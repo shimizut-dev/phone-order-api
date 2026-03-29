@@ -142,7 +142,7 @@ Issue と PR の各項目が対になるように起票する
 ## 開発フロー概要
 
 ```
-Issue 作成
+Issue作成
  ↓
 ブランチ作成
  ↓
@@ -152,16 +152,18 @@ Issue 作成
  ↓
 Push
  ↓
-PR 作成
+PR作成
  ↓
 レビュー
  ↓
 マージ
  ↓
-Issue クローズ
+Issueクローズ
+ ↓
+featureブランチ削除
 ```
 
-## ① Issue 作成
+## ① Issue作成
 
 AI（ChatGPT） を使用して Issue を作成する
 
@@ -231,7 +233,7 @@ git push origin feature/12
 
 ---
 
-## ⑥ PR 作成
+## ⑥ PR作成
 
 AI（ChatGPT） を使用して PR を作成
 
@@ -251,7 +253,13 @@ AI（ChatGPT） を使用して PR を作成
 
 ---
 
-## ⑨ Issue クローズ
+## ⑨ Issueクローズ
 
 - PRマージ後にIssueをクローズする
 - 完了条件を満たしていることを確認する
+
+---
+
+## ⑩ featureブランチ削除
+
+- Issueクローズ時にリモート/ローカルのfeatureブランチ削除する
