@@ -1,4 +1,3 @@
-
 # 📝 コミットメッセージ規則
 
 ## 準拠規約
@@ -42,6 +41,7 @@ https://www.conventionalcommits.org/en/v1.0.0/
 order
 delivery
 payment
+docs
 ```
 
 ---
@@ -73,9 +73,15 @@ Order集約の責務を整理
 
 ```
 feat(order): 注文作成機能を追加 (#12)
-docs(docs): アーキテクチャドキュメント追加 (#13)
+docs: アーキテクチャドキュメント追加 (#13)
 refactor(order): Order集約の責務を整理 (#14)
 fix(order): 注文作成時のバリデーション修正 (#15)
 test(order): 注文作成テストを追加 (#16)
-chore(build): Gradle設定を変更 (#17)
+chore: Gradle設定を変更 (#17)
 ```
+
+---
+
+## 補足
+
+- scopeは任意
