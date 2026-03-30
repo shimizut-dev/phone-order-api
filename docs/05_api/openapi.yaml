@@ -1,0 +1,388 @@
+openapi: 3.0.3
+info:
+  title: phone-order-api
+  version: 0.1.0
+  description: |
+    移動機注文API（phone-order-api）のMVP向けAPI仕様。
+
+    本仕様では以下を対象とする。
+    - 注文作成
+    - 注文参照
+    - 注文キャンセル
+    - 配送作成
+    - 配送参照
+
+servers:
+  - url: http://localhost:8080
+    description: local
+
+tags:
+  - name: Orders
+    description: 注文API
+  - name: Deliveries
+    description: 配送API
+
+paths:
+  /orders:
+    post:
+      tags:
+        - Orders
+      summary: 注文を作成する
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: 注文作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: リクエスト不正
+        '409':
+          description: 業務ルール違反
+
+  /orders/{orderId}:
+    get:
+      tags:
+        - Orders
+      summary: 注文を参照する
+      operationId: getOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: 注文参照成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: 注文が存在しない
+
+  /orders/{orderId}/cancel:
+    post:
+      tags:
+        - Orders
+      summary: 注文をキャンセルする
+      operationId: cancelOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelOrderRequest'
+      responses:
+        '200':
+          description: 注文キャンセル成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: 注文が存在しない
+        '409':
+          description: キャンセル不可状態
+
+  /orders/{orderId}/deliveries:
+    post:
+      tags:
+        - Deliveries
+      summary: 配送を作成する
+      operationId: createDelivery
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDeliveryRequest'
+      responses:
+        '201':
+          description: 配送作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponse'
+        '404':
+          description: 注文が存在しない
+        '409':
+          description: 業務ルール違反
+
+  /deliveries/{deliveryId}:
+    get:
+      tags:
+        - Deliveries
+      summary: 配送を参照する
+      operationId: getDelivery
+      parameters:
+        - $ref: '#/components/parameters/DeliveryId'
+      responses:
+        '200':
+          description: 配送参照成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponse'
+        '404':
+          description: 配送が存在しない
+
+components:
+  parameters:
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      description: 注文ID
+      schema:
+        type: string
+        example: ORD-000001
+
+    DeliveryId:
+      name: deliveryId
+      in: path
+      required: true
+      description: 配送ID
+      schema:
+        type: string
+        example: DLV-000001
+
+  schemas:
+    CreateOrderRequest:
+      type: object
+      required:
+        - orderParties
+        - orderLines
+        - orderedAt
+      properties:
+        orderParties:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderPartyRequest'
+        orderLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLineRequest'
+        orderedAt:
+          type: string
+          format: date-time
+          example: 2026-03-31T10:00:00+09:00
+
+    CancelOrderRequest:
+      type: object
+      required:
+        - cancelReason
+      properties:
+        cancelReason:
+          type: string
+          example: 顧客都合によりキャンセル
+
+    CreateDeliveryRequest:
+      type: object
+      required:
+        - address
+        - deliveryLines
+      properties:
+        address:
+          $ref: '#/components/schemas/Address'
+        requestedDeliveryAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2026-04-02T14:00:00+09:00
+        deliveryLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryLineRequest'
+
+    OrderResponse:
+      type: object
+      properties:
+        orderId:
+          type: string
+          example: ORD-000001
+        orderStatus:
+          type: string
+          example: 受付
+        orderParties:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderPartyResponse'
+        orderLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLineResponse'
+        deliveries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryResponse'
+
+    DeliveryResponse:
+      type: object
+      properties:
+        deliveryId:
+          type: string
+          example: DLV-000001
+        address:
+          $ref: '#/components/schemas/Address'
+        requestedDeliveryAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2026-04-02T14:00:00+09:00
+        deliveryLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryLineResponse'
+
+    OrderPartyRequest:
+      type: object
+      required:
+        - role
+        - name
+        - nameKana
+        - gender
+        - birthDate
+        - address
+      properties:
+        role:
+          type: string
+          example: 契約者
+        name:
+          type: string
+          example: 山田 太郎
+        nameKana:
+          type: string
+          example: ヤマダ タロウ
+        gender:
+          type: string
+          example: 男性
+        birthDate:
+          type: string
+          format: date
+          example: 1990-01-01
+        address:
+          $ref: '#/components/schemas/Address'
+
+    OrderPartyResponse:
+      allOf:
+        - $ref: '#/components/schemas/OrderPartyRequest'
+
+    OrderLineRequest:
+      type: object
+      required:
+        - orderLineType
+        - quantity
+      properties:
+        orderLineType:
+          type: string
+          example: 回線
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+        line:
+          $ref: '#/components/schemas/Line'
+        phone:
+          $ref: '#/components/schemas/Phone'
+        accessory:
+          $ref: '#/components/schemas/Accessory'
+
+    OrderLineResponse:
+      allOf:
+        - $ref: '#/components/schemas/OrderLineRequest'
+        - type: object
+          properties:
+            orderLineId:
+              type: string
+              example: ODL-000001
+
+    DeliveryLineRequest:
+      type: object
+      required:
+        - orderLineId
+        - quantity
+      properties:
+        orderLineId:
+          type: string
+          example: ODL-000001
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+
+    DeliveryLineResponse:
+      allOf:
+        - $ref: '#/components/schemas/DeliveryLineRequest'
+
+    Line:
+      type: object
+      properties:
+        lineContractKind:
+          type: string
+          example: 新規契約
+        msisdn:
+          type: string
+          nullable: true
+          example: '09012345678'
+        sim:
+          $ref: '#/components/schemas/Sim'
+
+    Sim:
+      type: object
+      properties:
+        simForm:
+          type: string
+          example: 物理SIM
+        simStatus:
+          type: string
+          example: 白SIM
+
+    Phone:
+      type: object
+      properties:
+        phoneId:
+          type: string
+          example: PHN-000001
+        imei:
+          type: string
+          nullable: true
+          example: '123456789012345'
+
+    Accessory:
+      type: object
+      properties:
+        accessoryId:
+          type: string
+          example: ACC-000001
+        accessoryName:
+          type: string
+          example: 充電器
+
+    Address:
+      type: object
+      properties:
+        postalCode:
+          type: string
+          example: 100-0001
+        prefecture:
+          type: string
+          example: 東京都
+        city:
+          type: string
+          example: 千代田区
+        street:
+          type: string
+          example: 千代田1-1-1
+        building:
+          type: string
+          nullable: true
+          example: サンプルビル101
