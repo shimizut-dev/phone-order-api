@@ -1,10 +1,10 @@
 
 # 📱 phone-order-api
 
-携帯電話注文API（phone-order-api）
+移動機注文API（phone-order-api）
 
 DDD / Clean Architecture をベースにした  
-携帯電話申込ドメインのサンプルプロジェクトです。
+移動機申込ドメインのサンプルプロジェクトです。
 
 ---
 

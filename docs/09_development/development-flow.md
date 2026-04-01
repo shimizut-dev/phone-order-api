@@ -65,8 +65,8 @@ GitHub Flow に準拠した開発
 
 本プロジェクトでは以下の2つのブランチを使用する
 
-- main
-- feature
+- main: 常に動く状態を保つメインブランチ
+- feature: 新機能やバグ修正などの作業ブランチ
 
 ```
 feature
@@ -236,6 +236,7 @@ git push origin feature/12
 ## ⑥ PR作成
 
 AI（ChatGPT） を使用して PR を作成
+PRのタイトルはコミットメッセージと同じフォーマット
 
 ---
 
