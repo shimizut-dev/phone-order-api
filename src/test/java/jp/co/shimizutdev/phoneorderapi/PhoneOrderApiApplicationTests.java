@@ -1,4 +1,4 @@
-package jp.co.shimizu.phoneorderapi;
+package jp.co.shimizutdev.phoneorderapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
