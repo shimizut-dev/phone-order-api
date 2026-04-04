@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: phone-order-api-postgres
+    environment:
+      POSTGRES_DB: phone_order_api_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      TZ: Asia/Tokyo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
