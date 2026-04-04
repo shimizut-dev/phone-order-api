@@ -4,8 +4,8 @@ info:
   version: 0.1.0
   description: |
     移動機注文API（phone-order-api）のMVP向けAPI仕様。
-
     本仕様では以下を対象とする。
+
     - 注文作成
     - 注文参照
     - 注文キャンセル

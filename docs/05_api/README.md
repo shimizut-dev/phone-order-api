@@ -1,4 +1,4 @@
-# 📘 05_api
+# 05_api
 
 phone-order-api の API 設計ドキュメント
 
@@ -19,7 +19,7 @@ API仕様の正式な定義は以下とする。
 
 - `openapi.yaml`
 
-補助資料として以下を今後追加する。
+補助資料として以下を管理する。
 
 - `api-design-rules.md`
 - `error-response.md`
@@ -41,13 +41,13 @@ MVPで対象とする API は以下とする。
 
 ## 4. 対象エンドポイント一覧
 
-| API名 | Method | Path | 用途 |
-|------|--------|------|------|
-| 注文作成 | POST | `/orders` | 注文を作成する |
-| 注文参照 | GET | `/orders/{orderId}` | 注文を参照する |
-| 注文キャンセル | POST | `/orders/{orderId}/cancel` | 注文をキャンセルする |
-| 配送作成 | POST | `/orders/{orderId}/deliveries` | 配送を作成する |
-| 配送参照 | GET | `/deliveries/{deliveryId}` | 配送を参照する |
+| API名    | Method | Path                           | 用途         |
+|---------|--------|--------------------------------|------------|
+| 注文作成    | POST   | `/orders`                      | 注文を作成する    |
+| 注文参照    | GET    | `/orders/{orderId}`            | 注文を参照する    |
+| 注文キャンセル | POST   | `/orders/{orderId}/cancel`     | 注文をキャンセルする |
+| 配送作成    | POST   | `/orders/{orderId}/deliveries` | 配送を作成する    |
+| 配送参照    | GET    | `/deliveries/{deliveryId}`     | 配送を参照する    |
 
 ---
 
@@ -71,16 +71,6 @@ MVPで対象とする API は以下とする。
 
 ---
 
-## 7. 今後追加する資料
-
-今後、以下の資料を追加予定とする。
-
-- `api-design-rules.md`
-- `error-response.md`
-- `examples.md`
-
----
-
-## 8. 補足
+## 7. 補足
 
 OpenAPI の更新時は、本 README と対象範囲・エンドポイント一覧の整合も確認すること。
