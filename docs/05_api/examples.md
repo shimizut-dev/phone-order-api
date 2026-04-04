@@ -1,17 +1,17 @@
-# 📘 examples.md
+# APIリクエスト・レスポンス例
 
 ## 1. 目的
 
 本ドキュメントは `phone-order-api` の API リクエスト・レスポンス例を定義する。  
-API 利用者・設計レビュー・実装時の理解を目的とする。
+API利用者、設計レビュー、実装時の理解を目的とする。
 
 ---
 
-# 2. 注文作成
+## 2. 注文作成
 
-## Request
+### Request
 
-POST /orders
+`POST /orders`
 
 ```json
 {
@@ -48,11 +48,9 @@ POST /orders
 }
 ```
 
----
+### Response
 
-## Response
-
-201 Created
+`201 Created`
 
 ```json
 {
@@ -63,17 +61,15 @@ POST /orders
 
 ---
 
-# 3. 注文参照
+## 3. 注文参照
 
-## Request
+### Request
 
-GET /orders/ORD-000001
+`GET /orders/ORD-000001`
 
----
+### Response
 
-## Response
-
-200 OK
+`200 OK`
 
 ```json
 {
@@ -84,11 +80,11 @@ GET /orders/ORD-000001
 
 ---
 
-# 4. 注文キャンセル
+## 4. 注文キャンセル
 
-## Request
+### Request
 
-POST /orders/ORD-000001/cancel
+`POST /orders/ORD-000001/cancel`
 
 ```json
 {
@@ -96,11 +92,9 @@ POST /orders/ORD-000001/cancel
 }
 ```
 
----
+### Response
 
-## Response
-
-200 OK
+`200 OK`
 
 ```json
 {
@@ -111,11 +105,11 @@ POST /orders/ORD-000001/cancel
 
 ---
 
-# 5. 配送作成
+## 5. 配送作成
 
-## Request
+### Request
 
-POST /orders/ORD-000001/deliveries
+`POST /orders/ORD-000001/deliveries`
 
 ```json
 {
@@ -134,11 +128,9 @@ POST /orders/ORD-000001/deliveries
 }
 ```
 
----
+### Response
 
-## Response
-
-201 Created
+`201 Created`
 
 ```json
 {
@@ -148,17 +140,15 @@ POST /orders/ORD-000001/deliveries
 
 ---
 
-# 6. 配送参照
+## 6. 配送参照
 
-## Request
+### Request
 
-GET /deliveries/DLV-000001
+`GET /deliveries/DLV-000001`
 
----
+### Response
 
-## Response
-
-200 OK
+`200 OK`
 
 ```json
 {
@@ -168,9 +158,9 @@ GET /deliveries/DLV-000001
 
 ---
 
-# 7. エラー例
+## 7. エラー例
 
-## 404
+### 404
 
 ```json
 {
@@ -180,9 +170,7 @@ GET /deliveries/DLV-000001
 }
 ```
 
----
-
-## 400
+### 400
 
 ```json
 {
@@ -192,9 +180,7 @@ GET /deliveries/DLV-000001
 }
 ```
 
----
-
-## 409
+### 409
 
 ```json
 {
