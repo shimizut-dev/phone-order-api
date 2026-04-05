@@ -34,28 +34,7 @@ public final class OrderMapper {
         entity.setOrderCode(dto.getOrderCode());
         entity.setOrderedAt(dto.getOrderedAt());
         entity.setOrderStatus(dto.getOrderStatus());
-        entity.setOrderLines(OrderLineMapper.toEntityList(dto.getOrderLines(), entity));
-        entity.setOrderParties(OrderPartyMapper.toEntityList(dto.getOrderParties(), entity));
-        entity.setDeliveries(DeliveryMapper.toEntityList(dto.getDeliveries(), entity));
-        entity.setOrderHistories(OrderHistoryMapper.toEntityList(dto.getOrderHistories(), entity));
         return entity;
-    }
-
-    /**
-     * 注文Listを注文エンティティListへ変換
-     *
-     * @param dtos 注文Request DTO List
-     * @return 注文List
-     */
-    public static List<OrderEntity> toEntityList(List<OrderRequestDto> dtos) {
-        if (dtos == null) {
-            return Collections.emptyList();
-        }
-
-        return dtos.stream()
-                .map(OrderMapper::toEntity)
-                .filter(Objects::nonNull)
-                .toList();
     }
 
     /**
@@ -74,10 +53,6 @@ public final class OrderMapper {
         dto.setOrderCode(entity.getOrderCode());
         dto.setOrderedAt(entity.getOrderedAt());
         dto.setOrderStatus(entity.getOrderStatus());
-        dto.setOrderLines(OrderLineMapper.toResponseDtoList(entity.getOrderLines()));
-        dto.setOrderParties(OrderPartyMapper.toResponseDtoList(entity.getOrderParties()));
-        dto.setDeliveries(DeliveryMapper.toResponseDtoList(entity.getDeliveries()));
-        dto.setOrderHistories(OrderHistoryMapper.toResponseDtoList(entity.getOrderHistories()));
         BaseAuditMapper.mapToResponse(entity, dto);
         return dto;
     }
