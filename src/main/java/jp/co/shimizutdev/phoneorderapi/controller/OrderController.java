@@ -8,17 +8,10 @@ import jp.co.shimizutdev.phoneorderapi.mapper.OrderMapper;
 import jp.co.shimizutdev.phoneorderapi.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 注文Controller
@@ -38,17 +31,6 @@ public class OrderController {
     @GetMapping("/orders")
     public List<OrderResponseDto> searchOrders() {
         return OrderMapper.toResponseDtoList(orderService.searchOrders());
-    }
-
-    /**
-     * 注文IDで注文を参照
-     *
-     * @param id 注文ID
-     * @return 注文Response DTO
-     */
-    @GetMapping("/orders/{id}")
-    public OrderResponseDto getOrderById(@PathVariable UUID id) {
-        return OrderMapper.toResponseDto(getOrderOrThrow(id));
     }
 
     /**
@@ -75,16 +57,5 @@ public class OrderController {
     public OrderResponseDto createOrder(@Valid @RequestBody OrderRequestDto requestDto) {
         OrderEntity order = OrderMapper.toEntity(requestDto);
         return OrderMapper.toResponseDto(orderService.saveOrder(order));
-    }
-
-    /**
-     * 注文IDで注文を取得
-     *
-     * @param id 注文ID
-     * @return 注文
-     */
-    private OrderEntity getOrderOrThrow(UUID id) {
-        return orderService.getOrderById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "注文が見つかりません。"));
     }
 }

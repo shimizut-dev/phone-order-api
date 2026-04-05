@@ -1,6 +1,5 @@
 package jp.co.shimizutdev.phoneorderapi.dto.request;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 /**
  * 注文Request DTO
@@ -38,28 +36,4 @@ public class OrderRequestDto {
     @NotBlank(message = "注文ステータスは必須です。")
     @Size(max = 10, message = "注文ステータスは10桁以内で入力してください。")
     private String orderStatus;
-
-    /**
-     * 注文明細List
-     */
-    @Valid
-    private List<OrderLineRequestDto> orderLines;
-
-    /**
-     * 注文関係者List
-     */
-    @Valid
-    private List<OrderPartyRequestDto> orderParties;
-
-    /**
-     * 配送List
-     */
-    @Valid
-    private List<DeliveryRequestDto> deliveries;
-
-    /**
-     * 注文履歴List
-     */
-    @Valid
-    private List<OrderHistoryRequestDto> orderHistories;
 }

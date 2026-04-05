@@ -1,6 +1,6 @@
 package jp.co.shimizutdev.phoneorderapi.repository;
 
-import jp.co.shimizutdev.phoneorderapi.entity.*;
+import jp.co.shimizutdev.phoneorderapi.entity.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
