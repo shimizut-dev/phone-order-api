@@ -24,16 +24,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @Sql(
-        statements = {
-                "delete from orders where order_code in ('ORD000001', 'ORD999999')"
-        },
-        executionPhase = ExecutionPhase.BEFORE_TEST_METHOD
+    statements = {
+        "delete from orders where order_code in ('ORD000001', 'ORD999999')"
+    },
+    executionPhase = ExecutionPhase.BEFORE_TEST_METHOD
 )
 @Sql(
-        statements = {
-                "delete from orders where order_code in ('ORD000001', 'ORD999999')"
-        },
-        executionPhase = ExecutionPhase.AFTER_TEST_METHOD
+    statements = {
+        "delete from orders where order_code in ('ORD000001', 'ORD999999')"
+    },
+    executionPhase = ExecutionPhase.AFTER_TEST_METHOD
 )
 class OrderControllerIntegrationTest {
 
@@ -43,10 +43,10 @@ class OrderControllerIntegrationTest {
     @Container
     @SuppressWarnings("resource")
     static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
-            new PostgreSQLContainer<>("postgres:16")
-                    .withDatabaseName("phone_order_api_test_db")
-                    .withUsername("test")
-                    .withPassword("test");
+        new PostgreSQLContainer<>("postgres:16")
+            .withDatabaseName("phone_order_api_test_db")
+            .withUsername("test")
+            .withPassword("test");
 
     /**
      * MockMvc
@@ -74,14 +74,14 @@ class OrderControllerIntegrationTest {
      */
     @Test
     @Sql(statements = {
-            "insert into orders (order_code, ordered_at, order_status, created_by, updated_by) " +
-                    "values ('ORD000001', now(), '001', 'system', 'system')"
+        "insert into orders (order_code, ordered_at, order_status, created_by, updated_by) " +
+            "values ('ORD000001', now(), '001', 'system', 'system')"
     })
     void shouldReturnOrderWhenOrderCodeExists() throws Exception {
         mockMvc.perform(get("/api/orders/order-code/{orderCode}", "ORD000001"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderCode").value("ORD000001"))
-                .andExpect(jsonPath("$.orderStatus").value("001"));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.orderCode").value("ORD000001"))
+            .andExpect(jsonPath("$.orderStatus").value("001"));
     }
 
     /**
@@ -92,6 +92,6 @@ class OrderControllerIntegrationTest {
     @Test
     void shouldReturnNotFoundWhenOrderCodeDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/orders/order-code/{orderCode}", "ORD999999"))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 }
