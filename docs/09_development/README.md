@@ -1,4 +1,3 @@
-
 # 📚 Git運用ルール
 
 このディレクトリでは phone-order-api プロジェクトの
@@ -19,4 +18,4 @@ Git運用ルールを管理します。
 本プロジェクトでは以下の規約に準拠します
 
 - Conventional Commits
-https://www.conventionalcommits.org/en/v1.0.0/
+  https://www.conventionalcommits.org/en/v1.0.0/

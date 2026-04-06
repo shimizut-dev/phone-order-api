@@ -26,7 +26,7 @@ DDL生成
 ↓  
 DB反映  
 ↓  
-Spring Data 実装  
+Spring Data 実装
 
 ER図を設計の正とします。
 
@@ -40,13 +40,13 @@ docs/06_database
 ├─ id-generation.md  
 ├─ naming-rules.md  
 ├─ er-diagram  
-│  ├─ er-diagram.a5er  
-│  └─ er-diagram.png  
+│ ├─ er-diagram.a5er  
+│ └─ er-diagram.png  
 ├─ table-definition  
-│  └─ table-definition.xlsx  
+│ └─ table-definition.xlsx  
 ├─ ddl  
-│  └─ schema.sql  
-└─ ddl-changes  
+│ └─ schema.sql  
+└─ ddl-changes
 
 ---
 

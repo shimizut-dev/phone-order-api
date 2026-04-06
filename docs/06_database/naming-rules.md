@@ -68,7 +68,7 @@ updated_by
 
 例
 
-```sql
+```text
 id uuid primary key default gen_random_uuid()
 ```
 
@@ -189,7 +189,7 @@ ORD-000001
 
 したがって、データ型は原則として以下を採用する。
 
-```sql
+```text
 varchar(10)
 ```
 
@@ -201,7 +201,7 @@ varchar(10)
 
 例
 
-```sql
+```text
 order_code varchar(10) not null unique
 ```
 
@@ -239,7 +239,7 @@ delivery_status
 
 データ型例
 
-```sql
+```text
 order_linek_ind varchar(10) not null
 ```
 
@@ -254,16 +254,16 @@ order_linek_ind varchar(10) not null
 
 監査項目は以下に統一する。
 
-| 論理名 | 物理名 | 型 | 備考 |
-|---|---|---|---|
+| 論理名  | 物理名          | 型             | 備考         |
+|------|--------------|---------------|------------|
 | 作成日時 | `created_at` | `timestamptz` | `not null` |
-| 作成者 | `created_by` | `varchar(50)` | `not null` |
+| 作成者  | `created_by` | `varchar(50)` | `not null` |
 | 更新日時 | `updated_at` | `timestamptz` | `not null` |
-| 更新者 | `updated_by` | `varchar(50)` | `not null` |
+| 更新者  | `updated_by` | `varchar(50)` | `not null` |
 
 例
 
-```sql
+```text
 created_at timestamptz not null default CURRENT_TIMESTAMP,
 created_by varchar(50) not null,
 updated_at timestamptz not null default CURRENT_TIMESTAMP,
@@ -276,20 +276,20 @@ updated_by varchar(50) not null
 
 制約名は、DBエラー時に判別しやすいように命名する。
 
-| 種別 | 命名規則 | 例 |
-|---|---|---|
-| 主キー | `pk_<table_name>` | `pk_order` |
-| 外部キー | `fk_<table_name>_<column_name>` | `fk_order_detail_order_id` |
-| 一意制約 | `uk_<table_name>_<column_name>` | `uk_order_order_code` |
-| チェック制約 | `ck_<table_name>_<column_name>` | `ck_order_status` |
+| 種別     | 命名規則                            | 例                          |
+|--------|---------------------------------|----------------------------|
+| 主キー    | `pk_<table_name>`               | `pk_order`                 |
+| 外部キー   | `fk_<table_name>_<column_name>` | `fk_order_detail_order_id` |
+| 一意制約   | `uk_<table_name>_<column_name>` | `uk_order_order_code`      |
+| チェック制約 | `ck_<table_name>_<column_name>` | `ck_order_status`          |
 
 ---
 
 ## 8. インデックス名の命名規則
 
-| 種別 | 命名規則 | 例 |
-|---|---|---|
-| 通常インデックス | `idx_<table_name>_<column_name>` | `idx_order_order_code` |
+| 種別       | 命名規則                             | 例                                    |
+|----------|----------------------------------|--------------------------------------|
+| 通常インデックス | `idx_<table_name>_<column_name>` | `idx_order_order_code`               |
 | 複合インデックス | `idx_<table_name>_<col1>_<col2>` | `idx_order_customer_id_order_status` |
 
 ---

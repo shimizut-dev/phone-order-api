@@ -1,17 +1,18 @@
 -- 注文
-create table orders (
-                        id uuid default gen_random_uuid() not null
-    , order_code varchar(20) not null
-    , ordered_at timestamptz not null
-    , order_status varchar(10) not null
-    , created_at timestamptz default CURRENT_TIMESTAMP not null
-    , created_by varchar(50) not null
-    , updated_at timestamptz default CURRENT_TIMESTAMP not null
-    , updated_by varchar(50) not null
-    , deleted_at timestamptz
-    , deleted_by varchar(50)
-    , constraint pk_orders primary key (id)
-) ;
+create table orders
+(
+    id           uuid        default gen_random_uuid() not null,
+    order_code   varchar(20)                           not null,
+    ordered_at   timestamptz                           not null,
+    order_status varchar(10)                           not null,
+    created_at   timestamptz default CURRENT_TIMESTAMP not null,
+    created_by   varchar(50)                           not null,
+    updated_at   timestamptz default CURRENT_TIMESTAMP not null,
+    updated_by   varchar(50)                           not null,
+    deleted_at   timestamptz,
+    deleted_by   varchar(50),
+    constraint pk_orders primary key (id)
+);
 
 comment on table orders is '注文:注文を管理するテーブル';
 comment on column orders.id is 'ID';

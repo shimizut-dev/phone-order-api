@@ -53,7 +53,7 @@ domain
 - HTTP リクエストを受け付ける
 - リクエストをアプリケーション入力に変換する
 - アプリケーション結果をレスポンスに変換する
-- HTTP ステータスコードを決定する 
+- HTTP ステータスコードを決定する
 
 ### 4.2 application
 
@@ -119,12 +119,12 @@ OrderLine は明細単体の整合性を保証する。
 
 ## 7. 設計原則
 
--  ドメイン知識は domain に置く
--  ユースケースの流れは application に置く
--  フレームワーク都合は infrastructure / presentation に閉じ込める
--  API都合のDTOを domain に持ち込まない
--  永続化都合のEntityを domain に持ち込まない
--  将来拡張（支払・審査・在庫）を見越しつつ、MVPでは責務を増やしすぎない
+- ドメイン知識は domain に置く
+- ユースケースの流れは application に置く
+- フレームワーク都合は infrastructure / presentation に閉じ込める
+- API都合のDTOを domain に持ち込まない
+- 永続化都合のEntityを domain に持ち込まない
+- 将来拡張（支払・審査・在庫）を見越しつつ、MVPでは責務を増やしすぎない
 
 ---
 

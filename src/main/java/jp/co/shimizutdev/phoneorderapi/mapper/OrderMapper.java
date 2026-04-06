@@ -69,8 +69,8 @@ public final class OrderMapper {
         }
 
         return entities.stream()
-                .map(OrderMapper::toResponseDto)
-                .filter(Objects::nonNull)
-                .toList();
+            .map(OrderMapper::toResponseDto)
+            .filter(Objects::nonNull)
+            .toList();
     }
 }
