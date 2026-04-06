@@ -70,20 +70,20 @@ jp.co.example.phoneorderapi
 
 ### 5.1 order
 
-- Order 
-- OrderId 
+- Order
+- OrderId
 - OrderStatus
 
 ### 5.2 party
 
 - OrderParty
--  OrderPartyId
--  OrderPartyRole
--  PersonName
--  PersonNameKana
--  Gender
--  BirthDate
--  Address
+- OrderPartyId
+- OrderPartyRole
+- PersonName
+- PersonNameKana
+- Gender
+- BirthDate
+- Address
 
 ### 5.3 delivery
 

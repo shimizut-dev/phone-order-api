@@ -42,7 +42,7 @@ public class OrderController {
     @GetMapping("/orders/order-code/{orderCode}")
     public OrderResponseDto getOrderByOrderCode(@PathVariable String orderCode) {
         OrderEntity order = orderService.getOrderByOrderCode(orderCode)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "注文が見つかりません。"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "注文が見つかりません。"));
         return OrderMapper.toResponseDto(order);
     }
 

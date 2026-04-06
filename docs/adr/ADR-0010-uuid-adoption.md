@@ -1,9 +1,11 @@
 # ADR-0010: UUID を採用する
 
 ## ステータス
+
 採用
 
 ## 日付
+
 2026-04-04
 
 ---
@@ -114,7 +116,7 @@ UUID を使用することで、
 
 ## PostgreSQL 例
 
-```sql
+```text
 id uuid primary key default gen_random_uuid()
 ```
 

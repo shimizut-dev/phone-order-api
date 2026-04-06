@@ -1,4 +1,3 @@
-
 # 命名規約 (Naming Conventions)
 
 本ドキュメントでは、phone-order-api における命名規約を定義する。
@@ -121,12 +120,12 @@ order_details
 
 # まとめ
 
-| 対象 | 命名 |
-|------|------|
-| ドメインID | orderId |
-| 主キー | id |
-| 外部キー | order_id |
-| 業務ID | order_code |
+| 対象     | 命名         |
+|--------|------------|
+| ドメインID | orderId    |
+| 主キー    | id         |
+| 外部キー   | order_id   |
+| 業務ID   | order_code |
 
 ---
 

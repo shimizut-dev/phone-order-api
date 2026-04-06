@@ -1,9 +1,11 @@
 # ADR-0011: テーブルの主キーは ID 1つ（UUID）を採用する
 
 ## ステータス
+
 採用
 
 ## 日付
+
 2026-04-04
 
 ---
@@ -112,7 +114,7 @@ Spring Data JPA を使用するため、
 
 すべてのテーブルに以下を採用する
 
-```sql
+```text
 id uuid primary key default gen_random_uuid()
 ```
 
@@ -125,7 +127,7 @@ id uuid primary key default gen_random_uuid()
 
 例
 
-```sql
+```text
 unique(order_code)
 ```
 

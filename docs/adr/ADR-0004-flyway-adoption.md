@@ -1,9 +1,11 @@
 # ADR-0004: Flyway を採用する
 
 ## ステータス
+
 採用
 
 ## 日付
+
 2026-04-04
 
 ---
@@ -51,7 +53,7 @@ Flyway では以下の形式で管理可能
 
 V1__init.sql  
 V2__add_order_table.sql  
-V3__add_delivery_table.sql  
+V3__add_delivery_table.sql
 
 この形式により、DB変更履歴を明確に管理できる。
 
