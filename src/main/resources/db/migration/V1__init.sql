@@ -1,7 +1,7 @@
 -- 注文
 create table orders
 (
-    id           uuid        default gen_random_uuid() not null,
+    id uuid not null,
     order_code   varchar(20)                           not null,
     ordered_at   timestamptz                           not null,
     order_status varchar(10)                           not null,
