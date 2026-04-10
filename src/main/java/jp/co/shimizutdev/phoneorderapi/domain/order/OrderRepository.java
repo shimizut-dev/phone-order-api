@@ -1,0 +1,33 @@
+package jp.co.shimizutdev.phoneorderapi.domain.order;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 注文リポジトリ
+ */
+public interface OrderRepository {
+
+    /**
+     * 注文リストを取得する
+     *
+     * @return 注文リスト
+     */
+    List<Order> findAll();
+
+    /**
+     * 注文コードで注文を取得する
+     *
+     * @param orderCode 注文コード
+     * @return 注文
+     */
+    Optional<Order> findByOrderCode(OrderCode orderCode);
+
+    /**
+     * 注文を登録する
+     *
+     * @param order 注文
+     * @return 注文
+     */
+    Order create(Order order);
+}

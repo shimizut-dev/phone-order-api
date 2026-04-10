@@ -2,7 +2,7 @@
 
 ## 1. 目的
 
-本資料は `phone-order-api` におけるDBオブジェクトの命名規則を定義する。
+本資料は `phone-order-api` におけるDBオブジェクトの命名規則を定義する。  
 命名を統一することで、DDL・ER図・実装コード・レビュー観点のブレを防ぐことを目的とする。
 
 ---
@@ -20,20 +20,27 @@
 
 ### 3.1 テーブル名
 
-- **複数形にしない**
-- **業務上の実体を表す名詞**を使う
+- **物理テーブル名は実装で採用した名前を正とする**
+- 複数形 / 単数形は、プロジェクトで採用した物理名に合わせる
+- 制約名・インデックス名は、**実際の物理テーブル名** をそのまま使用する
+- 業務上の実体を表す名詞を使う
 - 略語は多用しない
 - ただし、業務上意味が定着している略語は使用可とする
 
 例
 
 ```text
-order
-order_detail
-customer
-product
-delivery
+orders
+order_details
+customers
+products
+deliveries
 ```
+
+補足
+
+- 本プロジェクトでは、既存DDLとの整合を優先し、物理テーブル名として `orders` を採用している
+- 制約名も `orders` をそのまま使用する
 
 ---
 
@@ -62,14 +69,14 @@ updated_by
 
 ### 3.3 主キー
 
-- 主キー名は原則として **`id`** に統一する
+- 主キーカラム名は原則として **`id`** に統一する
 - 型は `uuid` を使用する
-- DBで採番する
+- 採番方式はプロジェクト方針に従う
 
 例
 
 ```text
-id uuid primary key default gen_random_uuid()
+id uuid primary key
 ```
 
 ---
@@ -197,7 +204,7 @@ varchar(10)
 
 ### 4.6 一意制約
 
-業務向けIDは、必要に応じて **一意制約（UNIQUE）** を付与する。
+業務向けIDは、必要に応じて **一意キー制約（UNIQUE）** を付与する。
 
 例
 
@@ -240,7 +247,7 @@ delivery_status
 データ型例
 
 ```text
-order_linek_ind varchar(10) not null
+order_line_kind varchar(10) not null
 ```
 
 補足
@@ -276,21 +283,55 @@ updated_by varchar(50) not null
 
 制約名は、DBエラー時に判別しやすいように命名する。
 
-| 種別     | 命名規則                            | 例                          |
-|--------|---------------------------------|----------------------------|
-| 主キー    | `pk_<table_name>`               | `pk_order`                 |
-| 外部キー   | `fk_<table_name>_<column_name>` | `fk_order_detail_order_id` |
-| 一意制約   | `uk_<table_name>_<column_name>` | `uk_order_order_code`      |
-| チェック制約 | `ck_<table_name>_<column_name>` | `ck_order_status`          |
+### 7.1 基本方針
+
+- 制約名には、**実際の物理テーブル名** と **実際の物理カラム名** を使用する
+- 物理テーブル名が複数形の場合でも、制約名ではそのまま複数形を使う
+- カラム名は定義順で連結する
+- 接頭辞で制約種別を表す
+
+### 7.2 接頭辞
+
+| 種別     | 接頭辞  |
+|--------|------|
+| 主キー    | `pk` |
+| 外部キー   | `fk` |
+| 一意キー制約 | `uk` |
+| チェック制約 | `ck` |
+
+### 7.3 命名規則
+
+| 種別     | 命名規則                                              | 例                                  |
+|--------|---------------------------------------------------|------------------------------------|
+| 主キー    | `pk_<physical_table_name>`                        | `pk_orders`                        |
+| 外部キー   | `fk_<physical_table_name>_<physical_column_name>` | `fk_order_details_order_id`        |
+| 一意キー制約 | `uk_<physical_table_name>_<physical_column_name>` | `uk_orders_order_code`             |
+| 複合一意キー | `uk_<physical_table_name>_<col1>_<col2>`          | `uk_orders_customer_id_order_code` |
+| チェック制約 | `ck_<physical_table_name>_<physical_column_name>` | `ck_orders_order_status`           |
+
+### 7.4 一意キー制約の補足
+
+- 一意キー制約名は **`uk_`** を接頭辞とする
+- 物理テーブル名は **実装DDLのテーブル名をそのまま使用する**
+- 単一カラムの一意キー制約は **`uk_<table>_<column>`** とする
+- 複合一意キー制約は **定義順にカラム名を連結** する
+- 既存DDLが `orders` のような複数形テーブル名を採用している場合も、制約名では `orders` をそのまま使用する
+
+例
+
+```text
+uk_orders_order_code
+uk_orders_customer_id_order_code
+```
 
 ---
 
 ## 8. インデックス名の命名規則
 
-| 種別       | 命名規則                             | 例                                    |
-|----------|----------------------------------|--------------------------------------|
-| 通常インデックス | `idx_<table_name>_<column_name>` | `idx_order_order_code`               |
-| 複合インデックス | `idx_<table_name>_<col1>_<col2>` | `idx_order_customer_id_order_status` |
+| 種別       | 命名規則                             | 例                                     |
+|----------|----------------------------------|---------------------------------------|
+| 通常インデックス | `idx_<table_name>_<column_name>` | `idx_orders_order_code`               |
+| 複合インデックス | `idx_<table_name>_<col1>_<col2>` | `idx_orders_customer_id_order_status` |
 
 ---
 
@@ -298,7 +339,7 @@ updated_by varchar(50) not null
 
 以下は原則として採用しない。
 
-- テーブル名の複数形
+- 実際の物理テーブル名と異なる制約名を付けること
 - 意味が曖昧な略語
 - `kbn` `flg` `no` の乱用
 - 可変フォーマットの業務向けID
@@ -307,7 +348,7 @@ updated_by varchar(50) not null
 例
 
 ```text
-orders
+uk_order_order_code
 orderDtl
 customerNo
 status_kbn
@@ -318,7 +359,7 @@ varchar(20) の業務向けID
 
 ## 10. まとめ
 
-- テーブル名は単数形
+- テーブル名は **実装で採用した物理名を正とする**
 - カラム名は英小文字 + スネークケース
 - 主キーは `id` + `uuid`
 - 外部キーは `参照先テーブル名_id`
@@ -327,3 +368,4 @@ varchar(20) の業務向けID
 - 業務向けIDの型は原則 `varchar(10)`
 - 区分値コメントはコードと意味を両方書く
 - 監査項目は `created_at / created_by / updated_at / updated_by` に統一する
+- 一意キー制約名は `uk_<physical_table_name>_<physical_column_name>` とする
