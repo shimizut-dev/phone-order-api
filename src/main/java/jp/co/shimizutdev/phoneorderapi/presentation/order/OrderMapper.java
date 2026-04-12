@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 注文マッパ
+ * 注文マッパー
  */
 public class OrderMapper {
 
@@ -28,7 +28,7 @@ public class OrderMapper {
             return null;
         }
 
-        var orderResponse = new OrderResponse();
+        OrderResponse orderResponse = new OrderResponse();
         orderResponse.setOrderCode(order.getOrderCode().getValue());
         orderResponse.setOrderedAt(order.getOrderedAt().getValue());
         orderResponse.setOrderStatus(order.getOrderStatus().getCode());

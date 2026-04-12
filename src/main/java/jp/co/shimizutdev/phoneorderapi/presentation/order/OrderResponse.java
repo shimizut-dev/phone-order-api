@@ -1,8 +1,6 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 
@@ -11,6 +9,8 @@ import java.time.OffsetDateTime;
  */
 @Getter
 @Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 public class OrderResponse {
 
@@ -29,3 +29,5 @@ public class OrderResponse {
      */
     private String orderStatus;
 }
+
+

@@ -28,17 +28,17 @@ public class GlobalExceptionHandler {
      * @return APIエラーレスポンス
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValidException(
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
         final MethodArgumentNotValidException ex,
         final HttpServletRequest request) {
 
-        List<ApiValidationError> validationErrors = ex.getBindingResult()
+        List<ValidationError> validationErrors = ex.getBindingResult()
             .getFieldErrors()
             .stream()
             .map(this::toApiValidationError)
             .toList();
 
-        ApiErrorResponse response = buildErrorResponse(
+        ErrorResponse response = createErrorResponse(
             HttpStatus.BAD_REQUEST,
             "入力値が不正です。",
             request,
@@ -56,18 +56,18 @@ public class GlobalExceptionHandler {
      * @return APIエラーレスポンス
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(
         final ConstraintViolationException ex,
         final HttpServletRequest request) {
 
-        List<ApiValidationError> validationErrors = ex.getConstraintViolations()
+        List<ValidationError> validationErrors = ex.getConstraintViolations()
             .stream()
-            .map(violation -> new ApiValidationError(
+            .map(violation -> ValidationError.create(
                 violation.getPropertyPath().toString(),
                 violation.getMessage()))
             .toList();
 
-        ApiErrorResponse response = buildErrorResponse(
+        ErrorResponse response = createErrorResponse(
             HttpStatus.BAD_REQUEST,
             "入力値が不正です。",
             request,
@@ -85,11 +85,11 @@ public class GlobalExceptionHandler {
      * @return APIエラーレスポンス
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
         final IllegalArgumentException ex,
         final HttpServletRequest request) {
 
-        ApiErrorResponse response = buildErrorResponse(
+        ErrorResponse response = createErrorResponse(
             HttpStatus.BAD_REQUEST,
             ex.getMessage(),
             request,
@@ -106,10 +106,10 @@ public class GlobalExceptionHandler {
      * @return APIエラーレスポンス
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
         final HttpServletRequest request) {
 
-        ApiErrorResponse response = buildErrorResponse(
+        ErrorResponse response = createErrorResponse(
             HttpStatus.BAD_REQUEST,
             "リクエストボディの形式が不正です。",
             request,
@@ -127,13 +127,13 @@ public class GlobalExceptionHandler {
      * @return APIエラーレスポンス
      */
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ApiErrorResponse> handleResponseStatusException(
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(
         ResponseStatusException ex,
         HttpServletRequest request) {
         HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
         String message = ex.getReason() != null ? ex.getReason() : "リクエスト処理に失敗しました。";
 
-        ApiErrorResponse response = buildErrorResponse(status, message, request, List.of());
+        ErrorResponse response = createErrorResponse(status, message, request, List.of());
         return ResponseEntity.status(status).body(response);
     }
 
@@ -144,10 +144,10 @@ public class GlobalExceptionHandler {
      * @return APIエラーレスポンス
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleException(
+    public ResponseEntity<ErrorResponse> handleException(
         final HttpServletRequest request) {
 
-        ApiErrorResponse response = buildErrorResponse(
+        ErrorResponse response = createErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "サーバー内部でエラーが発生しました。",
             request,
@@ -158,34 +158,34 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * FieldErrorをAPIバリデーションエラーへ変換
+     * 項目エラーをバリデーションエラーへ変換
      *
-     * @param fieldError FieldError
-     * @return APIバリデーションエラー
+     * @param fieldError 項目エラー
+     * @return バリデーションエラー
      */
-    private ApiValidationError toApiValidationError(final FieldError fieldError) {
-        return new ApiValidationError(
+    private ValidationError toApiValidationError(final FieldError fieldError) {
+        return ValidationError.create(
             fieldError.getField(),
             fieldError.getDefaultMessage()
         );
     }
 
     /**
-     * APIエラーレスポンスを生成
+     * エラーレスポンスを生成
      *
      * @param status           HTTPステータス
      * @param message          メッセージ
      * @param request          HTTPリクエスト
      * @param validationErrors バリデーションエラー
-     * @return APIエラーレスポンス
+     * @return エラーレスポンス
      */
-    private ApiErrorResponse buildErrorResponse(
+    private ErrorResponse createErrorResponse(
         final HttpStatus status,
         final String message,
         final HttpServletRequest request,
-        final List<ApiValidationError> validationErrors) {
+        final List<ValidationError> validationErrors) {
 
-        return new ApiErrorResponse(
+        return ErrorResponse.create(
             OffsetDateTime.now(),
             status.value(),
             status.name(),
