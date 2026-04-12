@@ -3,7 +3,7 @@ package jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order;
 import jp.co.shimizutdev.phoneorderapi.domain.order.*;
 
 /**
- * 注文JPAマッパ
+ * 注文JPAマッパー
  */
 public class OrderJpaMapper {
     /**
@@ -39,7 +39,7 @@ public class OrderJpaMapper {
      * @return 注文JPAエンティティ
      */
     public static OrderJpaEntity toEntity(final Order order) {
-        var orderJpaEntity = new OrderJpaEntity();
+        OrderJpaEntity orderJpaEntity = new OrderJpaEntity();
         orderJpaEntity.setId(order.getOrderId().getValue());
         orderJpaEntity.setOrderCode(order.getOrderCode().getValue());
         orderJpaEntity.setOrderedAt(order.getOrderedAt().getValue());

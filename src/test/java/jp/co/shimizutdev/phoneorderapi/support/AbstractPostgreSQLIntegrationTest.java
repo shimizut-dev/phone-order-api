@@ -3,24 +3,25 @@ package jp.co.shimizutdev.phoneorderapi.support;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * PostgreSQL統合テスト共通設定
  */
-@Testcontainers
 public abstract class AbstractPostgreSQLIntegrationTest {
 
     /**
      * PostgreSQLコンテナ
      */
-    @Container
     @SuppressWarnings("resource")
-    protected static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:16")
-        .withDatabaseName("phone_order_api_test_db")
-        .withUsername("test")
-        .withPassword("test");
+    protected static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER =
+        new PostgreSQLContainer<>("postgres:16")
+            .withDatabaseName("phone_order_api_test_db")
+            .withUsername("test")
+            .withPassword("test");
+
+    static {
+        POSTGRESQL_CONTAINER.start();
+    }
 
     /**
      * テスト用データソースを設定する。
