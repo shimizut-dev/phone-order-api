@@ -18,6 +18,6 @@ public class OrderRequest {
     /**
      * 注文日時
      */
-    @NotNull(message = "注文日時は必須です。")
+    @NotNull(message = "{validation.order.orderedAt.required}")
     private OffsetDateTime orderedAt;
 }
