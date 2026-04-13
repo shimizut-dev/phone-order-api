@@ -56,10 +56,10 @@ class MethodLogAspectIntegrationTest extends AbstractPostgreSQLIntegrationTest {
             + "('22222222-2222-2222-2222-222222222222', 'ORD000002', now(), '002', 'system', 'system')"
     })
     void shouldLogMethodStartAndReturnType(final CapturedOutput output) {
-        orderService.getOrderList();
+        orderService.getOrders();
 
-        assertThat(output).contains("[method start] methodName: OrderService#getOrderList");
-        assertThat(output).contains("[method end] methodName: OrderService#getOrderList");
+        assertThat(output).contains("[method start] methodName: OrderService#getOrders");
+        assertThat(output).contains("[method end] methodName: OrderService#getOrders");
         assertThat(output).contains("[method end] return value: [List<Order>(size=2)]");
         assertThat(output).contains("\"orderCode\":{\"value\":\"ORD000001\"}");
         assertThat(output).contains("\"orderCode\":{\"value\":\"ORD000002\"}");

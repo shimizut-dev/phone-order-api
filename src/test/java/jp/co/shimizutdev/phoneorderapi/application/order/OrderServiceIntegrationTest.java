@@ -75,20 +75,20 @@ class OrderServiceIntegrationTest extends AbstractPostgreSQLIntegrationTest {
 
     /**
      * <pre>
-     * 注文リストを取得できること。
+     * 注文一覧を取得できること。
      *
      * Given 注文データが複数件保存されている
-     * When 注文リストを取得する
-     * Then 保存された注文リストが返る
+     * When 注文一覧を取得する
+     * Then 保存された注文一覧が返る
      * </pre>
      */
     @Test
-    @DisplayName("注文リストを取得できること")
+    @DisplayName("注文一覧を取得できること")
     void shouldListOrders() {
         orderJpaRepository.save(reconstructOrderJpaEntity("ORD000001", "001"));
         orderJpaRepository.save(reconstructOrderJpaEntity("ORD000002", "002"));
 
-        List<Order> actual = orderService.getOrderList();
+        List<Order> actual = orderService.getOrders();
 
         assertEquals(2, actual.size());
         assertTrue(actual.stream().anyMatch(order -> "ORD000001".equals(order.getOrderCode().getValue())));

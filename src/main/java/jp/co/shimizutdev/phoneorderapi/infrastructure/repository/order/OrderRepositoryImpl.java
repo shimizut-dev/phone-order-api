@@ -33,9 +33,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     private EntityManager entityManager;
 
     /**
-     * 注文リストを取得する
+     * 注文一覧を取得する
      *
-     * @return 注文リスト
+     * @return 注文一覧
      */
     @Override
     public List<Order> findAll() {

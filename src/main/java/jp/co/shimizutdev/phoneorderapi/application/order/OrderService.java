@@ -31,11 +31,11 @@ public class OrderService {
     private final OrderCodeGenerator orderCodeGenerator;
 
     /**
-     * 注文リストを取得する
+     * 注文一覧を取得する
      *
-     * @return 注文リスト
+     * @return 注文一覧
      */
-    public List<Order> getOrderList() {
+    public List<Order> getOrders() {
         return orderRepository.findAll();
     }
 
