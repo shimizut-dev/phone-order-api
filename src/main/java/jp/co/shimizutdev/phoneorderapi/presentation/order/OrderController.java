@@ -56,6 +56,6 @@ public class OrderController {
     @PostMapping("/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createOrder(@Valid @RequestBody final OrderRequest orderRequest) {
-        return OrderMapper.toResponse(orderService.createOrder(orderRequest.getOrderedAt()));
+        return OrderMapper.toResponse(orderService.createOrder(orderRequest.orderedAt()));
     }
 }

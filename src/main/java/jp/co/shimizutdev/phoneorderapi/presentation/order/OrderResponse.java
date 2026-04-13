@@ -1,33 +1,17 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
-import lombok.*;
-
 import java.time.OffsetDateTime;
 
 /**
  * 注文レスポンス
+ *
+ * @param orderCode   注文コード
+ * @param orderedAt   注文日時
+ * @param orderStatus 注文ステータス
  */
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@NoArgsConstructor
-public class OrderResponse {
-
-    /**
-     * 注文コード
-     */
-    private String orderCode;
-
-    /**
-     * 注文日時
-     */
-    private OffsetDateTime orderedAt;
-
-    /**
-     * 注文ステータス
-     */
-    private String orderStatus;
+public record OrderResponse(
+    String orderCode,
+    OffsetDateTime orderedAt,
+    String orderStatus
+) {
 }
-
-

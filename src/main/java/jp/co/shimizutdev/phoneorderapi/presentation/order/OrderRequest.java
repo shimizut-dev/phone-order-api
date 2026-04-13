@@ -1,23 +1,16 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.time.OffsetDateTime;
 
 /**
  * 注文リクエスト
+ *
+ * @param orderedAt 注文日時
  */
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@NoArgsConstructor
-public class OrderRequest {
-
-    /**
-     * 注文日時
-     */
+public record OrderRequest(
     @NotNull(message = "{validation.order.orderedAt.required}")
-    private OffsetDateTime orderedAt;
+    OffsetDateTime orderedAt
+) {
 }
