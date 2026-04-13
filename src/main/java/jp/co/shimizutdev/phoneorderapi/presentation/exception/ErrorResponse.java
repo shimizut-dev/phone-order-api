@@ -41,7 +41,7 @@ public class ErrorResponse {
     private final String path;
 
     /**
-     * バリデーションエラーリスト
+     * バリデーションエラー一覧
      */
     private final List<ValidationError> validationErrors;
 
@@ -53,7 +53,7 @@ public class ErrorResponse {
      * @param error            エラー種別
      * @param message          メッセージ
      * @param path             リクエストパス
-     * @param validationErrors バリデーションエラーリスト
+     * @param validationErrors バリデーションエラー一覧
      */
     private ErrorResponse(
         final OffsetDateTime timestamp,
@@ -78,7 +78,7 @@ public class ErrorResponse {
      * @param error            エラー種別
      * @param message          メッセージ
      * @param path             リクエストパス
-     * @param validationErrors バリデーションエラーリスト
+     * @param validationErrors バリデーションエラー一覧
      */
     public static ErrorResponse create(
         final OffsetDateTime timestamp,

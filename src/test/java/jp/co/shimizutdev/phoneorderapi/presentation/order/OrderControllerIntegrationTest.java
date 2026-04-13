@@ -48,17 +48,17 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
     class ListOrders {
         /**
          * <pre>
-         * 注文リストを取得できること。
+         * 注文一覧を取得できること。
          *
          * Given 注文データが複数件登録されている
-         * When 注文リスト取得APIを実行する
-         * Then 200 OK と注文リストが返る
+         * When 注文一覧取得APIを実行する
+         * Then 200 OK と注文一覧が返る
          * </pre>
          *
          * @throws Exception 例外
          */
         @Test
-        @DisplayName("注文リストを取得できること")
+        @DisplayName("注文一覧を取得できること")
         @Sql(statements = {
             "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 'system', 'system')",
             "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000002', now(), '002', 'system', 'system')"

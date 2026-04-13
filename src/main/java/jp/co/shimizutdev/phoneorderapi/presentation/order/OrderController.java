@@ -24,13 +24,13 @@ public class OrderController {
     private final OrderService orderService;
 
     /**
-     * 注文リストを取得する
+     * 注文一覧を取得する
      *
-     * @return 注文レスポンスリスト
+     * @return 注文レスポンス一覧
      */
     @GetMapping("/orders")
-    public List<OrderResponse> getOrderList() {
-        return OrderMapper.toResponseList(orderService.getOrderList());
+    public List<OrderResponse> getOrders() {
+        return OrderMapper.toResponseList(orderService.getOrders());
     }
 
     /**

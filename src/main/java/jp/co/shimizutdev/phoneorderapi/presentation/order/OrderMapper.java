@@ -36,17 +36,17 @@ public class OrderMapper {
     }
 
     /**
-     * 注文リストを注文レスポンスリストへ変換する
+     * 注文一覧を注文レスポンス一覧へ変換する
      *
-     * @param orderList 注文リスト
-     * @return 注文レスポンスリスト
+     * @param orders 注文一覧
+     * @return 注文レスポンス一覧
      */
-    public static List<OrderResponse> toResponseList(final List<Order> orderList) {
-        if (orderList == null) {
+    public static List<OrderResponse> toResponseList(final List<Order> orders) {
+        if (orders == null) {
             return Collections.emptyList();
         }
 
-        return orderList.stream()
+        return orders.stream()
             .map(OrderMapper::toResponse)
             .filter(Objects::nonNull)
             .toList();

@@ -39,13 +39,13 @@
 #### 一覧取得
 
 - 日本語: 一覧取得
-- 英語: `get + XxxList`
+- 英語: `get + 複数形`
 
 例
 
 ```text
-getOrderList
-getDeliveryList
+getOrders
+getDeliveries
 ```
 
 #### 1件取得
@@ -125,19 +125,19 @@ BaseAuditMapper
 
 ### Service
 
-現行実装では、application の Service も Controller と同様に `get + XxxList` を採用している。  
+現行実装では、application の Service も Controller と同様に `get + 複数形` を採用している。  
 そのため、application の Service は次の命名を採用する。
 
 #### 一覧取得
 
 - 日本語: 一覧取得
-- 英語: `get + XxxList`
+- 英語: `get + 複数形`
 
 例
 
 ```text
-getOrderList
-getDeliveryList
+getOrders
+getDeliveries
 ```
 
 #### 1件取得
@@ -328,7 +328,7 @@ JpaAuditConfig
 
 ```text
 @GetMapping("/orders")
-public List<OrderResponse> getOrderList() {
+public List<OrderResponse> getOrders() {
     // ...
 }
 
@@ -346,7 +346,7 @@ public OrderResponse createOrder(@RequestBody OrderRequest requestDto) {
 ### application の例
 
 ```text
-public List<Order> getOrderList() {
+public List<Order> getOrders() {
     // ...
 }
 
@@ -390,11 +390,11 @@ Javadoc は日本語で記載する。
 
 ```text
 /**
- * 注文リストを取得
+ * 注文一覧を取得
  *
- * @return 注文レスポンスリスト
+ * @return 注文レスポンス一覧
  */
-public List<OrderResponse> getOrderList() {
+public List<OrderResponse> getOrders() {
     // ...
 }
 
@@ -413,11 +413,11 @@ public OrderResponse getOrderByOrderCode(String orderCode) {
 
 ```text
 /**
- * 注文リストを取得する
+ * 注文一覧を取得する
  *
- * @return 注文リスト
+ * @return 注文一覧
  */
-public List<Order> getOrderList() {
+public List<Order> getOrders() {
     // ...
 }
 
@@ -466,7 +466,7 @@ public class OrderResponse {
 
 ## 注意事項
 
-- presentation / application は現行実装に合わせて `getOrderList` を採用している
+- presentation / application は現行実装に合わせて `getOrders` を採用している
 - domain の値オブジェクトは `of` を基本とする
 - domain Repository は interface とし、永続化の詳細は infrastructure に置く
 - infrastructure の DB Repository は Spring Data JPA の慣習に合わせて `find` / `save` / `delete` を使う
@@ -481,7 +481,7 @@ public class OrderResponse {
 ### presentation
 
 ```text
-getOrderList
+getOrders
 getOrderByOrderCode
 createOrder
 updateOrder
@@ -491,7 +491,7 @@ deleteOrder
 ### application
 
 ```text
-getOrderList
+getOrders
 getOrderByOrderCode
 createOrder
 updateOrder
