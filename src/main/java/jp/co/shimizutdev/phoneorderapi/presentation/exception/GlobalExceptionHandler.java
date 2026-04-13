@@ -21,7 +21,7 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     /**
-     * バリデーションエラーを処理
+     * バリデーションエラーを処理する。
      *
      * @param ex      MethodArgumentNotValidException
      * @param request HTTPリクエスト
@@ -35,12 +35,12 @@ public class GlobalExceptionHandler {
         List<ValidationError> validationErrors = ex.getBindingResult()
             .getFieldErrors()
             .stream()
-            .map(this::toApiValidationError)
+            .map(this::toValidationError)
             .toList();
 
         ErrorResponse response = createErrorResponse(
             HttpStatus.BAD_REQUEST,
-            "入力値が不正です。",
+            ApiErrorMessageConstants.VALIDATION_ERROR,
             request,
             validationErrors
         );
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 制約違反エラーを処理
+     * 制約違反エラーを処理する。
      *
      * @param ex      ConstraintViolationException
      * @param request HTTPリクエスト
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = createErrorResponse(
             HttpStatus.BAD_REQUEST,
-            "入力値が不正です。",
+            ApiErrorMessageConstants.VALIDATION_ERROR,
             request,
             validationErrors
         );
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * IllegalArgumentExceptionを処理
+     * IllegalArgumentExceptionを処理する。
      *
      * @param ex      IllegalArgumentException
      * @param request HTTPリクエスト
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * JSON解析エラーを処理
+     * JSON解析エラーを処理する。
      *
      * @param request HTTPリクエスト
      * @return APIエラーレスポンス
@@ -111,7 +111,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = createErrorResponse(
             HttpStatus.BAD_REQUEST,
-            "リクエストボディの形式が不正です。",
+            ApiErrorMessageConstants.INVALID_REQUEST_BODY,
             request,
             List.of()
         );
@@ -120,7 +120,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * レスポンスステータス例外を処理
+     * レスポンスステータス例外を処理する。
      *
      * @param ex      ResponseStatusException
      * @param request HTTPリクエスト
@@ -128,28 +128,35 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatusException(
-        ResponseStatusException ex,
-        HttpServletRequest request) {
-        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
-        String message = ex.getReason() != null ? ex.getReason() : "リクエスト処理に失敗しました。";
+        final ResponseStatusException ex,
+        final HttpServletRequest request) {
 
-        ErrorResponse response = createErrorResponse(status, message, request, List.of());
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+        String message = ex.getReason() != null
+            ? ex.getReason()
+            : ApiErrorMessageConstants.REQUEST_FAILED;
+
+        ErrorResponse response = createErrorResponse(
+            status,
+            message,
+            request,
+            List.of()
+        );
+
         return ResponseEntity.status(status).body(response);
     }
 
     /**
-     * 想定外例外を処理
+     * 想定外例外を処理する。
      *
      * @param request HTTPリクエスト
      * @return APIエラーレスポンス
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(
-        final HttpServletRequest request) {
-
+    public ResponseEntity<ErrorResponse> handleException(final HttpServletRequest request) {
         ErrorResponse response = createErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            "サーバー内部でエラーが発生しました。",
+            ApiErrorMessageConstants.INTERNAL_SERVER_ERROR,
             request,
             List.of()
         );
@@ -158,12 +165,12 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 項目エラーをバリデーションエラーへ変換
+     * 項目エラーをバリデーションエラーへ変換する。
      *
      * @param fieldError 項目エラー
      * @return バリデーションエラー
      */
-    private ValidationError toApiValidationError(final FieldError fieldError) {
+    private ValidationError toValidationError(final FieldError fieldError) {
         return ValidationError.create(
             fieldError.getField(),
             fieldError.getDefaultMessage()
@@ -171,7 +178,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * エラーレスポンスを生成
+     * エラーレスポンスを生成する。
      *
      * @param status           HTTPステータス
      * @param message          メッセージ
