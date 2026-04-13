@@ -42,7 +42,7 @@ class RequestResponseLogFilterIntegrationTest extends AbstractPostgreSQLIntegrat
     @Test
     @DisplayName("マスク対象ヘッダーとボディ項目がログでマスクされること")
     void shouldMaskHeaderAndBodyInLogs(final CapturedOutput output) throws Exception {
-        mockMvc.perform(post("/api/orders")
+        mockMvc.perform(post("/api/v1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer secret-token")
                 .content("""
@@ -54,7 +54,7 @@ class RequestResponseLogFilterIntegrationTest extends AbstractPostgreSQLIntegrat
             .andExpect(status().isBadRequest());
 
         assertThat(output).contains("[request] hTTP method: POST");
-        assertThat(output).contains("[request] request uri: /api/orders");
+        assertThat(output).contains("[request] request uri: /api/v1/orders");
         assertThat(output).contains("Authorization=****");
         assertThat(output).contains("[request] body:");
         assertThat(output).contains("\"password\":\"****\"");

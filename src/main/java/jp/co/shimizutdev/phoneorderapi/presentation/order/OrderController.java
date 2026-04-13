@@ -14,7 +14,7 @@ import java.util.List;
  * 注文コントローラ
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class OrderController {
 

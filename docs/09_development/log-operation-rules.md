@@ -112,7 +112,7 @@ SQLログは Hibernate の logger 設定で制御する。
 
 ```text
 [request] http method: POST
-[request] request uri: /api/orders
+[request] request uri: /api/v1/orders
 [response] status: 400
 [method start] methodName: OrderService#createOrder
 [method end] duration(ms): 12
