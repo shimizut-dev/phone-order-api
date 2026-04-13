@@ -125,7 +125,7 @@ class OrderServiceIntegrationTest extends AbstractPostgreSQLIntegrationTest {
      * @return 注文JPAエンティティ
      */
     private OrderJpaEntity reconstructOrderJpaEntity(final String orderCode, final String orderStatus) {
-        var order = new OrderJpaEntity();
+        OrderJpaEntity order = new OrderJpaEntity();
         order.setId(UUID.randomUUID());
         order.setOrderCode(orderCode);
         order.setOrderedAt(OffsetDateTime.now());
