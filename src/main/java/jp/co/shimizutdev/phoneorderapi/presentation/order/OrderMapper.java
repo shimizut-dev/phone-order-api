@@ -28,12 +28,11 @@ public class OrderMapper {
             return null;
         }
 
-        OrderResponse orderResponse = new OrderResponse();
-        orderResponse.setOrderCode(order.getOrderCode().getValue());
-        orderResponse.setOrderedAt(order.getOrderedAt().getValue());
-        orderResponse.setOrderStatus(order.getOrderStatus().getCode());
-
-        return orderResponse;
+        return new OrderResponse(
+            order.getOrderCode().getValue(),
+            order.getOrderedAt().getValue(),
+            order.getOrderStatus().getCode()
+        );
     }
 
     /**
