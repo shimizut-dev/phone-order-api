@@ -107,7 +107,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
      * @param request HTTPリクエスト
      */
     private void logRequest(final ContentCachingRequestWrapper request) {
-        log.info("[request] hTTP method: {}", request.getMethod());
+        log.info("[request] http method: {}", request.getMethod());
         log.info("[request] request uri: {}", request.getRequestURI());
         log.info("[request] query string: {}", nullToEmpty(request.getQueryString()));
         log.info("[request] parameters: {}", getParameters(request));

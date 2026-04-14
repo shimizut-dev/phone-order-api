@@ -53,7 +53,7 @@ class RequestResponseLogFilterIntegrationTest extends AbstractPostgreSQLIntegrat
                     """))
             .andExpect(status().isBadRequest());
 
-        assertThat(output).contains("[request] hTTP method: POST");
+        assertThat(output).contains("[request] http method: POST");
         assertThat(output).contains("[request] request uri: /api/v1/orders");
         assertThat(output).contains("Authorization=****");
         assertThat(output).contains("[request] body:");
