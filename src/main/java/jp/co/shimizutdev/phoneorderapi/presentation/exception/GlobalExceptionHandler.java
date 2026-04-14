@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
 
         List<ValidationError> validationErrors = ex.getConstraintViolations()
             .stream()
-            .map(violation -> ValidationError.create(
+            .map(violation -> new ValidationError(
                 violation.getPropertyPath().toString(),
                 violation.getMessage()))
             .toList();
@@ -171,7 +171,7 @@ public class GlobalExceptionHandler {
      * @return バリデーションエラー
      */
     private ValidationError toValidationError(final FieldError fieldError) {
-        return ValidationError.create(
+        return new ValidationError(
             fieldError.getField(),
             fieldError.getDefaultMessage()
         );
@@ -192,7 +192,7 @@ public class GlobalExceptionHandler {
         final HttpServletRequest request,
         final List<ValidationError> validationErrors) {
 
-        return ErrorResponse.create(
+        return new ErrorResponse(
             OffsetDateTime.now(),
             status.value(),
             status.name(),

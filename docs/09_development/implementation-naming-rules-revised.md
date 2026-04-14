@@ -100,12 +100,53 @@ deleteDelivery
 
 - Request クラスは `XxxRequest`
 - Response クラスは `XxxResponse`
+- Error Response は `ErrorResponse`
+- バリデーション明細は `ValidationError`
+- DTO suffix は付けず、役割が分かる名称を使用する
 
 例
 
 ```text
 OrderRequest
 OrderResponse
+ErrorResponse
+ValidationError
+```
+
+### DTO / Error Response の実装方針
+
+- presentation 層の API 入出力モデルは `record` を基本とする
+- 対象は `Request` / `Response` / `ErrorResponse` / `ValidationError` など HTTP の入出力を表すモデルとする
+- DTO は不変データとして扱い、状態変更を持たせない
+- DTO の生成はコンストラクタ呼び出しを基本とする
+- `static factory method` は前処理・null 補正・生成意図の明確化が必要な場合のみ使用する
+- 単に全項目をそのまま渡すだけの `of(...)` / `from(...)` は原則作成しない
+- Entity から DTO への変換は `Mapper` に集約する
+- JPA Entity は DTO と別ルールで扱い、本方針の対象外とする
+
+例
+
+```text
+public record OrderRequest(OffsetDateTime orderedAt) {
+}
+
+public record OrderResponse(
+        String orderCode,
+        OffsetDateTime orderedAt,
+        String orderStatus) {
+}
+
+public record ErrorResponse(
+        OffsetDateTime timestamp,
+        int status,
+        String error,
+        String message,
+        String path,
+        List<ValidationError> errors) {
+}
+
+public record ValidationError(String field, String message) {
+}
 ```
 
 ### Mapper
@@ -450,15 +491,31 @@ Optional<Order> findByOrderCode(OrderCode orderCode);
 /**
  * 注文リクエスト
  */
-public class OrderRequest {
-    // ...
+public record OrderRequest(OffsetDateTime orderedAt) {
 }
 
 /**
  * 注文レスポンス
  */
-public class OrderResponse {
-    // ...
+public record OrderResponse(String orderCode, OffsetDateTime orderedAt, String orderStatus) {
+}
+
+/**
+ * エラーレスポンス
+ */
+public record ErrorResponse(
+        OffsetDateTime timestamp,
+        int status,
+        String error,
+        String message,
+        String path,
+        List<ValidationError> errors) {
+}
+
+/**
+ * バリデーションエラー
+ */
+public record ValidationError(String field, String message) {
 }
 ```
 
@@ -468,6 +525,8 @@ public class OrderResponse {
 
 - presentation / application は現行実装に合わせて `getOrders` を採用している
 - domain の値オブジェクトは `of` を基本とする
+- presentation の DTO は `record` を基本とし、単純な `new` のラッパーだけの `static factory method` は作成しない
+- DTO に `static factory method` を持たせる場合は、null 補正・不変化・生成意図の明確化などの意味を持たせる
 - domain Repository は interface とし、永続化の詳細は infrastructure に置く
 - infrastructure の DB Repository は Spring Data JPA の慣習に合わせて `find` / `save` / `delete` を使う
 - 命名は役割に応じて統一し、クラス間で混在させない
