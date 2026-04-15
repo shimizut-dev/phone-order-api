@@ -1,21 +1,56 @@
-# 📚 Git運用ルール
+# 09_development
 
-このディレクトリでは phone-order-api プロジェクトの
-Git運用ルールを管理します。
+開発ルール・運用ルールを管理します。
 
-## 📌 対象
+---
 
-- ブランチ命名規則
-- コミットメッセージ規則
+## 目的
 
-## 📂 ファイル一覧
+- 日々の実装判断をそろえる
+- Git / テスト / 命名 / ログ / ドキュメントのルールを集約する
+- ローカル開発時のセットアップ手順を明確にする
 
-- git-branch-naming.md
-- git-commit-message.md
+---
 
-## 📌 準拠規約
+## 管理資料
 
-本プロジェクトでは以下の規約に準拠します
+- `development-flow.md`
+- `git-branch-naming.md`
+- `git-commit-message.md`
+- `chatgpt-thread-guidelines.md`
+- `implementation-naming-rules.md`
+- `implementation-naming-rules-revised.md`
+- `validation-message-key-naming-rules.md`
+- `test-code-naming-and-javadoc-rules.md`
+- `log-operation-rules.md`
+- `intellij-local-profile-setup.md`
+- `document-format-guideline.md`
 
-- Conventional Commits
-  https://www.conventionalcommits.org/en/v1.0.0/
+---
+
+## 主な扱い
+
+- 開発フロー
+- Git 運用
+- 実装命名規則
+- バリデーションメッセージキー命名
+- テストコード規約
+- ログ運用
+- IntelliJ / local プロファイル設定
+- ドキュメントフォーマット統一
+
+---
+
+## 運用ルール
+
+- 実装ルールを追加したら本ディレクトリへ集約する
+- 上位設計ではなく日々の開発判断をここに記載する
+- 古い規約と改訂版が共存する場合は、README に優先資料を明記する
+
+---
+
+## 優先して参照する資料
+
+- 命名規則は `implementation-naming-rules-revised.md`
+- ローカル起動設定は `intellij-local-profile-setup.md`
+- ドキュメント書式は `document-format-guideline.md`

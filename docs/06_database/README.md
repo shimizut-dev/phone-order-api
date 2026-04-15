@@ -1,79 +1,65 @@
-# 📦 06_database
+# 06_database
 
-## 概要
-
-06_databaseではデータベース設計に関する資料を管理します。
-
-本ディレクトリでは以下を管理対象とします。
-
-- ER図
-- テーブル定義
-- DDL
-- DDL変更履歴
-- DB設計ルール
+データベース設計に関する資料を管理します。
 
 ---
 
-## 🎯 設計方針
+## 目的
 
-データベース設計は以下の順番で行います。
-
-ER図  
-↓  
-テーブル定義  
-↓  
-DDL生成  
-↓  
-DB反映  
-↓  
-Spring Data 実装
-
-ER図を設計の正とします。
+- DB 設計方針を明確にする
+- ER 図と命名ルールを管理する
+- ID 採番や DDL 作成ルールを統一する
 
 ---
 
-## 📁 フォルダ構成
+## ディレクトリ構成
 
-docs/06_database  
-├─ README.md  
-├─ database-overview.md  
-├─ id-generation.md  
-├─ naming-rules.md  
-├─ er-diagram  
-│ ├─ er-diagram.a5er  
-│ └─ er-diagram.png  
-├─ table-definition  
-│ └─ table-definition.xlsx  
-├─ ddl  
-│ └─ schema.sql  
-└─ ddl-changes
-
----
-
-## 🧰 使用ツール
-
-- ER図: A5:SQL Mk-2
-- テーブル定義: Excel
-- DB: PostgreSQL
-- ORM: Spring Data JPA
-- IDE: IntelliJ
-- テスト: Testcontainers
+```text
+06_database/
+├─ er-diagram/
+│  ├─ er-diagram.a5er
+│  └─ er-diagram.pdf
+├─ README.md
+├─ a5sql-ddl-generation.md
+├─ database-overview.md
+├─ er-diagram-guideline.md
+├─ id-generation.md
+└─ naming-rules.md
+```
 
 ---
 
-## 🔄 開発フロー
+## 主要資料
 
-1. ER図作成
-2. テーブル定義更新
-3. DDL生成
-4. DB反映
-5. Spring Data 実装
+- `database-overview.md`
+    - DB 全体方針
+- `id-generation.md`
+    - ID 採番方針
+- `naming-rules.md`
+    - DB 命名ルール
+- `a5sql-ddl-generation.md`
+    - DDL 生成手順
+- `er-diagram-guideline.md`
+    - ER 図運用ルール
+- `er-diagram/`
+    - ER 図本体
 
 ---
 
-## ⚠ 運用ルール
+## 設計方針
 
-- ER図を正とする
-- DB直接変更時はDDLを追加する
-- Excelは生成物として扱う
-- ddl-changesは削除しない
+DB 設計は以下の流れを基本とします。
+
+```text
+ER図
+↓
+命名・制約設計
+↓
+DDL整理
+↓
+DB反映
+↓
+JPA / Repository 実装
+```
+
+ER 図を設計の起点とし、命名ルールと整合性を保ちながら実装へ反映します。
