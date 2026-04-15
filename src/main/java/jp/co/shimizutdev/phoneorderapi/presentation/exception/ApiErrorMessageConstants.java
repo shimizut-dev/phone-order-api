@@ -26,6 +26,11 @@ public final class ApiErrorMessageConstants {
     public static final String INTERNAL_SERVER_ERROR = "サーバー内部でエラーが発生しました。";
 
     /**
+     * 注文未検出メッセージ
+     */
+    public static final String ORDER_NOT_FOUND = "注文が見つかりません。";
+
+    /**
      * インスタンス化を防止する。
      */
     private ApiErrorMessageConstants() {
