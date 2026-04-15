@@ -1,52 +1,167 @@
-# 📱 phone-order-api
+# phone-order-api
 
-移動機注文API（phone-order-api）
-
-DDD / Clean Architecture をベースにした  
-移動機申込ドメインのサンプルプロジェクトです。
+移動機注文API（phone-order-api）です。  
+DDD / Clean Architecture をベースに、移動機申込ドメインを題材として設計・実装・テスト方針を整理するサンプルプロジェクトです。
 
 ---
 
-# 📌 概要
+## 概要
 
-本プロジェクトは以下を目的としています。
+本プロジェクトは、以下を目的としています。
 
-- 実務レベルのドメイン設計
+- 実務レベルのドメイン設計の整理
 - Clean Architecture の適用
-- DDD設計の実践
-- API設計のベストプラクティス検証
-- AI活用による設計品質向上
+- DDD 設計の実践
+- API 設計のベストプラクティス検証
+- AI 活用による設計品質向上
 
 ---
 
-# 🧱 技術スタック
+## 技術スタック
 
-- Java
-- Spring Boot
-- DDD
-- Clean Architecture
-- Docker（予定）
-
----
-
-# 📦 ドメイン概要
-
-本システムは移動機申込を扱います。
-
-主なドメイン：
-
-- 注文（Order）
-- 注文明細（OrderLine）
-- 注文関係者（OrderParty）
-- 回線（Line）
-- SIM（Sim）
-- 移動機（Phone）
-- アクセサリ（Accessory）
-- 配送（Delivery）
+- Java 21
+- Spring Boot 3.5.x
+- Spring Web
+- Spring Data JPA
+- Spring Validation
+- PostgreSQL
+- Flyway
+- Testcontainers
+- Docker / Docker Compose
+- Lombok
+- Maven
 
 ---
 
-# 📚 ドキュメント構成
+## 現在の実装範囲
+
+現在は注文 API を中心に実装を進めています。
+
+### 実装済み API
+
+- `GET /api/v1/orders`
+    - 注文一覧取得
+- `GET /api/v1/orders/order-code/{orderCode}`
+    - 注文コードによる注文取得
+- `POST /api/v1/orders`
+    - 注文登録
+
+### エラーレスポンス方針
+
+- 例外レスポンスは `ErrorResponse` を使用
+- バリデーションエラー詳細は `ValidationError` を使用
+- presentation 層の DTO は `record` を基本方針とする
+
+---
+
+## 設計方針
+
+### DDD
+
+- `Order` を集約ルートとする
+- ドメインルールはドメイン層で保証する
+- 値オブジェクトや区分を用いて業務表現を明確にする
+
+### Clean Architecture
+
+以下のレイヤ構成を採用しています。
+
+- presentation
+- application
+- domain
+- infrastructure
+
+### ログ・例外処理
+
+- リクエスト / レスポンスログを出力
+- `traceId` を付与してログを追跡しやすくする
+- 例外レスポンスは `GlobalExceptionHandler` で集約する
+
+---
+
+## ローカル起動方法
+
+### 1. PostgreSQL を起動する
+
+`docker/docker-compose.yml` を使用してローカル DB を起動します。
+
+```bash
+docker compose -f docker/docker-compose.yml up -d
+```
+
+ローカル DB の設定は以下です。
+
+- container name: `phone-order-api-local-db`
+- database: `phone_order_api_local_db`
+- username: `local`
+- password: `local`
+
+既存の volume に旧設定が残っている場合は、必要に応じて再作成してください。
+
+```bash
+docker compose -f docker/docker-compose.yml down -v
+docker compose -f docker/docker-compose.yml up -d
+```
+
+### 2. `local` プロファイルでアプリを起動する
+
+ローカル用設定は `src/main/resources/application-local.properties` に定義しています。
+
+IntelliJ IDEA から起動する場合は、Spring Boot の実行/デバッグ構成で **有効なプロファイル** に以下を設定します。
+
+```text
+local
+```
+
+CLI で起動する場合の例:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+---
+
+## テスト
+
+主なテスト方針:
+
+- API テストは Spring Boot + MockMvc を使用
+- DB を利用するテストは PostgreSQL + Testcontainers を使用
+- Flyway マイグレーションを適用した状態で検証する
+
+テスト実行例:
+
+```bash
+./mvnw test
+```
+
+---
+
+## ディレクトリ構成
+
+```text
+phone-order-api/
+├─ docker/
+├─ docs/
+├─ src/
+│  ├─ main/
+│  │  ├─ java/jp/co/shimizutdev/phoneorderapi/
+│  │  │  ├─ application/
+│  │  │  ├─ domain/
+│  │  │  ├─ infrastructure/
+│  │  │  └─ presentation/
+│  │  └─ resources/
+│  └─ test/
+├─ pom.xml
+├─ mvnw
+└─ README.md
+```
+
+---
+
+## ドキュメント構成
+
+詳細資料は `docs/` 配下に整理しています。
 
 ```text
 docs/
@@ -54,83 +169,31 @@ docs/
 ├─ 02_domain/
 ├─ 03_usecases/
 ├─ 04_architecture/
-└─ 90_supporting/
+├─ 05_api/
+├─ 06_database/
+├─ 09_development/
+├─ 90_supporting/
+├─ adr/
+└─ README.md
 ```
 
----
+補足:
 
-# 🎯 MVPスコープ
-
-MVPで扱う機能
-
-- 注文作成
-- 注文参照
-- 注文キャンセル
-- 配送作成
-- 配送参照
+- ローカル起動時の IntelliJ 設定は `docs/09_development/intellij-local-profile-setup.md`
+- 開発ルールや命名規則も `docs/09_development/` に配置
 
 ---
 
-# 🧭 設計方針
-
-## DDD
-
-- Order を集約ルートとする
-- OrderLine は注文明細
-- OrderParty は注文関係者
-- ドメインルールはドメインで保証
-
-## Clean Architecture
-
-- domain
-- application
-- infrastructure
-- presentation
-
----
-
-# 📁 ディレクトリ構成
-
-```text
-phone-order-api
-├─ src
-├─ docs
-├─ README.md
-└─ build.gradle
-```
-
----
-
-# 🧠 設計重視プロジェクト
-
-本プロジェクトは以下を重視しています
+## このプロジェクトで重視していること
 
 - 設計品質
 - 保守性
 - 拡張性
 - テスト容易性
+- ログ / 例外処理の一貫性
 
 ---
 
-# 🚀 今後の予定
-
-- API設計
-- クラス設計
-- 実装
-- テスト
-- CI/CD
-
----
-
-# ✨ このプロジェクトの特徴
-
-- 実務レベルのDDD設計
-- AIレビュー活用
-- Clean Architecture
-- 高品質設計
-
----
-
-# 👨‍💻 Author
+## Author
 
 個人開発プロジェクト
