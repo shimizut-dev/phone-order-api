@@ -3,6 +3,7 @@ package jp.co.shimizutdev.phoneorderapi.presentation.order;
 import jakarta.validation.Valid;
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
+import jp.co.shimizutdev.phoneorderapi.presentation.exception.ApiErrorMessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,10 @@ public class OrderController {
     @GetMapping("/orders/order-code/{orderCode}")
     public OrderResponse getOrderByOrderCode(@PathVariable final String orderCode) {
         Order order = orderService.getOrderByOrderCode(orderCode)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "注文が見つかりません。"));
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                ApiErrorMessageConstants.ORDER_NOT_FOUND
+            ));
 
         return OrderMapper.toResponse(order);
     }

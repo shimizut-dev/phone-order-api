@@ -113,7 +113,8 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
         @DisplayName("注文コードに対応する注文が存在しない場合は404を返すこと")
         void shouldReturnNotFoundWhenOrderCodeDoesNotExist() throws Exception {
             mockMvc.perform(get("/api/v1/orders/order-code/{orderCode}", "ORD999999"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("注文が見つかりません。"));
         }
     }
 
