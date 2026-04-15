@@ -1,0 +1,49 @@
+# 07_adr
+
+Architecture Decision Record を管理します。
+
+---
+
+## 目的
+
+- 設計判断の理由を残す
+- 採用した技術や方針の背景を共有する
+- 後から見返したときに意思決定の経緯を追えるようにする
+
+---
+
+## 管理対象
+
+- 技術採用判断
+- アーキテクチャ方針の採用判断
+- 継続的に参照したいルールの採用判断
+- ADR テンプレートと命名ルール
+
+---
+
+## 現在の主なファイル
+
+- `ADR-0000-adr-naming-rules.md`
+- `ADR-0001-java21-adoption.md`
+- `ADR-0002-spring-boot-3-adoption.md`
+- `ADR-0003-postgresql-adoption.md`
+- `ADR-0004-flyway-adoption.md`
+- `ADR-0005-testcontainers-adoption.md`
+- `ADR-0006-spring-data-jpa-adoption.md`
+- `ADR-0007-maven-adoption.md`
+- `ADR-0008-clean-architecture-adoption.md`
+- `ADR-0009-ddd-adoption.md`
+- `ADR-0010-uuid-adoption.md`
+- `ADR-0011-primary-key-uuid.md`
+- `ADR-0011-rest-api-design-policy.md`
+- `ADR-0013-history-table-adoption.md`
+- `ADR-0014-order-domain-center.md`
+- `ADR-template.md`
+
+---
+
+## 運用ルール
+
+- 新しい重要判断を行ったら ADR を追加する
+- 採番とファイル名は `ADR-0000-xxx.md` 形式に従う
+- 欠番や重複番号が発生した場合は整理タイミングで見直す
