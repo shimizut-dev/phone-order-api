@@ -1,87 +1,76 @@
-# presentation-layer.md
+# presentation-layer
 
-## 1. 目的
-
-本ドキュメントは presentation layer の責務を定義する。
-
----
-
-## 2. 役割
-
-presentation layer は外部からの入力を受け付け、結果を返却する。
-
-主な役割は以下の通り。
-
-- HTTP endpoint の公開
-- request の受信
-- request validation
-- application input への変換
-- application output の response への変換
-- 例外を HTTP エラーへ変換
+presentation layer は外部からの入力を受け付け、結果を返却する層です。  
+HTTP リクエスト / レスポンスを扱い、application layer との橋渡しを行います。
 
 ---
 
-## 3. MVP時点で想定する controller
+## 1. 役割
 
-- OrderController
-- DeliveryController
-
----
-
-## 4. 想定API
-
-### 4.1 注文
-
-- POST /orders
-- GET /orders/{orderId}
-- POST /orders/{orderId}/cancel
-
-### 4.2 配送
-
-- POST /orders/{orderId}/deliveries
-- GET /deliveries/{deliveryId}
+- HTTP リクエストを受け付ける
+- Request DTO を受け取り application layer へ渡す
+- application layer の結果を Response DTO に変換して返却する
+- 例外を適切な HTTP ステータスとレスポンスへ変換する
+- ログ出力や traceId 付与などの外部入出力制御を行う
 
 ---
 
-## 5. presentation に置くもの
+## 2. 責務
+
+### 2.1 入力受付
+
+- パスパラメータ
+- クエリパラメータ
+- リクエストボディ
+- バリデーション
+
+### 2.2 出力返却
+
+- 正常レスポンス返却
+- エラーレスポンス返却
+- HTTP ステータス制御
+
+---
+
+## 3. 主な構成要素
 
 - Controller
 - Request DTO
 - Response DTO
-- ExceptionHandler
+- Mapper
+- GlobalExceptionHandler
+- Filter
 
 ---
 
-## 6. presentation に置かないもの
+## 4. 現在の対象 API
 
-- ドメイン整合性ロジック
-- SQL
-- 永続化ロジック
-- ユースケース本体
+### 4.1 注文
 
----
-
-## 7. バリデーション方針
-
-### 7.1 presentation で扱うもの
-
-- 必須チェック
-- 形式チェック
-- 文字数チェック
-- JSON構造の妥当性
-
-### 7.2 domain で扱うもの
-
-- 業務ルール
-- 注文成立条件
-- 明細整合性
-- 配送数量整合性
+- `GET /api/v1/orders`
+- `GET /api/v1/orders/{orderCode}`
+- `POST /api/v1/orders`
 
 ---
 
-## 8. エラー方針
+## 5. 設計方針
+
+- Controller は HTTP API の責務に限定する
+- ビジネスロジックは application / domain に委譲する
+- presentation 層の DTO は `record` を基本とする
+- Entity を直接レスポンスへ返さない
+- 例外レスポンスは `GlobalExceptionHandler` で集約する
+
+---
+
+## 6. 例外・レスポンス方針
 
 - 存在しない注文は 404
 - リクエスト不正は 400
-- ドメインルール違反は 409 または 400 を検討する
 - 想定外エラーは 500
+
+---
+
+## 7. 補足
+
+今後 API を追加する場合も、`/api/v1` を付与した外部公開パスで統一する。

@@ -1,0 +1,1238 @@
+diff --git a/README.md b/README.md
+index 7253091..593fce2 100644
+--- a/README.md
++++ b/README.md
+@@ -41,7 +41,7 @@ DDD / Clean Architecture をベースに、移動機申込ドメインを題材
+ 
+ - `GET /api/v1/orders`
+     - 注文一覧取得
+-- `GET /api/v1/orders/order-code/{orderCode}`
++- `GET /api/v1/orders/{orderCode}`
+     - 注文コードによる注文取得
+ - `POST /api/v1/orders`
+     - 注文登録
+diff --git a/docs/04_architecture/presentation-layer.md b/docs/04_architecture/presentation-layer.md
+index 916a77f..b2e5035 100644
+--- a/docs/04_architecture/presentation-layer.md
++++ b/docs/04_architecture/presentation-layer.md
+@@ -1,87 +1,76 @@
+-# presentation-layer.md
++# presentation-layer
+ 
+-## 1. 目的
+-
+-本ドキュメントは presentation layer の責務を定義する。
+-
+----
+-
+-## 2. 役割
+-
+-presentation layer は外部からの入力を受け付け、結果を返却する。
+-
+-主な役割は以下の通り。
+-
+-- HTTP endpoint の公開
+-- request の受信
+-- request validation
+-- application input への変換
+-- application output の response への変換
+-- 例外を HTTP エラーへ変換
++presentation layer は外部からの入力を受け付け、結果を返却する層です。  
++HTTP リクエスト / レスポンスを扱い、application layer との橋渡しを行います。
+ 
+ ---
+ 
+-## 3. MVP時点で想定する controller
++## 1. 役割
+ 
+-- OrderController
+-- DeliveryController
++- HTTP リクエストを受け付ける
++- Request DTO を受け取り application layer へ渡す
++- application layer の結果を Response DTO に変換して返却する
++- 例外を適切な HTTP ステータスとレスポンスへ変換する
++- ログ出力や traceId 付与などの外部入出力制御を行う
+ 
+ ---
+ 
+-## 4. 想定API
++## 2. 責務
+ 
+-### 4.1 注文
++### 2.1 入力受付
+ 
+-- POST /orders
+-- GET /orders/{orderId}
+-- POST /orders/{orderId}/cancel
++- パスパラメータ
++- クエリパラメータ
++- リクエストボディ
++- バリデーション
+ 
+-### 4.2 配送
++### 2.2 出力返却
+ 
+-- POST /orders/{orderId}/deliveries
+-- GET /deliveries/{deliveryId}
++- 正常レスポンス返却
++- エラーレスポンス返却
++- HTTP ステータス制御
+ 
+ ---
+ 
+-## 5. presentation に置くもの
++## 3. 主な構成要素
+ 
+ - Controller
+ - Request DTO
+ - Response DTO
+-- ExceptionHandler
++- Mapper
++- GlobalExceptionHandler
++- Filter
+ 
+ ---
+ 
+-## 6. presentation に置かないもの
++## 4. 現在の対象 API
+ 
+-- ドメイン整合性ロジック
+-- SQL
+-- 永続化ロジック
+-- ユースケース本体
++### 4.1 注文
++
++- `GET /api/v1/orders`
++- `GET /api/v1/orders/{orderCode}`
++- `POST /api/v1/orders`
+ 
+ ---
+ 
+-## 7. バリデーション方針
++## 5. 設計方針
+ 
+-### 7.1 presentation で扱うもの
++- Controller は HTTP API の責務に限定する
++- ビジネスロジックは application / domain に委譲する
++- presentation 層の DTO は `record` を基本とする
++- Entity を直接レスポンスへ返さない
++- 例外レスポンスは `GlobalExceptionHandler` で集約する
+ 
+-- 必須チェック
+-- 形式チェック
+-- 文字数チェック
+-- JSON構造の妥当性
++---
+ 
+-### 7.2 domain で扱うもの
++## 6. 例外・レスポンス方針
+ 
+-- 業務ルール
+-- 注文成立条件
+-- 明細整合性
+-- 配送数量整合性
++- 存在しない注文は 404
++- リクエスト不正は 400
++- 想定外エラーは 500
+ 
+ ---
+ 
+-## 8. エラー方針
++## 7. 補足
+ 
+-- 存在しない注文は 404
+-- リクエスト不正は 400
+-- ドメインルール違反は 409 または 400 を検討する
+-- 想定外エラーは 500
+\ No newline at end of file
++今後 API を追加する場合も、`/api/v1` を付与した外部公開パスで統一する。
+diff --git a/docs/05_api/README.md b/docs/05_api/README.md
+index d920e1c..cf59f52 100644
+--- a/docs/05_api/README.md
++++ b/docs/05_api/README.md
+@@ -28,7 +28,7 @@
+ ## 現在の主な対象 API
+ 
+ - `GET /api/v1/orders`
+-- `GET /api/v1/orders/order-code/{orderCode}`
++- `GET /api/v1/orders/{orderCode}`
+ - `POST /api/v1/orders`
+ 
+ ---
+diff --git a/docs/05_api/api-design-rules.md b/docs/05_api/api-design-rules.md
+index 9f1e10e..2543e1c 100644
+--- a/docs/05_api/api-design-rules.md
++++ b/docs/05_api/api-design-rules.md
+@@ -1,108 +1,80 @@
+-# API設計ルール
++# api-design-rules
++
++API 仕様の表現を統一し、保守性と可読性を向上させることを目的とする。
++
++---
+ 
+ ## 1. 目的
+ 
+-本ドキュメントは `phone-order-api` における API 設計ルールを定義する。  
+-API仕様の表現を統一し、保守性と可読性を向上させることを目的とする。
++- API パス表現を統一する
++- 命名規則を統一する
++- MVP では過剰な汎用化を避ける
++- 業務ルールは domain で保証し、API では入出力と表現を担う
++- URL は `/api/v1` を付与した形式で統一する
+ 
+ ---
+ 
+ ## 2. 基本方針
+ 
+-- API仕様の正式な定義は `openapi.yaml` とする
+ - REST を基本とする
+ - JSON を利用する
+-- 命名規則を統一する
+-- MVPでは過剰な汎用化を避ける
+-- 業務ルールは domain で保証し、APIでは入出力と表現を担う
++- OpenAPI を主資料として管理する
++- 実装済み範囲と docs の整合を保つ
+ 
+ ---
+ 
+-## 3. パス設計ルール
++## 3. URL / パスルール
+ 
+-### 3.1 基本ルール
++### 3.1 パス表現
+ 
+-- パスは名詞で表現する
+ - 英小文字を使用する
+ - リソース名は複数形を基本とする
+ - 末尾スラッシュは付与しない
++- 外部公開パスは `/api/v1` を先頭に付与する
+ 
+ 例
+ 
+ ```text
+-/orders
+-/orders/{orderId}
+-/orders/{orderId}/cancel
+-/orders/{orderId}/deliveries
+-/deliveries/{deliveryId}
++/api/v1/orders
++/api/v1/orders/{orderCode}
+ ```
+ 
+ ### 3.2 リソース命名
+ 
+ - コレクションは複数形とする
+-- パスパラメータは `{xxxId}` とする
++- 外部公開上の注文識別子は `{orderCode}` とする
+ - 業務操作が必要な場合のみ動詞サブパスを許可する
+ 
+-例
+-
+-```text
+-/orders/{orderId}/cancel
+-```
+-
+-補足
+-
+-- `cancel` は注文に対する明示的な業務操作であるため許可する
+-- MVPでは業務上の分かりやすさを優先する
+-
+ ---
+ 
+ ## 4. HTTP メソッドルール
+ 
+-| 用途   | メソッド |
++| 用途 | メソッド |
+ |------|------|
+-| 作成   | POST |
+-| 参照   | GET  |
+-| 業務操作 | POST |
++| 作成 | POST |
++| 参照 | GET |
+ 
+-MVP対象API
++現在の対象 API
+ 
+-- 注文作成 → `POST /orders`
+-- 注文参照 → `GET /orders/{orderId}`
+-- 注文キャンセル → `POST /orders/{orderId}/cancel`
+-- 配送作成 → `POST /orders/{orderId}/deliveries`
+-- 配送参照 → `GET /deliveries/{deliveryId}`
++- 注文一覧取得 → `GET /api/v1/orders`
++- 注文参照 → `GET /api/v1/orders/{orderCode}`
++- 注文作成 → `POST /api/v1/orders`
+ 
+ ---
+ 
+-## 5. JSON 設計ルール
+-
+-### 5.1 命名規則
++## 5. リクエスト / レスポンスルール
+ 
+-- JSONキーは `camelCase` とする
++- JSON キーは `camelCase` とする
+ - 省略語も読みやすさを優先する
+-- ID項目は `orderId` のように `{resource}Id` で表現する
+-
+-例
+-
+-```json
+-{
+-  "orderId": "ORD-000001",
+-  "orderStatus": "受付",
+-  "orderLines": []
+-}
+-```
+-
+-### 5.2 配列項目
+-
+-- 複数要素は複数形で表現する
++- 注文識別子は `orderCode` のように API 契約に合わせて表現する
+ 
+ 例
+ 
+ ```json
+ {
+-  "orderParties": [],
+-  "orderLines": [],
+-  "deliveries": []
++  "orderCode": "ORD000001",
++  "orderedAt": "2026-03-31T10:00:00+09:00",
++  "orderStatus": "001"
+ }
+ ```
+ 
+@@ -110,23 +82,21 @@ MVP対象API
+ 
+ ## 6. データ型ルール
+ 
+-### 6.1 ID
++### 6.1 ID / コード
+ 
+ - 型は文字列とする
+-- API上は意味のあるプレフィックス付き文字列を許可する
++- API 上は意味のある文字列を使用する
+ 
+ 例
+ 
+ ```text
+-ORD-000001
+-ODL-000001
+-DLV-000001
++ORD000001
+ ```
+ 
+ ### 6.2 日時
+ 
+-- `date-time` を使用する
+-- タイムゾーン付き ISO 8601 形式とする
++- 日時は ISO 8601 形式の文字列とする
++- タイムゾーン付きで扱う
+ 
+ 例
+ 
+@@ -134,92 +104,20 @@ DLV-000001
+ 2026-03-31T10:00:00+09:00
+ ```
+ 
+-### 6.3 日付
+-
+-- `date` を使用する
+-
+-例
+-
+-```text
+-1990-01-01
+-```
+-
+-### 6.4 数量
+-
+-- 数量は整数とする
+-- 1以上を前提とする
+-
+----
+-
+-## 7. Request / Response 設計ルール
+-
+-### 7.1 Request
+-
+-- 作成APIは専用Requestを定義する
+-- 業務操作APIは専用Requestを定義する
+-- 不要な項目は受け取らない
+-
+-例
+-
+-- `CreateOrderRequest`
+-- `CancelOrderRequest`
+-- `CreateDeliveryRequest`
+-
+-### 7.2 Response
+-
+-- 参照しやすい形で返却する
+-- MVPではネストを過度に深くしない
+-- レスポンス都合で domain を直接露出しない
+-
+ ---
+ 
+-## 8. スキーマ設計ルール
++## 7. エラーレスポンスルール
+ 
+-- OpenAPI の `components/schemas` に集約する
+-- 共通利用する型はスキーマとして切り出す
+-- 同一意味のデータ構造を重複定義しない
+-- ドメインモデルとAPIモデルは完全一致を前提にしない
++- エラー時は `ErrorResponse` を返す
++- バリデーションエラー詳細は `ValidationError` を返す
++- `timestamp`、`status`、`error`、`message`、`path` を基本項目とする
+ 
+ ---
+ 
+-## 9. エラー設計ルール
+-
+-- エラーレスポンス方針は `error-response.md` に従う
+-- HTTPステータスは意味に応じて使い分ける
+-- バリデーション不正と業務ルール違反を区別する
++## 8. OpenAPI 記載ルール
+ 
+----
+-
+-## 10. OpenAPI 記述ルール
+-
+-- API仕様の正式版は `openapi.yaml` とする
+-- `summary` を必ず記載する
+ - `operationId` を必ず記載する
+ - `requestBody` と `responses` を必ず明記する
+ - パラメータ、スキーマ、レスポンスは再利用可能なものを `components` に寄せる
+-
+----
+-
+-## 11. MVP時点で扱わないもの
+-
+-以下はMVPでは扱わない。
+-
+-- ページング
+-- ソート
+-- フィルタ検索
+-- バージョニング戦略の詳細化
+-- 非同期API
+-- Webhook
+-- 外部公開前提の認証認可詳細
+-
+----
+-
+-## 12. 補足
+-
+-API設計を変更する場合は、以下の整合を確認する。
+-
+-- `openapi.yaml`
+-- `README.md`
+-- `error-response.md`
+-- `03_usecases/usecases.md`
+-- `04_architecture/`
++- パスは `/api/v1` を含めて記載する
++- 実装済み範囲に合わせて更新する
+diff --git a/docs/05_api/openapi.yaml b/docs/05_api/openapi.yaml
+index a8a5906..28b5333 100644
+--- a/docs/05_api/openapi.yaml
++++ b/docs/05_api/openapi.yaml
+@@ -3,15 +3,11 @@ info:
+   title: phone-order-api
+   version: 0.1.0
+   description: |
+-    移動機注文API（phone-order-api）のMVP向けAPI仕様。
++    移動機注文API（phone-order-api）の実装済み範囲向けAPI仕様。
+     本仕様では以下を対象とする。
+-
+-    - 注文作成
+-    - 注文参照
+-    - 注文キャンセル
+-    - 配送作成
+-    - 配送参照
+-
++    - 注文一覧取得
++    - 注文コードによる注文取得
++    - 注文登録
+ servers:
+   - url: http://localhost:8080
+     description: local
+@@ -19,370 +15,136 @@ servers:
+ tags:
+   - name: Orders
+     description: 注文API
+-  - name: Deliveries
+-    description: 配送API
+ 
+ paths:
+-  /orders:
++  /api/v1/orders:
++    get:
++      tags:
++        - Orders
++      summary: 注文一覧を取得する
++      operationId: getOrders
++      responses:
++        '200':
++          description: 注文一覧取得成功
++          content:
++            application/json:
++              schema:
++                type: array
++                items:
++                  $ref: '#/components/schemas/OrderResponse'
+     post:
+       tags:
+         - Orders
+-      summary: 注文を作成する
++      summary: 注文を登録する
+       operationId: createOrder
+       requestBody:
+         required: true
+         content:
+           application/json:
+             schema:
+-              $ref: '#/components/schemas/CreateOrderRequest'
++              $ref: '#/components/schemas/OrderRequest'
+       responses:
+         '201':
+-          description: 注文作成成功
++          description: 注文登録成功
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/OrderResponse'
+         '400':
+           description: リクエスト不正
+-        '409':
+-          description: 業務ルール違反
+-
+-  /orders/{orderId}:
+-    get:
+-      tags:
+-        - Orders
+-      summary: 注文を参照する
+-      operationId: getOrder
+-      parameters:
+-        - $ref: '#/components/parameters/OrderId'
+-      responses:
+-        '200':
+-          description: 注文参照成功
+           content:
+             application/json:
+               schema:
+-                $ref: '#/components/schemas/OrderResponse'
+-        '404':
+-          description: 注文が存在しない
++                $ref: '#/components/schemas/ErrorResponse'
+ 
+-  /orders/{orderId}/cancel:
+-    post:
++  /api/v1/orders/{orderCode}:
++    get:
+       tags:
+         - Orders
+-      summary: 注文をキャンセルする
+-      operationId: cancelOrder
++      summary: 注文コードで注文を取得する
++      operationId: getOrderByOrderCode
+       parameters:
+-        - $ref: '#/components/parameters/OrderId'
+-      requestBody:
+-        required: true
+-        content:
+-          application/json:
+-            schema:
+-              $ref: '#/components/schemas/CancelOrderRequest'
++        - $ref: '#/components/parameters/OrderCode'
+       responses:
+         '200':
+-          description: 注文キャンセル成功
++          description: 注文取得成功
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/OrderResponse'
+         '404':
+           description: 注文が存在しない
+-        '409':
+-          description: キャンセル不可状態
+-
+-  /orders/{orderId}/deliveries:
+-    post:
+-      tags:
+-        - Deliveries
+-      summary: 配送を作成する
+-      operationId: createDelivery
+-      parameters:
+-        - $ref: '#/components/parameters/OrderId'
+-      requestBody:
+-        required: true
+-        content:
+-          application/json:
+-            schema:
+-              $ref: '#/components/schemas/CreateDeliveryRequest'
+-      responses:
+-        '201':
+-          description: 配送作成成功
+-          content:
+-            application/json:
+-              schema:
+-                $ref: '#/components/schemas/DeliveryResponse'
+-        '404':
+-          description: 注文が存在しない
+-        '409':
+-          description: 業務ルール違反
+-
+-  /deliveries/{deliveryId}:
+-    get:
+-      tags:
+-        - Deliveries
+-      summary: 配送を参照する
+-      operationId: getDelivery
+-      parameters:
+-        - $ref: '#/components/parameters/DeliveryId'
+-      responses:
+-        '200':
+-          description: 配送参照成功
+           content:
+             application/json:
+               schema:
+-                $ref: '#/components/schemas/DeliveryResponse'
+-        '404':
+-          description: 配送が存在しない
++                $ref: '#/components/schemas/ErrorResponse'
+ 
+ components:
+   parameters:
+-    OrderId:
+-      name: orderId
+-      in: path
+-      required: true
+-      description: 注文ID
+-      schema:
+-        type: string
+-        example: ORD-000001
+-
+-    DeliveryId:
+-      name: deliveryId
++    OrderCode:
++      name: orderCode
+       in: path
+       required: true
+-      description: 配送ID
++      description: 注文コード
+       schema:
+         type: string
+-        example: DLV-000001
++        example: ORD000001
+ 
+   schemas:
+-    CreateOrderRequest:
++    OrderRequest:
+       type: object
+       required:
+-        - orderParties
+-        - orderLines
+         - orderedAt
+       properties:
+-        orderParties:
+-          type: array
+-          items:
+-            $ref: '#/components/schemas/OrderPartyRequest'
+-        orderLines:
+-          type: array
+-          items:
+-            $ref: '#/components/schemas/OrderLineRequest'
+         orderedAt:
+           type: string
+           format: date-time
+           example: 2026-03-31T10:00:00+09:00
+ 
+-    CancelOrderRequest:
++    OrderResponse:
+       type: object
+-      required:
+-        - cancelReason
+       properties:
+-        cancelReason:
++        orderCode:
+           type: string
+-          example: 顧客都合によりキャンセル
+-
+-    CreateDeliveryRequest:
+-      type: object
+-      required:
+-        - address
+-        - deliveryLines
+-      properties:
+-        address:
+-          $ref: '#/components/schemas/Address'
+-        requestedDeliveryAt:
++          example: ORD000001
++        orderedAt:
+           type: string
+           format: date-time
+-          nullable: true
+-          example: 2026-04-02T14:00:00+09:00
+-        deliveryLines:
+-          type: array
+-          items:
+-            $ref: '#/components/schemas/DeliveryLineRequest'
+-
+-    OrderResponse:
+-      type: object
+-      properties:
+-        orderId:
+-          type: string
+-          example: ORD-000001
++          example: 2026-03-31T10:00:00+09:00
+         orderStatus:
+           type: string
+-          example: 受付
+-        orderParties:
+-          type: array
+-          items:
+-            $ref: '#/components/schemas/OrderPartyResponse'
+-        orderLines:
+-          type: array
+-          items:
+-            $ref: '#/components/schemas/OrderLineResponse'
+-        deliveries:
+-          type: array
+-          items:
+-            $ref: '#/components/schemas/DeliveryResponse'
++          example: '001'
+ 
+-    DeliveryResponse:
++    ErrorResponse:
+       type: object
+       properties:
+-        deliveryId:
+-          type: string
+-          example: DLV-000001
+-        address:
+-          $ref: '#/components/schemas/Address'
+-        requestedDeliveryAt:
++        timestamp:
+           type: string
+           format: date-time
+-          nullable: true
+-          example: 2026-04-02T14:00:00+09:00
+-        deliveryLines:
+-          type: array
+-          items:
+-            $ref: '#/components/schemas/DeliveryLineResponse'
+-
+-    OrderPartyRequest:
+-      type: object
+-      required:
+-        - role
+-        - name
+-        - nameKana
+-        - gender
+-        - birthDate
+-        - address
+-      properties:
+-        role:
+-          type: string
+-          example: 契約者
+-        name:
+-          type: string
+-          example: 山田 太郎
+-        nameKana:
+-          type: string
+-          example: ヤマダ タロウ
+-        gender:
+-          type: string
+-          example: 男性
+-        birthDate:
+-          type: string
+-          format: date
+-          example: 1990-01-01
+-        address:
+-          $ref: '#/components/schemas/Address'
+-
+-    OrderPartyResponse:
+-      allOf:
+-        - $ref: '#/components/schemas/OrderPartyRequest'
+-
+-    OrderLineRequest:
+-      type: object
+-      required:
+-        - orderLineType
+-        - quantity
+-      properties:
+-        orderLineType:
+-          type: string
+-          example: 回線
+-        quantity:
+-          type: integer
+-          minimum: 1
+-          example: 1
+-        line:
+-          $ref: '#/components/schemas/Line'
+-        phone:
+-          $ref: '#/components/schemas/Phone'
+-        accessory:
+-          $ref: '#/components/schemas/Accessory'
+-
+-    OrderLineResponse:
+-      allOf:
+-        - $ref: '#/components/schemas/OrderLineRequest'
+-        - type: object
+-          properties:
+-            orderLineId:
+-              type: string
+-              example: ODL-000001
+-
+-    DeliveryLineRequest:
+-      type: object
+-      required:
+-        - orderLineId
+-        - quantity
+-      properties:
+-        orderLineId:
+-          type: string
+-          example: ODL-000001
+-        quantity:
++          example: 2026-03-31T10:00:00+09:00
++        status:
+           type: integer
+-          minimum: 1
+-          example: 1
+-
+-    DeliveryLineResponse:
+-      allOf:
+-        - $ref: '#/components/schemas/DeliveryLineRequest'
+-
+-    Line:
+-      type: object
+-      properties:
+-        lineContractKind:
+-          type: string
+-          example: 新規契約
+-        msisdn:
+-          type: string
+-          nullable: true
+-          example: '09012345678'
+-        sim:
+-          $ref: '#/components/schemas/Sim'
+-
+-    Sim:
+-      type: object
+-      properties:
+-        simForm:
+-          type: string
+-          example: 物理SIM
+-        simStatus:
+-          type: string
+-          example: 白SIM
+-
+-    Phone:
+-      type: object
+-      properties:
+-        phoneId:
+-          type: string
+-          example: PHN-000001
+-        imei:
++          example: 404
++        error:
+           type: string
+-          nullable: true
+-          example: '123456789012345'
+-
+-    Accessory:
+-      type: object
+-      properties:
+-        accessoryId:
++          example: Not Found
++        message:
+           type: string
+-          example: ACC-000001
+-        accessoryName:
++          example: 注文が見つかりません。
++        path:
+           type: string
+-          example: 充電器
++          example: /api/v1/orders/ORD000001
++        validationErrors:
++          type: array
++          items:
++            $ref: '#/components/schemas/ValidationError'
+ 
+-    Address:
++    ValidationError:
+       type: object
+       properties:
+-        postalCode:
+-          type: string
+-          example: 100-0001
+-        prefecture:
+-          type: string
+-          example: 東京都
+-        city:
+-          type: string
+-          example: 千代田区
+-        street:
++        field:
+           type: string
+-          example: 千代田1-1-1
+-        building:
++          example: orderedAt
++        message:
+           type: string
+-          nullable: true
+-          example: サンプルビル101
++          example: 注文日時は必須です。
+diff --git a/docs/07_adr/ADR-0012-rest-api-design-policy.md b/docs/07_adr/ADR-0012-rest-api-design-policy.md
+index c23a28f..9129e2a 100644
+--- a/docs/07_adr/ADR-0012-rest-api-design-policy.md
++++ b/docs/07_adr/ADR-0012-rest-api-design-policy.md
+@@ -1,225 +1,93 @@
+-# ADR-0011: REST API 設計方針を採用する
++# ADR-0012: REST API 設計方針を採用する
+ 
+ ## ステータス
+ 
+ 採用
+ 
+-## 日付
+-
+-2026-04-04
+-
+ ---
+ 
+-## コンテキスト
+-
+-phone-order-api プロジェクトでは、外部公開および内部利用を想定した Web API の設計方針を決定する必要がある。
+-
+-候補として以下を検討した。
+-
+-- REST API
+-- RPC 形式 API
+-- GraphQL
++## 背景
+ 
+-検討観点
+-
+-- 実務での採用状況
+-- API の分かりやすさ
+-- 保守性
+-- 拡張性
+-- クライアントとの疎結合
+-- ポートフォリオとしての説明しやすさ
++phone-order-api では、移動機注文を扱う API を提供する。  
++注文という業務概念を外部に分かりやすく公開し、将来的な拡張にも耐えられる API 設計方針が必要である。
+ 
+ ---
+ 
+-## 決定
++## 課題
+ 
+-REST API 設計方針を採用する
++- URL の表現を統一したい
++- 実務想定のポートフォリオとして説明しやすい設計にしたい
++- 実装と資料のずれを減らしたい
+ 
+ ---
+ 
+-## 理由
+-
+-### 1. 業務リソースを自然に表現しやすいため
+-
+-phone-order-api では以下のような業務リソースを扱う。
+-
+-- 注文
+-- 注文明細
+-- 配送
+-- 注文関係者
++## 検討した選択肢
+ 
+-REST はこれらの業務概念をリソースとして表現しやすい。
++### 1. RPC 風 API
+ 
+ 例
+ 
+-- `/orders`
+-- `/orders/{orderId}`
+-- `/deliveries/{deliveryId}`
+-
+----
+-
+-### 2. 実務で広く採用されているため
+-
+-REST API は Web API の代表的な設計方針であり、
+-多くのシステムで採用されている。
+-
+-実務想定のポートフォリオとして説明しやすい。
+-
+----
+-
+-### 3. クライアントとの疎結合を保ちやすいため
++- `/createOrder`
++- `/getOrder`
+ 
+-HTTP メソッドとリソース指向に基づく設計により、
+-クライアントとサーバの責務分離がしやすい。
++### 2. REST API
+ 
+----
+-
+-### 4. Spring Boot と相性が良いため
++例
+ 
+-Spring Boot は REST API 開発に必要な機能を標準で提供しており、
+-実装・テスト・例外ハンドリング・バリデーションを統一しやすい。
++- `/api/v1/orders`
++- `/api/v1/orders/{orderCode}`
+ 
+ ---
+ 
+-### 5. 将来的な拡張がしやすいため
++## 採用理由
+ 
+-REST API はエンドポイント単位で責務を整理しやすく、
+-一覧取得・詳細取得・作成・更新・キャンセルなどを段階的に拡張しやすい。
++REST API は Web API の代表的な設計方針であり、多くのシステムで採用されている。  
++業務リソースを URL で自然に表現しやすく、実務想定のポートフォリオとして説明しやすい。
+ 
+ ---
+ 
+-## 設計方針
++## 採用方針
+ 
+ phone-order-api では以下の REST 設計方針を採用する。
+ 
+-### 1. リソース名は名詞・複数形を基本とする
++### 1. リソース指向で表現する
+ 
+ 例
+ 
+-- `/orders`
+-- `/deliveries`
+-
+-動詞を URL に含めるのは最小限とする。
+-
+----
+-
+-### 2. HTTP メソッドで操作を表現する
+-
+-- `GET` : 参照
+-- `POST` : 作成
+-- `PUT` : 全体更新
+-- `PATCH` : 部分更新
+-- `DELETE` : 削除
++- `/api/v1/orders`
+ 
+-ただし、業務上のキャンセルなどは単純削除ではなく状態変更として扱う。
+-
+----
+-
+-### 3. 業務操作はサブリソースまたは明示的アクションとして表現する
++### 2. 外部公開パスは `/api/v1` を付与する
+ 
+ 例
+ 
+-- `POST /orders`
+-- `GET /orders/{orderId}`
+-- `POST /orders/{orderId}/cancel`
+-
+-業務的に意味のある操作は、
+-単純な CRUD に無理やり当てはめず、可読性を優先する。
++- `/api/v1/orders`
++- `/api/v1/orders/{orderCode}`
+ 
+----
+-
+-### 4. レスポンスは JSON を採用する
+-
+-標準的なデータ交換形式として JSON を採用する。
+-
+----
+-
+-### 5. エラーは HTTP ステータスと業務エラー情報を併用する
+-
+-例
+-
+-- 400 Bad Request
+-- 404 Not Found
+-- 409 Conflict
+-- 422 Unprocessable Entity
+-- 500 Internal Server Error
+-
+-アプリケーション独自のエラーコード・メッセージを必要に応じて返却する。
+-
+----
+-
+-### 6. API バージョニングを導入する
++### 3. 外部公開上の注文識別子は `orderCode` を使用する
+ 
+ 例
+ 
+-- `api/v1/orders`
+-
+----
+-
+-### 7. DTO を利用し、ドメインオブジェクトを直接公開しない
+-
+-API の入出力は Request DTO / Response DTO を使用する。
+-ドメインモデルと API 契約を分離する。
+-
+----
+-
+-## RPC 形式 API との比較
++- `GET /api/v1/orders/{orderCode}`
+ 
+-### RPC のメリット
++### 4. 実装済み範囲を正として docs / OpenAPI を更新する
+ 
+-- 操作中心で分かりやすい場合がある
+-- 複雑な業務操作を表現しやすい
++現時点の対象 API
+ 
+-### RPC のデメリット
+-
+-- URL が動詞中心になりやすい
+-- リソースの一貫性が崩れやすい
+-- API 全体の統一感を保ちにくい
+-
+----
+-
+-## GraphQL との比較
+-
+-### GraphQL のメリット
+-
+-- 必要な項目だけ取得できる
+-- クライアント柔軟性が高い
+-
+-### GraphQL のデメリット
+-
+-- 学習コストが高い
+-- MVP には過剰
+-- キャッシュや認可設計が複雑になりやすい
++- `GET /api/v1/orders`
++- `GET /api/v1/orders/{orderCode}`
++- `POST /api/v1/orders`
+ 
+ ---
+ 
+ ## 影響
+ 
+-### ポジティブな影響
+-
+-- API 設計の統一
+-- 実務で説明しやすい
+-- Spring Boot と相性が良い
+-- フロントや外部利用者に理解されやすい
+-
+-### ネガティブな影響
+-
+-- 業務操作によっては REST にきれいに当てはめにくい
+-- 厳密な REST にこだわりすぎると可読性が下がる場合がある
+-
+----
+-
+-## 補足方針
+-
+-- REST を基本とするが、業務上不自然な設計は避ける
+-- 「純粋な REST」よりも「実務で分かりやすい API」を優先する
+-- リソース指向と業務可読性のバランスを取る
++- Controller のパス表現を統一する
++- OpenAPI と README を同じ外部公開パスにそろえる
++- テストコードや設計資料も同じ URL 表現に合わせる
+ 
+ ---
+ 
+ ## 結論
+ 
+-phone-order-api では REST API 設計方針を採用する。
+-
+-業務リソースを自然に表現しやすく、
+-実務想定・保守性・説明しやすさの観点で最も適しているため。
++phone-order-api では REST API 設計方針を採用する。  
++業務リソースを自然に表現しやすく、実務想定・保守性・説明しやすさの観点で最も適しているため。
+diff --git a/docs/07_adr/README.md b/docs/07_adr/README.md
+index aa5b453..e1ac08d 100644
+--- a/docs/07_adr/README.md
++++ b/docs/07_adr/README.md
+@@ -23,22 +23,7 @@ Architecture Decision Record を管理します。
+ 
+ ## 現在の主なファイル
+ 
+-- `ADR-0000-adr-naming-rules.md`
+-- `ADR-0001-java21-adoption.md`
+-- `ADR-0002-spring-boot-3-adoption.md`
+-- `ADR-0003-postgresql-adoption.md`
+-- `ADR-0004-flyway-adoption.md`
+-- `ADR-0005-testcontainers-adoption.md`
+-- `ADR-0006-spring-data-jpa-adoption.md`
+-- `ADR-0007-maven-adoption.md`
+-- `ADR-0008-clean-architecture-adoption.md`
+-- `ADR-0009-ddd-adoption.md`
+-- `ADR-0010-uuid-adoption.md`
+-- `ADR-0011-primary-key-uuid.md`
+-- `ADR-0012-rest-api-design-policy.md`
+-- `ADR-0013-history-table-adoption.md`
+-- `ADR-0014-order-domain-center.md`
+-- `ADR-template.md`
++ディレクトリを直接参照
+ 
+ ---
+ 
+diff --git a/docs/09_development/implementation-naming-rules.md b/docs/09_development/implementation-naming-rules.md
+index aaf98f5..b7522b9 100644
+--- a/docs/09_development/implementation-naming-rules.md
++++ b/docs/09_development/implementation-naming-rules.md
+@@ -373,7 +373,7 @@ public List<OrderResponse> getOrders() {
+     // ...
+ }
+ 
+-@GetMapping("/orders/order-code/{orderCode}")
++@GetMapping("/orders/{orderCode}")
+ public OrderResponse getOrderByOrderCode(@PathVariable String orderCode) {
+     // ...
+ }
+diff --git a/src/main/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderController.java b/src/main/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderController.java
+index 000a8e8..b258c95 100644
+--- a/src/main/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderController.java
++++ b/src/main/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderController.java
+@@ -40,7 +40,7 @@ public class OrderController {
+      * @param orderCode 注文コード
+      * @return 注文レスポンス
+      */
+-    @GetMapping("/orders/order-code/{orderCode}")
++    @GetMapping("/orders/{orderCode}")
+     public OrderResponse getOrderByOrderCode(@PathVariable final String orderCode) {
+         Order order = orderService.getOrderByOrderCode(orderCode)
+             .orElseThrow(() -> new ResponseStatusException(
+diff --git a/src/test/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderControllerIntegrationTest.java b/src/test/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderControllerIntegrationTest.java
+index 1d899cf..198fee1 100644
+--- a/src/test/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderControllerIntegrationTest.java
++++ b/src/test/java/jp/co/shimizutdev/phoneorderapi/presentation/order/OrderControllerIntegrationTest.java
+@@ -73,7 +73,7 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
+     }
+ 
+     @Nested
+-    @DisplayName("GET /api/v1/orders/order-code/{orderCode}")
++    @DisplayName("GET /api/v1/orders/{orderCode}")
+     class GetOrderByOrderCode {
+         /**
+          * <pre>
+@@ -92,7 +92,7 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
+             "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 'system', 'system')"
+         })
+         void shouldReturnOrderWhenOrderCodeExists() throws Exception {
+-            mockMvc.perform(get("/api/v1/orders/order-code/{orderCode}", "ORD000001"))
++            mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD000001"))
+                 .andExpect(status().isOk())
+                 .andExpect(jsonPath("$.orderCode").value("ORD000001"))
+                 .andExpect(jsonPath("$.orderStatus").value("001"));
+@@ -112,7 +112,7 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
+         @Test
+         @DisplayName("注文コードに対応する注文が存在しない場合は404を返すこと")
+         void shouldReturnNotFoundWhenOrderCodeDoesNotExist() throws Exception {
+-            mockMvc.perform(get("/api/v1/orders/order-code/{orderCode}", "ORD999999"))
++            mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD999999"))
+                 .andExpect(status().isNotFound())
+                 .andExpect(jsonPath("$.message").value("注文が見つかりません。"));
+         }

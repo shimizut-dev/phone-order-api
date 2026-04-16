@@ -23,22 +23,7 @@ Architecture Decision Record を管理します。
 
 ## 現在の主なファイル
 
-- `ADR-0000-adr-naming-rules.md`
-- `ADR-0001-java21-adoption.md`
-- `ADR-0002-spring-boot-3-adoption.md`
-- `ADR-0003-postgresql-adoption.md`
-- `ADR-0004-flyway-adoption.md`
-- `ADR-0005-testcontainers-adoption.md`
-- `ADR-0006-spring-data-jpa-adoption.md`
-- `ADR-0007-maven-adoption.md`
-- `ADR-0008-clean-architecture-adoption.md`
-- `ADR-0009-ddd-adoption.md`
-- `ADR-0010-uuid-adoption.md`
-- `ADR-0011-primary-key-uuid.md`
-- `ADR-0012-rest-api-design-policy.md`
-- `ADR-0013-history-table-adoption.md`
-- `ADR-0014-order-domain-center.md`
-- `ADR-template.md`
+ディレクトリを直接参照
 
 ---
 

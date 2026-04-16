@@ -373,7 +373,7 @@ public List<OrderResponse> getOrders() {
     // ...
 }
 
-@GetMapping("/orders/order-code/{orderCode}")
+@GetMapping("/orders/{orderCode}")
 public OrderResponse getOrderByOrderCode(@PathVariable String orderCode) {
     // ...
 }

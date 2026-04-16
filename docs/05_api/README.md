@@ -28,7 +28,7 @@
 ## 現在の主な対象 API
 
 - `GET /api/v1/orders`
-- `GET /api/v1/orders/order-code/{orderCode}`
+- `GET /api/v1/orders/{orderCode}`
 - `POST /api/v1/orders`
 
 ---
