@@ -174,7 +174,6 @@ docs/
 ├─ 06_database/
 ├─ 07_adr/
 ├─ 09_development/
-├─ 90_supporting/
 └─ README.md
 ```
 
