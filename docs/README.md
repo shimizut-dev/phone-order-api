@@ -26,7 +26,6 @@ docs/
 ├─ 06_database/
 ├─ 07_adr/
 ├─ 09_development/
-├─ 90_supporting/
 └─ README.md
 ```
 
@@ -48,6 +47,8 @@ docs/
 ドメイン設計の資料を配置します。
 
 - `domain-glossary.md`
+- `order-aggregate.md`
+- `order-line-creation-rules.md`
 - `model/`
 - `rules/`
 
@@ -106,13 +107,6 @@ Architecture Decision Record を配置します。
 - ログ運用
 - テスト規約
 - ドキュメントフォーマット規約
-
-### 90_supporting
-
-補助資料を配置します。
-
-- `order-aggregate.md`
-- `order-line-creation-rules.md`
 
 ---
 

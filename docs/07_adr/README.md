@@ -35,7 +35,7 @@ Architecture Decision Record を管理します。
 - `ADR-0009-ddd-adoption.md`
 - `ADR-0010-uuid-adoption.md`
 - `ADR-0011-primary-key-uuid.md`
-- `ADR-0011-rest-api-design-policy.md`
+- `ADR-0012-rest-api-design-policy.md`
 - `ADR-0013-history-table-adoption.md`
 - `ADR-0014-order-domain-center.md`
 - `ADR-template.md`

@@ -18,6 +18,8 @@
 ```text
 02_domain/
 ├─ domain-glossary.md
+├─ order-aggregate.md
+├─ order-line-creation-rules.md
 ├─ model/
 │  ├─ domain-model.drawio
 │  └─ domain-model.drawio.png
@@ -33,6 +35,10 @@
 
 - `domain-glossary.md`
     - 用語集
+- `order-aggregate.md`
+    - 注文集約の設計方針
+- `order-line-creation-rules.md`
+    - 注文明細生成ルール
 - `model/`
     - ドメインモデル図
 - `rules/domain-rules.md`
@@ -44,6 +50,8 @@
 
 ---
 
-## 補足
+## 運用ルール
 
-`90_supporting` にある `order-aggregate.md` と `order-line-creation-rules.md` は、必要に応じて本ディレクトリへ移管を検討します。
+- ドメインルールの変更時は関連資料を同時に更新する
+- 集約や生成ルールの変更時は `order-aggregate.md` と `order-line-creation-rules.md` を見直す
+- ドメインの正式資料は本ディレクトリで管理する

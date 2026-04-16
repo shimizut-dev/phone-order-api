@@ -19,7 +19,6 @@
 - `git-commit-message.md`
 - `chatgpt-thread-guidelines.md`
 - `implementation-naming-rules.md`
-- `implementation-naming-rules-revised.md`
 - `validation-message-key-naming-rules.md`
 - `test-code-naming-and-javadoc-rules.md`
 - `log-operation-rules.md`
@@ -45,12 +44,12 @@
 
 - 実装ルールを追加したら本ディレクトリへ集約する
 - 上位設計ではなく日々の開発判断をここに記載する
-- 古い規約と改訂版が共存する場合は、README に優先資料を明記する
+- ルールを削除・改訂した場合は README の管理資料も同時に見直す
 
 ---
 
 ## 優先して参照する資料
 
-- 命名規則は `implementation-naming-rules-revised.md`
+- 命名規則は `implementation-naming-rules.md`
 - ローカル起動設定は `intellij-local-profile-setup.md`
 - ドキュメント書式は `document-format-guideline.md`
