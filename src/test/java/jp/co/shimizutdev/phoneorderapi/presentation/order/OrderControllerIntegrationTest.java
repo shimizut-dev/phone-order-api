@@ -73,7 +73,7 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Nested
-    @DisplayName("GET /api/v1/orders/order-code/{orderCode}")
+    @DisplayName("GET /api/v1/orders/{orderCode}")
     class GetOrderByOrderCode {
         /**
          * <pre>
@@ -92,7 +92,7 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
             "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 'system', 'system')"
         })
         void shouldReturnOrderWhenOrderCodeExists() throws Exception {
-            mockMvc.perform(get("/api/v1/orders/order-code/{orderCode}", "ORD000001"))
+            mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD000001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orderCode").value("ORD000001"))
                 .andExpect(jsonPath("$.orderStatus").value("001"));
@@ -112,7 +112,7 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
         @Test
         @DisplayName("注文コードに対応する注文が存在しない場合は404を返すこと")
         void shouldReturnNotFoundWhenOrderCodeDoesNotExist() throws Exception {
-            mockMvc.perform(get("/api/v1/orders/order-code/{orderCode}", "ORD999999"))
+            mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD999999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("注文が見つかりません。"));
         }

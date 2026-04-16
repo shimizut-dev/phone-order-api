@@ -40,7 +40,7 @@ public class OrderController {
      * @param orderCode 注文コード
      * @return 注文レスポンス
      */
-    @GetMapping("/orders/order-code/{orderCode}")
+    @GetMapping("/orders/{orderCode}")
     public OrderResponse getOrderByOrderCode(@PathVariable final String orderCode) {
         Order order = orderService.getOrderByOrderCode(orderCode)
             .orElseThrow(() -> new ResponseStatusException(
