@@ -16,6 +16,7 @@ jobs:
 
     container:
       image: debian:trixie-slim
+      options: --add-host=host.docker.internal:host-gateway
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
 
