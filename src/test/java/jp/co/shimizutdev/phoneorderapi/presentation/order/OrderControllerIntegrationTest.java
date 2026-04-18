@@ -175,7 +175,7 @@ class OrderControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
                 .andExpect(jsonPath("$.message").value("入力値が不正です。"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(1)))
                 .andExpect(jsonPath("$.validationErrors[*].field", hasItem("orderedAt")))
-                .andExpect(jsonPath("$.validationErrors[*].message", hasItem("注文日時は必須です。")));
+                .andExpect(jsonPath("$.validationErrors[*].message", hasItem("必須項目です。")));
         }
 
         /**

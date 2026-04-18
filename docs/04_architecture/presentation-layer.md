@@ -8,8 +8,9 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 ## 1. 役割
 
 - HTTP リクエストを受け付ける
-- Request DTO を受け取り application layer へ渡す
-- application layer の結果を Response DTO に変換して返却する
+- OpenAPI から生成された API インターフェースを実装する
+- OpenAPI から生成された Request モデルを受け取り application layer へ渡す
+- application layer の結果を OpenAPI から生成された Response モデルに変換して返却する
 - 例外を適切な HTTP ステータスとレスポンスへ変換する
 - ログ出力や traceId 付与などの外部入出力制御を行う
 
@@ -35,8 +36,8 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 ## 3. 主な構成要素
 
 - Controller
-- Request DTO
-- Response DTO
+- OpenAPI 生成 API interface
+- OpenAPI 生成 Request / Response model
 - Mapper
 - GlobalExceptionHandler
 - Filter
@@ -57,7 +58,10 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 
 - Controller は HTTP API の責務に限定する
 - ビジネスロジックは application / domain に委譲する
-- presentation 層の DTO は `record` を基本とする
+- API インターフェースと API 入出力モデルは `openapi-generator-maven-plugin` で生成する
+- 生成元は `docs/05_api/openapi.yaml` とし、生成物は `target/generated-sources/openapi` 配下に出力する
+- 生成された API 入出力モデルは手修正しない
+- presentation 層で手書きするモデルは、OpenAPI 生成対象外の補助モデルに限定する
 - Entity を直接レスポンスへ返さない
 - 例外レスポンスは `GlobalExceptionHandler` で集約する
 
