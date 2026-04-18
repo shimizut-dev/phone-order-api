@@ -1,13 +1,10 @@
 openapi: 3.0.3
 info:
   title: phone-order-api
-  version: 0.1.0
+  version: 0.0.1-SNAPSHOT
   description: |
-    移動機注文API（phone-order-api）の実装済み範囲向けAPI仕様。
-    本仕様では以下を対象とする。
-    - 注文一覧取得
-    - 注文コードによる注文取得
-    - 注文登録
+    移動機注文API（phone-order-api）の実装済み範囲に合わせたAPI仕様です。
+    現在の対象は注文リソースの一覧取得、注文コード指定取得、登録です。
 servers:
   - url: http://localhost:8080
     description: local
@@ -32,6 +29,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OrderResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - Orders
@@ -43,6 +42,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/OrderRequest'
+            examples:
+              valid:
+                summary: 注文登録リクエスト
+                value:
+                  orderedAt: '2026-04-07T10:15:30+09:00'
       responses:
         '201':
           description: 注文登録成功
@@ -51,11 +55,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
         '400':
-          description: リクエスト不正
+          description: リクエストボディ不正または入力値不正
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validationError:
+                  summary: 必須項目不足
+                  value:
+                    timestamp: '2026-04-07T10:15:30+09:00'
+                    status: 400
+                    error: BAD_REQUEST
+                    message: 入力値が不正です。
+                    path: /api/v1/orders
+                    validationErrors:
+                      - field: orderedAt
+                        message: 注文日時は必須です。
+                invalidRequestBody:
+                  summary: 日時形式不正
+                  value:
+                    timestamp: '2026-04-07T10:15:30+09:00'
+                    status: 400
+                    error: BAD_REQUEST
+                    message: リクエストボディの形式が不正です。
+                    path: /api/v1/orders
+                    validationErrors: [ ]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /api/v1/orders/{orderCode}:
     get:
@@ -72,12 +99,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: 注文コード形式不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidOrderCode:
+                  summary: 注文コード形式不正
+                  value:
+                    timestamp: '2026-04-07T10:15:30+09:00'
+                    status: 400
+                    error: BAD_REQUEST
+                    message: 注文コード（ORD000001）の形式と不一致です。
+                    path: /api/v1/orders/invalid
+                    validationErrors: [ ]
         '404':
           description: 注文が存在しない
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: 注文未検出
+                  value:
+                    timestamp: '2026-04-07T10:15:30+09:00'
+                    status: 404
+                    error: NOT_FOUND
+                    message: 注文が見つかりません。
+                    path: /api/v1/orders/ORD999999
+                    validationErrors: [ ]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   parameters:
@@ -85,10 +140,31 @@ components:
       name: orderCode
       in: path
       required: true
-      description: 注文コード
+      description: 注文コード。ORD + 6桁の連番。
       schema:
         type: string
+        pattern: '^ORD\d{6}$'
+        minLength: 9
+        maxLength: 9
         example: ORD000001
+
+  responses:
+    InternalServerError:
+      description: サーバ内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            internalServerError:
+              summary: サーバ内部エラー
+              value:
+                timestamp: '2026-04-07T10:15:30+09:00'
+                status: 500
+                error: INTERNAL_SERVER_ERROR
+                message: サーバの内部でエラーが発生しました。
+                path: /api/v1/orders
+                validationErrors: [ ]
 
   schemas:
     OrderRequest:
@@ -99,52 +175,87 @@ components:
         orderedAt:
           type: string
           format: date-time
-          example: 2026-03-31T10:00:00+09:00
+          description: 注文日時。タイムゾーンオフセット付きISO 8601形式。
+          example: '2026-04-07T10:15:30+09:00'
 
     OrderResponse:
       type: object
+      required:
+        - orderCode
+        - orderedAt
+        - orderStatus
       properties:
         orderCode:
           type: string
+          description: 注文コード。ORD + 6桁の連番。
+          pattern: '^ORD\d{6}$'
           example: ORD000001
         orderedAt:
           type: string
           format: date-time
-          example: 2026-03-31T10:00:00+09:00
+          description: 注文日時。
+          example: '2026-04-07T10:15:30+09:00'
         orderStatus:
           type: string
+          description: 注文ステータスコード。
+          enum:
+            - '001'
+            - '002'
+            - '003'
+            - '004'
+            - '005'
+            - '006'
           example: '001'
 
     ErrorResponse:
       type: object
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
+        - validationErrors
       properties:
         timestamp:
           type: string
           format: date-time
-          example: 2026-03-31T10:00:00+09:00
+          description: エラー発生日時。
+          example: '2026-04-07T10:15:30+09:00'
         status:
           type: integer
+          format: int32
+          description: HTTPステータスコード。
           example: 404
         error:
           type: string
-          example: Not Found
+          description: HTTPステータス名。
+          example: NOT_FOUND
         message:
           type: string
+          description: エラーメッセージ。
           example: 注文が見つかりません。
         path:
           type: string
-          example: /api/v1/orders/ORD000001
+          description: リクエストパス。
+          example: /api/v1/orders/ORD999999
         validationErrors:
           type: array
+          description: バリデーションエラー一覧。該当なしの場合は空配列。
           items:
             $ref: '#/components/schemas/ValidationError'
 
     ValidationError:
       type: object
+      required:
+        - field
+        - message
       properties:
         field:
           type: string
+          description: エラー対象フィールド。
           example: orderedAt
         message:
           type: string
+          description: フィールド単位のエラーメッセージ。
           example: 注文日時は必須です。
