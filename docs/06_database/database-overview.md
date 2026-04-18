@@ -2,6 +2,12 @@
 
 # Database Overview
 
+## DB 製品・バージョン
+
+- DB：PostgreSQL 16.x
+- Docker イメージ：`postgres:16`
+- ローカル DB と Testcontainers の DB は同じメジャーバージョンを使用する
+
 ## 削除方針
 
 本システムでは論理削除を採用する。

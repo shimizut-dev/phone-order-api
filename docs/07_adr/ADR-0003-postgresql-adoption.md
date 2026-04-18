@@ -1,4 +1,4 @@
-# ADR-0003: PostgreSQL を採用する
+# ADR-0003: PostgreSQL 16.x を採用する
 
 ## ステータス
 
@@ -33,7 +33,12 @@ phone-order-api プロジェクトでは Web API のデータベースとして 
 
 ## 決定
 
-PostgreSQL を採用する
+PostgreSQL 16.x を採用する
+
+対象バージョン:
+
+- PostgreSQL 16.x
+- Docker イメージ: `postgres:16`
 
 ---
 
@@ -168,6 +173,6 @@ H2 を採用するメリットが少ない。
 
 ## 結論
 
-phone-order-api では PostgreSQL を採用する。
+phone-order-api では PostgreSQL 16.x を採用する。
 
 実務想定・学習価値・将来性の観点から最も適しているため。

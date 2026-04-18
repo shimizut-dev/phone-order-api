@@ -1,5 +1,17 @@
 # 開発環境（Development Environment）
 
+## 利用バージョン
+
+| 用途                       | バージョン                                      |
+|--------------------------|--------------------------------------------|
+| Java                     | 21                                         |
+| ローカル DB / Testcontainers | PostgreSQL 16.x（`postgres:16`）             |
+| CI コンテナ                  | Debian 13.x（Trixie / `debian:trixie-slim`） |
+
+PostgreSQL はローカル起動用の `docker/docker-compose.yml` と、DB 統合テスト用の Testcontainers で同じメジャーバージョンを使用する。
+
+---
+
 ## 📌 ローカルフォルダ構成
 
 以下の構成を標準とする
