@@ -14,6 +14,17 @@
 
 ---
 
+## 環境前提
+
+| 用途                       | バージョン                                      |
+|--------------------------|--------------------------------------------|
+| ローカル DB / Testcontainers | PostgreSQL 16.x（`postgres:16`）             |
+| CI コンテナ                  | Debian 13.x（Trixie / `debian:trixie-slim`） |
+
+詳細は `04_architecture/dev-environment.md`、DB 方針は `06_database/`、採用判断は `07_adr/` を参照します。
+
+---
+
 ## ディレクトリ構成
 
 ```text

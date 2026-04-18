@@ -12,6 +12,14 @@
 
 ---
 
+## 前提 DB
+
+- DB：PostgreSQL 16.x
+- Docker イメージ：`postgres:16`
+- ローカル DB と Testcontainers の DB は同じメジャーバージョンを使用する
+
+---
+
 ## ディレクトリ構成
 
 ```text
