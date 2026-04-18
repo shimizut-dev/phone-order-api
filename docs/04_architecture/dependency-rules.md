@@ -92,7 +92,10 @@
 
 ## 6. DTO の扱い
 
-- request / response DTO は presentation に置く
+- API request / response モデルは `docs/05_api/openapi.yaml` から生成し、`presentation.generated.model` として扱う
+- 生成された API モデルは presentation 層の境界モデルであり、application / domain へ持ち込まない
+- 生成物は `target/generated-sources/openapi` 配下に出力し、手動編集しない
+- OpenAPI 生成対象外の補助 DTO は presentation に置く
 - usecase 入出力 DTO は application に置く
 - domain object を APIレスポンス都合で変形しない
 

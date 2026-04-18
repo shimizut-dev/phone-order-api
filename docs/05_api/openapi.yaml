@@ -42,11 +42,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/OrderRequest'
-            examples:
-              valid:
-                summary: 注文登録リクエスト
-                value:
-                  orderedAt: '2026-04-07T10:15:30+09:00'
       responses:
         '201':
           description: 注文登録成功
@@ -60,27 +55,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                validationError:
-                  summary: 必須項目不足
-                  value:
-                    timestamp: '2026-04-07T10:15:30+09:00'
-                    status: 400
-                    error: BAD_REQUEST
-                    message: 入力値が不正です。
-                    path: /api/v1/orders
-                    validationErrors:
-                      - field: orderedAt
-                        message: 注文日時は必須です。
-                invalidRequestBody:
-                  summary: 日時形式不正
-                  value:
-                    timestamp: '2026-04-07T10:15:30+09:00'
-                    status: 400
-                    error: BAD_REQUEST
-                    message: リクエストボディの形式が不正です。
-                    path: /api/v1/orders
-                    validationErrors: [ ]
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -105,32 +79,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                invalidOrderCode:
-                  summary: 注文コード形式不正
-                  value:
-                    timestamp: '2026-04-07T10:15:30+09:00'
-                    status: 400
-                    error: BAD_REQUEST
-                    message: 注文コード（ORD000001）の形式と不一致です。
-                    path: /api/v1/orders/invalid
-                    validationErrors: [ ]
         '404':
           description: 注文が存在しない
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                notFound:
-                  summary: 注文未検出
-                  value:
-                    timestamp: '2026-04-07T10:15:30+09:00'
-                    status: 404
-                    error: NOT_FOUND
-                    message: 注文が見つかりません。
-                    path: /api/v1/orders/ORD999999
-                    validationErrors: [ ]
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -155,17 +109,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            internalServerError:
-              summary: サーバ内部エラー
-              value:
-                timestamp: '2026-04-07T10:15:30+09:00'
-                status: 500
-                error: INTERNAL_SERVER_ERROR
-                message: サーバの内部でエラーが発生しました。
-                path: /api/v1/orders
-                validationErrors: [ ]
-
   schemas:
     OrderRequest:
       type: object
@@ -258,4 +201,4 @@ components:
         message:
           type: string
           description: フィールド単位のエラーメッセージ。
-          example: 注文日時は必須です。
+          example: 必須項目です。

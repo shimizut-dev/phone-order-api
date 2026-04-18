@@ -1,6 +1,7 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
+import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,7 @@ public class OrderMapper {
         return new OrderResponse(
             order.getOrderCode().getValue(),
             order.getOrderedAt().getValue(),
-            order.getOrderStatus().getCode()
+            OrderResponse.OrderStatusEnum.fromValue(order.getOrderStatus().getCode())
         );
     }
 

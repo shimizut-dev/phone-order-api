@@ -18,51 +18,43 @@
 ## 3. ルートパッケージ
 
 ```text
-jp.co.example.phoneorderapi
+jp.co.shimizutdev.phoneorderapi
 ```
 
-※ 実際の organization に応じて変更する。
+現行実装では上記をルートパッケージとする。
 
 ---
 
 ## 4. 推奨パッケージ構成
 
 ```text
-jp.co.example.phoneorderapi
+jp.co.shimizutdev.phoneorderapi
 ├─ presentation
-│  ├─ controller
-│  ├─ request
-│  ├─ response
-│  └─ handler
+│  ├─ generated
+│  │  ├─ api
+│  │  └─ model
+│  ├─ order
+│  ├─ exception
+│  └─ log
 │
 ├─ application
-│  ├─ usecase
-│  │  ├─ order
-│  │  └─ delivery
-│  ├─ service
-│  ├─ dto
-│  └─ mapper
+│  └─ order
 │
 ├─ domain
-│  ├─ model
-│  │  ├─ order
-│  │  ├─ party
-│  │  ├─ delivery
-│  │  ├─ line
-│  │  ├─ sim
-│  │  ├─ phone
-│  │  └─ accessory
-│  ├─ service
-│  ├─ repository
-│  └─ exception
+│  └─ order
 │
 └─ infrastructure
-├─ persistence
-│  ├─ entity
-│  ├─ repository
-│  └─ mapper
-└─ config
+   ├─ codegen
+   ├─ config
+   ├─ log
+   ├─ persistence
+   │  └─ order
+   └─ repository
+      └─ order
 ```
+
+`presentation.generated` 配下は `docs/05_api/openapi.yaml` から `openapi-generator-maven-plugin` が生成する。
+生成物の出力先は `target/generated-sources/openapi` であり、手動編集しない。
 
 ---
 

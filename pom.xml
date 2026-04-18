@@ -19,6 +19,8 @@
 
   <properties>
     <java.version>21</java.version>
+    <tomcat.version>10.1.54</tomcat.version>
+    <openapi-generator.version>7.21.0</openapi-generator.version>
   </properties>
 
   <dependencies>
@@ -129,6 +131,41 @@
             </path>
           </annotationProcessorPaths>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator.version}</version>
+        <configuration>
+          <inputSpec>${project.basedir}/docs/05_api/openapi.yaml</inputSpec>
+          <generatorName>spring</generatorName>
+          <apiPackage>jp.co.shimizutdev.phoneorderapi.presentation.generated.api</apiPackage>
+          <modelPackage>jp.co.shimizutdev.phoneorderapi.presentation.generated.model</modelPackage>
+          <output>${project.build.directory}/generated-sources/openapi</output>
+          <cleanupOutput>true</cleanupOutput>
+          <configOptions>
+            <annotationLibrary>none</annotationLibrary>
+            <dateLibrary>java8</dateLibrary>
+            <documentationProvider>none</documentationProvider>
+            <interfaceOnly>true</interfaceOnly>
+            <openApiNullable>false</openApiNullable>
+            <skipDefaultInterface>true</skipDefaultInterface>
+            <useSpringBoot3>true</useSpringBoot3>
+            <useResponseEntity>false</useResponseEntity>
+            <useTags>true</useTags>
+          </configOptions>
+          <generateSupportingFiles>false</generateSupportingFiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-openapi-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>

@@ -4,9 +4,14 @@ import jakarta.validation.Valid;
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.presentation.exception.ApiErrorMessageConstants;
+import jp.co.shimizutdev.phoneorderapi.presentation.generated.api.OrdersApi;
+import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderRequest;
+import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -15,9 +20,8 @@ import java.util.List;
  * 注文コントローラ
  */
 @RestController
-@RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController implements OrdersApi {
 
     /**
      * 注文サービス
@@ -29,7 +33,7 @@ public class OrderController {
      *
      * @return 注文レスポンス一覧
      */
-    @GetMapping("/orders")
+    @Override
     public List<OrderResponse> getOrders() {
         return OrderMapper.toResponseList(orderService.getOrders());
     }
@@ -40,7 +44,7 @@ public class OrderController {
      * @param orderCode 注文コード
      * @return 注文レスポンス
      */
-    @GetMapping("/orders/{orderCode}")
+    @Override
     public OrderResponse getOrderByOrderCode(@PathVariable final String orderCode) {
         Order order = orderService.getOrderByOrderCode(orderCode)
             .orElseThrow(() -> new ResponseStatusException(
@@ -57,9 +61,8 @@ public class OrderController {
      * @param orderRequest 注文リクエスト
      * @return 注文レスポンス
      */
-    @PostMapping("/orders")
-    @ResponseStatus(HttpStatus.CREATED)
+    @Override
     public OrderResponse createOrder(@Valid @RequestBody final OrderRequest orderRequest) {
-        return OrderMapper.toResponse(orderService.createOrder(orderRequest.orderedAt()));
+        return OrderMapper.toResponse(orderService.createOrder(orderRequest.getOrderedAt()));
     }
 }

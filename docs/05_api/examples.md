@@ -11,40 +11,11 @@ API利用者、設計レビュー、実装時の理解を目的とする。
 
 ### Request
 
-`POST /orders`
+`POST /api/v1/orders`
 
 ```json
 {
-  "orderParties": [
-    {
-      "role": "契約者",
-      "name": "山田 太郎",
-      "nameKana": "ヤマダ タロウ",
-      "gender": "男性",
-      "birthDate": "1990-01-01",
-      "address": {
-        "postalCode": "100-0001",
-        "prefecture": "東京都",
-        "city": "千代田区",
-        "street": "千代田1-1-1",
-        "building": "サンプルビル101"
-      }
-    }
-  ],
-  "orderLines": [
-    {
-      "orderLineType": "回線",
-      "quantity": 1,
-      "line": {
-        "lineContractKind": "新規契約",
-        "sim": {
-          "simForm": "物理SIM",
-          "simStatus": "白SIM"
-        }
-      }
-    }
-  ],
-  "orderedAt": "2026-03-31T10:00:00+09:00"
+  "orderedAt": "2026-04-07T10:15:30+09:00"
 }
 ```
 
@@ -54,8 +25,9 @@ API利用者、設計レビュー、実装時の理解を目的とする。
 
 ```json
 {
-  "orderId": "ORD-000001",
-  "orderStatus": "受付"
+  "orderCode": "ORD000001",
+  "orderedAt": "2026-04-07T10:15:30+09:00",
+  "orderStatus": "001"
 }
 ```
 
@@ -65,7 +37,7 @@ API利用者、設計レビュー、実装時の理解を目的とする。
 
 ### Request
 
-`GET /orders/ORD-000001`
+`GET /api/v1/orders/ORD000001`
 
 ### Response
 
@@ -73,100 +45,53 @@ API利用者、設計レビュー、実装時の理解を目的とする。
 
 ```json
 {
-  "orderId": "ORD-000001",
-  "orderStatus": "受付"
+  "orderCode": "ORD000001",
+  "orderedAt": "2026-04-07T10:15:30+09:00",
+  "orderStatus": "001"
 }
 ```
 
 ---
 
-## 4. 注文キャンセル
+## 4. 注文一覧取得
 
 ### Request
 
-`POST /orders/ORD-000001/cancel`
-
-```json
-{
-  "cancelReason": "顧客都合"
-}
-```
+`GET /api/v1/orders`
 
 ### Response
 
 `200 OK`
 
 ```json
-{
-  "orderId": "ORD-000001",
-  "orderStatus": "キャンセル"
-}
-```
-
----
-
-## 5. 配送作成
-
-### Request
-
-`POST /orders/ORD-000001/deliveries`
-
-```json
-{
-  "address": {
-    "postalCode": "100-0001",
-    "prefecture": "東京都",
-    "city": "千代田区",
-    "street": "千代田1-1-1"
+[
+  {
+    "orderCode": "ORD000001",
+    "orderedAt": "2026-04-07T10:15:30+09:00",
+    "orderStatus": "001"
   },
-  "deliveryLines": [
-    {
-      "orderLineId": "ODL-000001",
-      "quantity": 1
-    }
-  ]
-}
-```
-
-### Response
-
-`201 Created`
-
-```json
-{
-  "deliveryId": "DLV-000001"
-}
+  {
+    "orderCode": "ORD000002",
+    "orderedAt": "2026-04-07T11:00:00+09:00",
+    "orderStatus": "002"
+  }
+]
 ```
 
 ---
 
-## 6. 配送参照
-
-### Request
-
-`GET /deliveries/DLV-000001`
-
-### Response
-
-`200 OK`
-
-```json
-{
-  "deliveryId": "DLV-000001"
-}
-```
-
----
-
-## 7. エラー例
+## 5. エラー例
 
 ### 404
 
 ```json
 {
-  "code": "ORDER_NOT_FOUND",
-  "message": "注文が存在しません。",
-  "details": []
+  "timestamp": "2026-04-07T10:15:30+09:00",
+  "status": 404,
+  "error": "NOT_FOUND",
+  "message": "注文が見つかりません。",
+  "path": "/api/v1/orders/ORD999999",
+  "validationErrors": []
 }
 ```
 
@@ -174,18 +99,16 @@ API利用者、設計レビュー、実装時の理解を目的とする。
 
 ```json
 {
-  "code": "VALIDATION_ERROR",
+  "timestamp": "2026-04-07T10:15:30+09:00",
+  "status": 400,
+  "error": "BAD_REQUEST",
   "message": "入力内容に誤りがあります。",
-  "details": []
-}
-```
-
-### 409
-
-```json
-{
-  "code": "BUSINESS_RULE_VIOLATION",
-  "message": "業務ルール違反です。",
-  "details": []
+  "path": "/api/v1/orders",
+  "validationErrors": [
+    {
+      "field": "orderedAt",
+      "message": "必須項目です。"
+    }
+  ]
 }
 ```

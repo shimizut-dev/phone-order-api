@@ -103,6 +103,8 @@ deleteDelivery
 - Error Response は `ErrorResponse`
 - バリデーション明細は `ValidationError`
 - DTO suffix は付けず、役割が分かる名称を使用する
+- API 入出力モデルは `docs/05_api/openapi.yaml` のスキーマ名から生成する
+- 生成されたモデルは `presentation.generated.model` に属する presentation 境界モデルとして扱う
 
 例
 
@@ -115,38 +117,29 @@ ValidationError
 
 ### DTO / Error Response の実装方針
 
-- presentation 層の API 入出力モデルは `record` を基本とする
+- presentation 層の API 入出力モデルは `openapi-generator-maven-plugin` で生成する
 - 対象は `Request` / `Response` / `ErrorResponse` / `ValidationError` など HTTP の入出力を表すモデルとする
-- DTO は不変データとして扱い、状態変更を持たせない
-- DTO の生成はコンストラクタ呼び出しを基本とする
-- `static factory method` は前処理・null 補正・生成意図の明確化が必要な場合のみ使用する
-- 単に全項目をそのまま渡すだけの `of(...)` / `from(...)` は原則作成しない
-- Entity から DTO への変換は `Mapper` に集約する
+- 生成元は `docs/05_api/openapi.yaml` とする
+- 生成物は `target/generated-sources/openapi` 配下に出力されるため、手動編集しない
+- API 入出力モデルの項目追加・型変更・バリデーション変更は `openapi.yaml` を修正する
+- OpenAPI 生成対象外の補助 DTO を手書きする場合のみ、`record` を基本とする
+- domain object から API Response モデルへの変換は `Mapper` に集約する
 - JPA Entity は DTO と別ルールで扱い、本方針の対象外とする
 
 例
 
 ```text
-public record OrderRequest(OffsetDateTime orderedAt) {
-}
+docs/05_api/openapi.yaml
+  components.schemas.OrderRequest
+  components.schemas.OrderResponse
+  components.schemas.ErrorResponse
+  components.schemas.ValidationError
 
-public record OrderResponse(
-        String orderCode,
-        OffsetDateTime orderedAt,
-        String orderStatus) {
-}
-
-public record ErrorResponse(
-        OffsetDateTime timestamp,
-        int status,
-        String error,
-        String message,
-        String path,
-        List<ValidationError> errors) {
-}
-
-public record ValidationError(String field, String message) {
-}
+target/generated-sources/openapi/src/main/java/.../presentation/generated/model
+  OrderRequest
+  OrderResponse
+  ErrorResponse
+  ValidationError
 ```
 
 ### Mapper
@@ -368,17 +361,21 @@ JpaAuditConfig
 ### presentation の例
 
 ```text
-@GetMapping("/orders")
+public class OrderController implements OrdersApi {
+    // ...
+}
+
+@Override
 public List<OrderResponse> getOrders() {
     // ...
 }
 
-@GetMapping("/orders/{orderCode}")
+@Override
 public OrderResponse getOrderByOrderCode(@PathVariable String orderCode) {
     // ...
 }
 
-@PostMapping("/orders")
+@Override
 public OrderResponse createOrder(@RequestBody OrderRequest requestDto) {
     // ...
 }
@@ -488,35 +485,17 @@ Optional<Order> findByOrderCode(OrderCode orderCode);
 ### Request / Response の例
 
 ```text
-/**
- * 注文リクエスト
- */
-public record OrderRequest(OffsetDateTime orderedAt) {
-}
-
-/**
- * 注文レスポンス
- */
-public record OrderResponse(String orderCode, OffsetDateTime orderedAt, String orderStatus) {
-}
-
-/**
- * エラーレスポンス
- */
-public record ErrorResponse(
-        OffsetDateTime timestamp,
-        int status,
-        String error,
-        String message,
-        String path,
-        List<ValidationError> errors) {
-}
-
-/**
- * バリデーションエラー
- */
-public record ValidationError(String field, String message) {
-}
+// API 入出力モデルは OpenAPI から生成する。
+// Javadoc 相当の説明は openapi.yaml の description に記載する。
+components:
+  schemas:
+    OrderRequest:
+      type: object
+      properties:
+        orderedAt:
+          type: string
+          format: date-time
+          description: 注文日時。タイムゾーンオフセット付きISO 8601形式。
 ```
 
 ---
@@ -525,13 +504,15 @@ public record ValidationError(String field, String message) {
 
 - presentation / application は現行実装に合わせて `getOrders` を採用している
 - domain の値オブジェクトは `of` を基本とする
-- presentation の DTO は `record` を基本とし、単純な `new` のラッパーだけの `static factory method` は作成しない
-- DTO に `static factory method` を持たせる場合は、null 補正・不変化・生成意図の明確化などの意味を持たせる
+- API 入出力モデルは OpenAPI から生成し、生成物を手動編集しない
+- OpenAPI 生成対象外の補助 DTO を手書きする場合は `record` を基本とし、単純な `new` のラッパーだけの
+  `static factory method` は作成しない
+- 補助 DTO に `static factory method` を持たせる場合は、null 補正・不変化・生成意図の明確化などの意味を持たせる
 - domain Repository は interface とし、永続化の詳細は infrastructure に置く
 - infrastructure の DB Repository は Spring Data JPA の慣習に合わせて `find` / `save` / `delete` を使う
 - 命名は役割に応じて統一し、クラス間で混在させない
 - 省略語は極力使わず、業務意味が分かる名前にする
-- typo を残さない。特に Request / Response の Javadoc は実装内容と一致させる
+- typo を残さない。特に OpenAPI の description は実装内容と一致させる
 
 ---
 

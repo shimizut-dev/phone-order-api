@@ -47,7 +47,8 @@ Clean Architecture を採用する理由は以下の通り。
 ### 3.4 Presentation Layer
 
 - Controller
-- Request / Response DTO
+- OpenAPI 生成 API interface
+- OpenAPI 生成 Request / Response model
 - Validation
 - Exception Handler
 
