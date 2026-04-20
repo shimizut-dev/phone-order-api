@@ -102,7 +102,7 @@ API利用者、設計レビュー、実装時の理解を目的とする。
   "timestamp": "2026-04-07T10:15:30+09:00",
   "status": 400,
   "error": "BAD_REQUEST",
-  "message": "入力内容に誤りがあります。",
+  "message": "入力値が不正です。",
   "path": "/api/v1/orders",
   "validationErrors": [
     {
@@ -111,4 +111,36 @@ API利用者、設計レビュー、実装時の理解を目的とする。
     }
   ]
 }
+```
+
+---
+
+## 6. curl 実行例
+
+### 注文作成
+
+```bash
+curl -i -X POST http://localhost:8080/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -d '{"orderedAt":"2026-04-07T10:15:30+09:00"}'
+```
+
+### 注文参照
+
+```bash
+curl -i http://localhost:8080/api/v1/orders/ORD000001
+```
+
+### 注文一覧取得
+
+```bash
+curl -i http://localhost:8080/api/v1/orders
+```
+
+### 入力値不正
+
+```bash
+curl -i -X POST http://localhost:8080/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -d '{}'
 ```
