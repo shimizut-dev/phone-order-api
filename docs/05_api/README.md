@@ -8,7 +8,8 @@
 
 - API の外部仕様を整理する
 - 実装・レビュー・テストの基準をそろえる
-- OpenAPI を主資料として運用する
+- OpenAPI を API 仕様の正本として運用する
+- モックサーバー、Swagger UI、コード生成に利用できる状態を維持する
 
 ---
 
@@ -16,12 +17,17 @@
 
 - `openapi.yaml`
     - API 仕様の正本
+    - リクエスト / レスポンス仕様
+    - リクエスト / レスポンス例
+    - 共通エラーレスポンス
+    - モックサーバー向け情報
+    - Swagger UI などの表示ツールで利用する curl 例の生成元
 - `api-design-rules.md`
     - API 設計ルール
+    - OpenAPI 記載ルール
 - `error-response.md`
-    - エラーレスポンス方針
-- `examples.md`
-    - リクエスト / レスポンス例
+    - エラーレスポンスの考え方
+    - HTTP ステータスの使い分け
 
 ---
 
@@ -36,8 +42,36 @@
 ## 運用ルール
 
 - エンドポイント追加・変更時は `openapi.yaml` を先に更新する
+- リクエスト例、レスポンス例、curl 生成に必要な情報は `openapi.yaml` に集約する
+- 共通エラーレスポンスは `openapi.yaml` の `components/schemas` と `components/responses` に集約する
+- openapi-generator の警告抑制を優先し、リクエスト例は schema / property example に、レスポンス例は media type example
+  に記載する
+- `operationId` とスキーマ名は生成 Java の名前に影響するため、実装側と合わせて安定させる
 - `openapi.yaml` は `openapi-generator-maven-plugin` の入力として使用する
 - API インターフェースと API 入出力モデルは Maven の `generate-sources` フェーズで生成する
 - 生成物は `target/generated-sources/openapi` 配下に出力されるため、手動編集しない
-- 例外レスポンス構造の変更時は `error-response.md` も更新する
-- README には概要のみを書き、詳細仕様は個別資料へ分ける
+- README には概要と運用ルールのみを書き、API の詳細仕様は `openapi.yaml` に集約する
+
+---
+
+## 資料の役割分担
+
+### `openapi.yaml` に記載するもの
+
+- パス
+- HTTP メソッド
+- パラメータ
+- リクエストボディ
+- レスポンス
+- スキーマ
+- example
+- servers
+- tags
+
+### md に記載するもの
+
+- 命名規約
+- 設計方針
+- 実装・生成上の注意点
+- OpenAPI 運用ルール
+- OpenAPI の記法だけでは表しにくい運用補足
