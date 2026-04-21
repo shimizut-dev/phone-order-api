@@ -87,7 +87,6 @@ API 設計・仕様資料を配置します。
 - `openapi.yaml`
 - `api-design-rules.md`
 - `error-response.md`
-- `examples.md`
 
 ### 06_database
 
