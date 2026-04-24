@@ -413,7 +413,7 @@ logging.level.org.hibernate.orm.jdbc.bind=TRACE
 
 - `LogMasker`
 - `RequestResponseLogFilter`
-- `GlobalExceptionHandler` のレスポンス形式
+- `ApiExceptionHandler` のレスポンス形式
 - `MethodLogAspect`
 
 ---

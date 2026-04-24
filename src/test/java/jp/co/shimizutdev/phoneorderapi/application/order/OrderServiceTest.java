@@ -1,9 +1,10 @@
 package jp.co.shimizutdev.phoneorderapi.application.order;
 
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCannotBeCancelledException;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaRepository;
-import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLIntegrationTest;
+import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +20,10 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * 注文サービス統合テスト
+ * 注文サービステスト
  */
 @SpringBootTest
-class OrderServiceIntegrationTest extends AbstractPostgreSQLIntegrationTest {
+class OrderServiceTest extends AbstractPostgreSQLTest {
 
     /**
      * 注文サービス
@@ -115,6 +116,50 @@ class OrderServiceIntegrationTest extends AbstractPostgreSQLIntegrationTest {
 
         Optional<OrderJpaEntity> actual = orderJpaRepository.findByOrderCode(createdOrder.getOrderCode().getValue());
         assertTrue(actual.isPresent());
+    }
+
+    /**
+     * <pre>
+     * 注文をキャンセルできること。
+     *
+     * Given 注文データが保存されている
+     * When 注文をキャンセルする
+     * Then 注文ステータスがキャンセルで保存される
+     * </pre>
+     */
+    @Test
+    @DisplayName("注文をキャンセルできること")
+    void shouldCancelOrder() {
+        orderJpaRepository.save(reconstructOrderJpaEntity("ORD000001", "001"));
+
+        Optional<Order> actual = orderService.cancelOrder("ORD000001");
+
+        assertTrue(actual.isPresent());
+        assertEquals("006", actual.get().getOrderStatus().getCode());
+
+        Optional<OrderJpaEntity> savedOrder = orderJpaRepository.findByOrderCode("ORD000001");
+        assertTrue(savedOrder.isPresent());
+        assertEquals("006", savedOrder.get().getOrderStatus());
+    }
+
+    /**
+     * <pre>
+     * 完了済み注文はキャンセルできないこと。
+     *
+     * Given 完了状態の注文データが保存されている
+     * When 注文をキャンセルする
+     * Then 注文キャンセル不可例外が発生する
+     * </pre>
+     */
+    @Test
+    @DisplayName("完了済み注文はキャンセルできないこと")
+    void shouldThrowExceptionWhenCompletedOrderIsCancelled() {
+        orderJpaRepository.save(reconstructOrderJpaEntity("ORD000001", "005"));
+
+        assertThrows(
+            OrderCannotBeCancelledException.class,
+            () -> orderService.cancelOrder("ORD000001")
+        );
     }
 
     /**

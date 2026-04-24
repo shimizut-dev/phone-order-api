@@ -23,7 +23,8 @@
 - domain は業務ルールと値オブジェクトを扱う
 - infrastructure は DB・採番・設定など技術実装を扱う
 - 一覧取得・1件取得・登録・更新・削除で、使用する動詞をできるだけ統一する
-- Repository は Spring Data JPA の利用を前提に、取得は `find`、登録・更新は `save`、削除は `delete` を基本とする
+- domain Repository は取得を `find`、登録を `create`、更新を `update`、削除を `delete` とする
+- infrastructure の Spring Data JPA Repository は慣習に合わせて `find` / `save` / `delete` を使う
 
 ---
 
@@ -245,7 +246,7 @@ OrderedAt.of
 例
 
 ```text
-Order.reconstruct(orderedAt, orderCodeGenerator)
+Order.create(orderedAt, orderCodeGenerator)
 Order.reconstruct(orderId, orderCode, orderedAt, orderStatus)
 ```
 
@@ -290,12 +291,13 @@ findByOrderCode
 #### 登録・更新
 
 - 日本語: 登録・更新
-- 英語: `save`
+- 英語: `create` / `update`
 
 例
 
 ```text
-save
+create
+update
 ```
 
 ---
@@ -320,7 +322,7 @@ DeliveriesJpaRepository
 例
 
 ```text
-OrdersEntity
+OrderJpaEntity
 BaseAuditEntity
 ```
 
@@ -404,17 +406,19 @@ List<Order> findAll();
 
 Optional<Order> findByOrderCode(OrderCode orderCode);
 
-Order save(Order order);
+Order create(Order order);
+
+Order update(Order order);
 ```
 
 ### infrastructure DB Repository の例
 
 ```text
-Optional<OrdersEntity> findByOrderCode(String orderCode);
+Optional<OrderJpaEntity> findByOrderCode(String orderCode);
 
-Optional<OrdersEntity> findTopByOrderCodeStartingWithOrderByOrderCodeDesc(String prefix);
+Optional<OrderJpaEntity> findTopByOrderCodeStartingWithOrderByOrderCodeDesc(String prefix);
 
-OrdersEntity save(OrdersEntity entity);
+OrderJpaEntity save(OrderJpaEntity entity);
 ```
 
 ---
@@ -552,8 +556,8 @@ save
 ### infrastructure
 
 ```text
-OrdersDbRepository
-OrdersEntity
+OrderJpaRepository
+OrderJpaEntity
 OrderRepositoryImpl
 SequentialOrderCodeGenerator
 JpaAuditConfig

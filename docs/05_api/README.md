@@ -36,6 +36,7 @@
 - `GET /api/v1/orders`
 - `GET /api/v1/orders/{orderCode}`
 - `POST /api/v1/orders`
+- `POST /api/v1/orders/{orderCode}/cancel`
 
 ---
 

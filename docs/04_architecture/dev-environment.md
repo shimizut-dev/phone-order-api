@@ -8,7 +8,7 @@
 | ローカル DB / Testcontainers | PostgreSQL 16.x（`postgres:16`）             |
 | CI コンテナ                  | Debian 13.x（Trixie / `debian:trixie-slim`） |
 
-PostgreSQL はローカル起動用の `docker/docker-compose.yml` と、DB 統合テスト用の Testcontainers で同じメジャーバージョンを使用する。
+PostgreSQL はローカル起動用の `docker/docker-compose.yml` と、DB テスト用の Testcontainers で同じメジャーバージョンを使用する。
 
 ---
 

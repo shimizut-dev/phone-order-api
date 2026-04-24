@@ -116,6 +116,35 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/orders/{orderCode}/cancel:
+    post:
+      tags:
+        - Orders
+      summary: 注文をキャンセルする
+      description: 注文コードを指定して注文をキャンセル状態に更新します。
+      operationId: cancelOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderCode'
+      responses:
+        '200':
+          description: 注文キャンセル成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+              example:
+                orderCode: ORD000001
+                orderedAt: '2026-04-07T10:15:30+09:00'
+                orderStatus: '006'
+        '400':
+          $ref: '#/components/responses/InvalidOrderCodeError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
 components:
   parameters:
     OrderCode:
@@ -176,6 +205,19 @@ components:
             error: NOT_FOUND
             message: 注文が見つかりません。
             path: /api/v1/orders/ORD999999
+            validationErrors: [ ]
+    ConflictError:
+      description: 業務ルール違反または状態不整合
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            timestamp: '2026-04-07T10:15:30+09:00'
+            status: 409
+            error: CONFLICT
+            message: 注文をキャンセルできません。
+            path: /api/v1/orders/ORD000001/cancel
             validationErrors: [ ]
     InternalServerError:
       description: 想定外エラー
@@ -265,11 +307,7 @@ components:
           example: 404
         error:
           type: string
-          description: HTTP ステータス名。
-          enum:
-            - BAD_REQUEST
-            - NOT_FOUND
-            - INTERNAL_SERVER_ERROR
+          description: HTTPステータスに対応するエラーコード。標準ステータスは BAD_REQUEST などの定義済みコード、非標準ステータスは HTTP_<statusCode> を返す。
           example: NOT_FOUND
         message:
           type: string

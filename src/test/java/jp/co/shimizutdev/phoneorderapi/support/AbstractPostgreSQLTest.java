@@ -5,9 +5,9 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
- * PostgreSQL統合テスト共通設定
+ * PostgreSQLテスト共通設定
  */
-public abstract class AbstractPostgreSQLIntegrationTest {
+public abstract class AbstractPostgreSQLTest {
 
     /**
      * PostgreSQLコンテナ

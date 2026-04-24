@@ -30,4 +30,12 @@ public interface OrderRepository {
      * @return 注文
      */
     Order create(Order order);
+
+    /**
+     * 注文を更新する
+     *
+     * @param order 注文
+     * @return 注文
+     */
+    Order update(Order order);
 }

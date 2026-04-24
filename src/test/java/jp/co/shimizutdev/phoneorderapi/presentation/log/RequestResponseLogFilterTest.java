@@ -1,6 +1,6 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.log;
 
-import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLIntegrationTest;
+import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +18,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * リクエスト/レスポンスのログを出力するフィルタ統合テスト
+ * リクエスト/レスポンスのログを出力するフィルタテスト
  */
 @ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-class RequestResponseLogFilterIntegrationTest extends AbstractPostgreSQLIntegrationTest {
+class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
 
     @Autowired
     private MockMvc mockMvc;

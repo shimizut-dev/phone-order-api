@@ -60,4 +60,17 @@ public class OrderService {
         Order order = Order.create(orderedAt, orderCodeGenerator);
         return orderRepository.create(order);
     }
+
+    /**
+     * 注文をキャンセルする
+     *
+     * @param orderCode 注文コード
+     * @return 注文
+     */
+    @Transactional
+    public Optional<Order> cancelOrder(final String orderCode) {
+        return orderRepository.findByOrderCode(OrderCode.of(orderCode))
+            .map(Order::cancel)
+            .map(orderRepository::update);
+    }
 }
