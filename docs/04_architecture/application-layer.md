@@ -22,11 +22,7 @@ application layer はユースケースを実現する層である。
 
 ## 3. 対象ユースケース
 
-- CreateOrderUseCase
-- GetOrderUseCase
-- CancelOrderUseCase
-- CreateDeliveryUseCase
-- GetDeliveryUseCase
+- OrderService
 
 ---
 
@@ -57,11 +53,8 @@ application layer はユースケースを実現する層である。
 
 ## 5. application に置くもの
 
-- UseCase
-- Input DTO
-- Output DTO
 - Application Service
-- Mapper
+- repository coordination
 - トランザクション制御
 
 ---

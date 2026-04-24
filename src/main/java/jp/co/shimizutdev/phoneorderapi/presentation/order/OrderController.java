@@ -3,7 +3,7 @@ package jp.co.shimizutdev.phoneorderapi.presentation.order;
 import jakarta.validation.Valid;
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
-import jp.co.shimizutdev.phoneorderapi.presentation.exception.ApiErrorMessageConstants;
+import jp.co.shimizutdev.phoneorderapi.presentation.error.ApiErrorResponseMessages;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.api.OrdersApi;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderRequest;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
@@ -49,7 +49,7 @@ public class OrderController implements OrdersApi {
         Order order = orderService.getOrderByOrderCode(orderCode)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                ApiErrorMessageConstants.ORDER_NOT_FOUND
+                ApiErrorResponseMessages.ORDER_NOT_FOUND
             ));
 
         return OrderMapper.toResponse(order);
@@ -64,5 +64,22 @@ public class OrderController implements OrdersApi {
     @Override
     public OrderResponse createOrder(@Valid @RequestBody final OrderRequest orderRequest) {
         return OrderMapper.toResponse(orderService.createOrder(orderRequest.getOrderedAt()));
+    }
+
+    /**
+     * 注文をキャンセルする
+     *
+     * @param orderCode 注文コード
+     * @return 注文レスポンス
+     */
+    @Override
+    public OrderResponse cancelOrder(@PathVariable final String orderCode) {
+        Order order = orderService.cancelOrder(orderCode)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                ApiErrorResponseMessages.ORDER_NOT_FOUND
+            ));
+
+        return OrderMapper.toResponse(order);
     }
 }

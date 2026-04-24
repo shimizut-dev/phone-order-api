@@ -1,4 +1,4 @@
-package jp.co.shimizutdev.phoneorderapi.presentation.exception;
+package jp.co.shimizutdev.phoneorderapi.presentation.error;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -7,12 +7,14 @@ import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -20,10 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * グローバル例外ハンドラ統合テスト
- */
-class GlobalExceptionHandlerIntegrationTest {
+class ApiExceptionHandlerTest {
 
     private MockMvc mockMvc;
 
@@ -38,25 +37,14 @@ class GlobalExceptionHandlerIntegrationTest {
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(new TestController())
-            .setControllerAdvice(new GlobalExceptionHandler())
+            .setControllerAdvice(new ApiExceptionHandler())
             .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
             .setValidator(validator)
             .build();
     }
 
-    /**
-     * <pre>
-     * IllegalArgumentException は400で返ること。
-     *
-     * Given IllegalArgumentException を送出するAPIを用意する
-     * When 対象APIを実行する
-     * Then 400 Bad Request とエラーレスポンスが返る
-     * </pre>
-     *
-     * @throws Exception 例外
-     */
     @Test
-    @DisplayName("IllegalArgumentException は400で返ること")
+    @DisplayName("IllegalArgumentException is mapped to 400")
     void shouldReturnBadRequestWhenIllegalArgumentExceptionOccurs() throws Exception {
         mockMvc.perform(get("/test/errors/illegal-argument"))
             .andExpect(status().isBadRequest())
@@ -67,19 +55,20 @@ class GlobalExceptionHandlerIntegrationTest {
             .andExpect(jsonPath("$.validationErrors").isArray());
     }
 
-    /**
-     * <pre>
-     * バリデーションエラーは400で返ること。
-     *
-     * Given 必須項目が不足したリクエストを用意する
-     * When バリデーション対象APIを実行する
-     * Then 400 Bad Request とバリデーションエラー情報が返る
-     * </pre>
-     *
-     * @throws Exception 例外
-     */
     @Test
-    @DisplayName("バリデーションエラーは400で返ること")
+    @DisplayName("IllegalArgumentException without a message falls back to the validation error message")
+    void shouldReturnValidationErrorMessageWhenIllegalArgumentExceptionHasNoMessage() throws Exception {
+        mockMvc.perform(get("/test/errors/illegal-argument-without-message"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
+            .andExpect(jsonPath("$.path").value("/test/errors/illegal-argument-without-message"))
+            .andExpect(jsonPath("$.validationErrors").isArray());
+    }
+
+    @Test
+    @DisplayName("Validation errors are mapped to 400")
     void shouldReturnBadRequestWhenValidationErrorOccurs() throws Exception {
         mockMvc.perform(post("/test/errors/validation")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -87,10 +76,32 @@ class GlobalExceptionHandlerIntegrationTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.message").value("入力値が不正です。"))
+            .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/validation"))
             .andExpect(jsonPath("$.validationErrors[0].field").value("name"))
             .andExpect(jsonPath("$.validationErrors[0].message").value("name is required."));
+    }
+
+    @Test
+    @DisplayName("Non-standard response statuses are preserved")
+    void shouldReturnCustomStatusWhenResponseStatusExceptionUsesNonStandardCode() throws Exception {
+        mockMvc.perform(get("/test/errors/custom-status"))
+            .andExpect(status().is(499))
+            .andExpect(jsonPath("$.status").value(499))
+            .andExpect(jsonPath("$.error").value("HTTP_499"))
+            .andExpect(jsonPath("$.message").value("client closed request"))
+            .andExpect(jsonPath("$.path").value("/test/errors/custom-status"));
+    }
+
+    @Test
+    @DisplayName("Unexpected exceptions are hidden behind a generic 500 response")
+    void shouldReturnInternalServerErrorWhenUnexpectedExceptionOccurs() throws Exception {
+        mockMvc.perform(get("/test/errors/unexpected"))
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.status").value(500))
+            .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
+            .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+            .andExpect(jsonPath("$.path").value("/test/errors/unexpected"));
     }
 
     @RestController
@@ -102,9 +113,24 @@ class GlobalExceptionHandlerIntegrationTest {
             throw new IllegalArgumentException("illegal argument occurred");
         }
 
+        @GetMapping("/illegal-argument-without-message")
+        String throwIllegalArgumentExceptionWithoutMessage() {
+            throw new IllegalArgumentException();
+        }
+
         @PostMapping("/validation")
-        String validate(@Valid @RequestBody TestRequest request) {
+        String validate(@Valid @RequestBody final TestRequest request) {
             return request.name();
+        }
+
+        @GetMapping("/custom-status")
+        String throwCustomStatusException() {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(499), "client closed request");
+        }
+
+        @GetMapping("/unexpected")
+        String throwUnexpectedException() {
+            throw new IllegalStateException("boom");
         }
     }
 

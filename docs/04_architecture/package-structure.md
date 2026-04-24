@@ -34,7 +34,7 @@ jp.co.shimizutdev.phoneorderapi
 │  │  ├─ api
 │  │  └─ model
 │  ├─ order
-│  ├─ exception
+│  ├─ error
 │  └─ log
 │
 ├─ application
@@ -116,18 +116,11 @@ jp.co.shimizutdev.phoneorderapi
 
 ---
 
-## 6. usecase 配下の考え方
+## 6. application 配下の考え方
 
-application/usecase/order
+application/order
 
-- CreateOrderUseCase
-- GetOrderUseCase
-- CancelOrderUseCase
-
-application/usecase/delivery
-
-- CreateDeliveryUseCase
-- GetDeliveryUseCase
+- OrderService
 
 ---
 

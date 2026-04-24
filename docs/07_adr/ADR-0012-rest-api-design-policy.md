@@ -76,6 +76,7 @@ phone-order-api では以下の REST 設計方針を採用する。
 - `GET /api/v1/orders`
 - `GET /api/v1/orders/{orderCode}`
 - `POST /api/v1/orders`
+- `POST /api/v1/orders/{orderCode}/cancel`
 
 ---
 

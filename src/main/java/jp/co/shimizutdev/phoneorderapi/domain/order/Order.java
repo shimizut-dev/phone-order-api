@@ -93,4 +93,22 @@ public class Order {
             orderStatus
         );
     }
+
+    /**
+     * 注文をキャンセルする
+     *
+     * @return キャンセル済み注文
+     */
+    public Order cancel() {
+        if (orderStatus == OrderStatus.COMPLETED || orderStatus == OrderStatus.CANCELLED) {
+            throw new OrderCannotBeCancelledException();
+        }
+
+        return new Order(
+            orderId,
+            orderCode,
+            orderedAt,
+            OrderStatus.CANCELLED
+        );
+    }
 }

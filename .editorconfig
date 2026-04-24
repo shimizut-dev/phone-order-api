@@ -5,27 +5,23 @@ charset = utf-8
 end_of_line = crlf
 insert_final_newline = true
 trim_trailing_whitespace = true
-
-[*.java]
 indent_style = space
 indent_size = 4
+
+[*.java]
 max_line_length = 120
+
+[*.properties]
+trim_trailing_whitespace = false
+
+[*.xml]
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[mvnw]
+end_of_line = lf
 
 [*.md]
 trim_trailing_whitespace = false
-
-[*.{yml,yaml}]
-indent_style = space
-indent_size = 2
-
-[*.xml]
-indent_style = space
-indent_size = 2
-
-[*.sql]
-indent_style = space
-indent_size = 4
-
-[*.properties]
-indent_style = space
-indent_size = 4

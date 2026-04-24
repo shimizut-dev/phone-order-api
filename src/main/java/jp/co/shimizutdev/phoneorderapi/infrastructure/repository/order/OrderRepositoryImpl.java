@@ -68,4 +68,21 @@ public class OrderRepositoryImpl implements OrderRepository {
         entityManager.persist(orderJpaEntity);
         return OrderJpaMapper.toDomain(orderJpaEntity);
     }
+
+    /**
+     * 注文を更新する
+     *
+     * @param order 注文
+     * @return 注文
+     */
+    @Override
+    public Order update(final Order order) {
+        OrderJpaEntity orderJpaEntity = orderJpaRepository.findById(order.getOrderId().getValue())
+            .orElseThrow(() -> new IllegalStateException("更新対象の注文が見つかりません。"));
+
+        orderJpaEntity.setOrderStatus(order.getOrderStatus().getCode());
+        orderJpaEntity.setUpdatedBy("system");
+
+        return OrderJpaMapper.toDomain(orderJpaEntity);
+    }
 }

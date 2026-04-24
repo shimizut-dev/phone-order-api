@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * デフォルトログマスキング実装統合テスト
+ * デフォルトログマスキング実装テスト
  */
-class DefaultLogMaskerTest {
+class LogMaskerTest {
 
     private final LogMasker logMasker = new LogMasker(new ObjectMapper());
 

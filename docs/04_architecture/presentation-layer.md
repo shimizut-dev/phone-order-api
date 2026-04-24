@@ -39,7 +39,8 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 - OpenAPI 生成 API interface
 - OpenAPI 生成 Request / Response model
 - Mapper
-- GlobalExceptionHandler
+- `presentation.error` package (`ApiErrorResponse`, `ApiValidationError`, `ApiErrorResponseMessages`,
+  `ApiExceptionHandler`)
 - Filter
 
 ---
@@ -51,6 +52,7 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 - `GET /api/v1/orders`
 - `GET /api/v1/orders/{orderCode}`
 - `POST /api/v1/orders`
+- `POST /api/v1/orders/{orderCode}/cancel`
 
 ---
 
@@ -63,7 +65,7 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 - 生成された API 入出力モデルは手修正しない
 - presentation 層で手書きするモデルは、OpenAPI 生成対象外の補助モデルに限定する
 - Entity を直接レスポンスへ返さない
-- 例外レスポンスは `GlobalExceptionHandler` で集約する
+- 例外レスポンスは `ApiExceptionHandler` で集約する
 
 ---
 
@@ -71,6 +73,7 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 
 - 存在しない注文は 404
 - リクエスト不正は 400
+- キャンセル不可などの業務ルール違反は 409
 - 想定外エラーは 500
 
 ---

@@ -1,7 +1,7 @@
 package jp.co.shimizutdev.phoneorderapi.infrastructure.log;
 
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
-import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLIntegrationTest;
+import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * メソッド開始/終了ログ出力アスペクト統合テスト
+ * メソッド開始/終了ログ出力アスペクトテスト
  */
 @ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     scripts = "classpath:sql/cleanup/cleanup-transaction-tables.sql",
     executionPhase = ExecutionPhase.AFTER_TEST_METHOD
 )
-class MethodLogAspectIntegrationTest extends AbstractPostgreSQLIntegrationTest {
+class MethodLogAspectTest extends AbstractPostgreSQLTest {
 
     /**
      * 注文サービス
