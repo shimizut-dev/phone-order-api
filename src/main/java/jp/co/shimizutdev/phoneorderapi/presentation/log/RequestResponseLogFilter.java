@@ -36,6 +36,11 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     private static final int MAX_LOG_BODY_LENGTH = 5000;
 
     /**
+     * リクエスト本文キャッシュ上限バイト数
+     */
+    private static final int REQUEST_CONTENT_CACHE_LIMIT = 8192;
+
+    /**
      * ログマスキング
      */
     private final LogMasker logMasker;
@@ -85,7 +90,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
         if (request instanceof ContentCachingRequestWrapper wrapper) {
             return wrapper;
         }
-        return new ContentCachingRequestWrapper(request);
+        return new ContentCachingRequestWrapper(request, REQUEST_CONTENT_CACHE_LIMIT);
     }
 
     /**

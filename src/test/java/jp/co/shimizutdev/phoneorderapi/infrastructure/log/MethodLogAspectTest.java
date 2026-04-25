@@ -58,10 +58,11 @@ class MethodLogAspectTest extends AbstractPostgreSQLTest {
     void shouldLogMethodStartAndReturnType(final CapturedOutput output) {
         orderService.getOrders();
 
-        assertThat(output).contains("[method start] methodName: OrderService#getOrders");
-        assertThat(output).contains("[method end] methodName: OrderService#getOrders");
-        assertThat(output).contains("[method end] return value: [List<Order>(size=2)]");
-        assertThat(output).contains("\"orderCode\":{\"value\":\"ORD000001\"}");
-        assertThat(output).contains("\"orderCode\":{\"value\":\"ORD000002\"}");
+        assertThat(output)
+            .contains("[method start] methodName: OrderService#getOrders")
+            .contains("[method end] methodName: OrderService#getOrders")
+            .contains("[method end] return value: [List<Order>(size=2)]")
+            .contains("\"orderCode\":{\"value\":\"ORD000001\"}")
+            .contains("\"orderCode\":{\"value\":\"ORD000002\"}");
     }
 }
