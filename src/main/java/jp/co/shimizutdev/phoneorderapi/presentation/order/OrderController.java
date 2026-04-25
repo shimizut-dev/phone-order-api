@@ -2,7 +2,6 @@ package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
 import jakarta.validation.Valid;
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
-import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.presentation.error.ApiErrorResponseMessages;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.api.OrdersApi;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderRequest;
@@ -45,13 +44,12 @@ public class OrderController implements OrdersApi {
      */
     @Override
     public OrderResponse getOrderByOrderCode(final String orderCode) {
-        Order order = orderService.getOrderByOrderCode(orderCode)
+        return orderService.getOrderByOrderCode(orderCode)
+            .map(OrderMapper::toResponse)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 ApiErrorResponseMessages.ORDER_NOT_FOUND
             ));
-
-        return OrderMapper.toResponse(order);
     }
 
     /**
@@ -73,12 +71,11 @@ public class OrderController implements OrdersApi {
      */
     @Override
     public OrderResponse cancelOrder(final String orderCode) {
-        Order order = orderService.cancelOrder(orderCode)
+        return orderService.cancelOrder(orderCode)
+            .map(OrderMapper::toResponse)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 ApiErrorResponseMessages.ORDER_NOT_FOUND
             ));
-
-        return OrderMapper.toResponse(order);
     }
 }

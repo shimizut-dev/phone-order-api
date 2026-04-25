@@ -235,8 +235,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
             return "";
         }
 
-        String body = new String(content, getCharset(encoding));
-        return abbreviate(logMasker.maskText(body));
+        return abbreviate(logMasker.maskText(new String(content, getCharset(encoding))));
     }
 
     /**

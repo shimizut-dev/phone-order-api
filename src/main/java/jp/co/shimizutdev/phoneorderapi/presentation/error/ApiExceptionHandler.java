@@ -19,6 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 /**
  * API例外ハンドラ
@@ -26,6 +29,9 @@ import java.util.List;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    /**
+     * ログ
+     */
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     /**
@@ -41,17 +47,15 @@ public class ApiExceptionHandler {
         final MethodArgumentNotValidException ex,
         final HttpServletRequest request) {
 
-        List<ApiValidationError> validationErrors = ex.getBindingResult()
-            .getFieldErrors()
-            .stream()
-            .map(this::toValidationError)
-            .toList();
-
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
             ApiErrorResponseMessages.VALIDATION_ERROR,
             request,
-            validationErrors
+            ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(this::toValidationError)
+                .toList()
         );
     }
 
@@ -68,16 +72,14 @@ public class ApiExceptionHandler {
         final ConstraintViolationException ex,
         final HttpServletRequest request) {
 
-        List<ApiValidationError> validationErrors = ex.getConstraintViolations()
-            .stream()
-            .map(this::toValidationError)
-            .toList();
-
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
             ApiErrorResponseMessages.VALIDATION_ERROR,
             request,
-            validationErrors
+            ex.getConstraintViolations()
+                .stream()
+                .map(this::toValidationError)
+                .toList()
         );
     }
 
@@ -161,13 +163,9 @@ public class ApiExceptionHandler {
         final ResponseStatusException ex,
         final HttpServletRequest request) {
 
-        String message = ex.getReason() != null
-            ? ex.getReason()
-            : ApiErrorResponseMessages.REQUEST_FAILED;
-
         return buildErrorResponse(
             ex.getStatusCode(),
-            resolveMessage(message, ApiErrorResponseMessages.REQUEST_FAILED),
+            resolveMessage(ex.getReason(), ApiErrorResponseMessages.REQUEST_FAILED),
             request,
             List.of()
         );
@@ -229,17 +227,20 @@ public class ApiExceptionHandler {
      * @return 項目名
      */
     private String extractViolationField(final ConstraintViolation<?> violation) {
-        String field = null;
-
-        for (Path.Node node : violation.getPropertyPath()) {
-            if (node.getName() != null) {
-                field = node.getName();
-            }
-        }
-
-        return field != null ? field : violation.getPropertyPath().toString();
+        return StreamSupport.stream(violation.getPropertyPath().spliterator(), false)
+            .map(Path.Node::getName)
+            .filter(Objects::nonNull)
+            .reduce((first, second) -> second)
+            .orElse(violation.getPropertyPath().toString());
     }
 
+    /**
+     * メッセージが null または空白の場合に、デフォルトメッセージへ補完する。
+     *
+     * @param message        判定対象メッセージ
+     * @param defaultMessage デフォルトメッセージ
+     * @return メッセージ
+     */
     private String resolveMessage(final String message, final String defaultMessage) {
         return message != null && !message.isBlank()
             ? message
@@ -262,7 +263,12 @@ public class ApiExceptionHandler {
         final List<ApiValidationError> validationErrors) {
 
         return ResponseEntity.status(statusCode)
-            .body(createErrorResponse(statusCode, message, request, validationErrors));
+            .body(createErrorResponse(
+                statusCode,
+                message,
+                request,
+                validationErrors
+            ));
     }
 
     /**
@@ -297,9 +303,8 @@ public class ApiExceptionHandler {
      * @return エラーコード文字列
      */
     private String resolveErrorCode(final HttpStatusCode statusCode) {
-        HttpStatus resolvedStatus = HttpStatus.resolve(statusCode.value());
-        return resolvedStatus != null
-            ? resolvedStatus.name()
-            : "HTTP_" + statusCode.value();
+        return Optional.ofNullable(HttpStatus.resolve(statusCode.value()))
+            .map(HttpStatus::name)
+            .orElse("HTTP_" + statusCode.value());
     }
 }
