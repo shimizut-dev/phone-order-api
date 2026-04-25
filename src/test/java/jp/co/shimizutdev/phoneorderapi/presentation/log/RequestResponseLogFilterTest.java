@@ -53,12 +53,13 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
                     """))
             .andExpect(status().isBadRequest());
 
-        assertThat(output).contains("[request] http method: POST");
-        assertThat(output).contains("[request] request uri: /api/v1/orders");
-        assertThat(output).contains("Authorization=****");
-        assertThat(output).contains("[request] body:");
-        assertThat(output).contains("\"password\":\"****\"");
-        assertThat(output).contains("[response] status: 400");
-        assertThat(output).contains("[response] body:");
+        assertThat(output)
+            .contains("[request] http method: POST")
+            .contains("[request] request uri: /api/v1/orders")
+            .contains("Authorization=****")
+            .contains("[request] body:")
+            .contains("\"password\":\"****\"")
+            .contains("[response] status: 400")
+            .contains("[response] body:");
     }
 }

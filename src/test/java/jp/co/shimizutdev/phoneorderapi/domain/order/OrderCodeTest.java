@@ -2,6 +2,10 @@ package jp.co.shimizutdev.phoneorderapi.domain.order;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,91 +34,25 @@ class OrderCodeTest {
 
     /**
      * <pre>
-     * 注文コードがnullの場合は例外を送出すること。
+     * 不正な形式の注文コードを生成しようとすると例外が発生すること。
      *
-     * Given nullの注文コードを用意する
+     * Given 不正な形式の注文コードを用意する
      * When 注文コードを生成する
-     * Then 形式不一致の例外を送出する
+     * Then 例外が発生する
      * </pre>
      */
-    @Test
-    @DisplayName("注文コードがnullの場合は例外を送出すること")
-    void shouldThrowExceptionWhenOrderCodeIsNull() {
+    @ParameterizedTest
+    @NullSource
+    @EmptySource
+    @ValueSource(strings = {"   ", "ABC000001", "ORD00001"})
+    @DisplayName("不正な形式の注文コードを生成しようとすると例外が発生すること")
+    void shouldThrowExceptionWhenOrderCodeFormatIsInvalid(final String value) {
+        String expectedMessage =
+            assertThrows(IllegalArgumentException.class, () -> OrderCode.of("invalid")).getMessage();
+
         IllegalArgumentException actual =
-            assertThrows(IllegalArgumentException.class, () -> OrderCode.of(null));
+            assertThrows(IllegalArgumentException.class, () -> OrderCode.of(value));
 
-        assertEquals("注文コード（ORD000001）の形式と不一致です。", actual.getMessage());
-    }
-
-    /**
-     * <pre>
-     * 注文コードが空文字の場合は例外を送出すること。
-     *
-     * Given 空文字の注文コードを用意する
-     * When 注文コードを生成する
-     * Then 形式不一致の例外を送出する
-     * </pre>
-     */
-    @Test
-    @DisplayName("注文コードが空文字の場合は例外を送出すること")
-    void shouldThrowExceptionWhenOrderCodeIsEmpty() {
-        IllegalArgumentException actual =
-            assertThrows(IllegalArgumentException.class, () -> OrderCode.of(""));
-
-        assertEquals("注文コード（ORD000001）の形式と不一致です。", actual.getMessage());
-    }
-
-    /**
-     * <pre>
-     * 注文コードが空白のみの場合は例外を送出すること。
-     *
-     * Given 空白のみの注文コードを用意する
-     * When 注文コードを生成する
-     * Then 形式不一致の例外を送出する
-     * </pre>
-     */
-    @Test
-    @DisplayName("注文コードが空白のみの場合は例外を送出すること")
-    void shouldThrowExceptionWhenOrderCodeIsBlank() {
-        IllegalArgumentException actual =
-            assertThrows(IllegalArgumentException.class, () -> OrderCode.of("   "));
-
-        assertEquals("注文コード（ORD000001）の形式と不一致です。", actual.getMessage());
-    }
-
-    /**
-     * <pre>
-     * 注文コードのプレフィックスが不正な場合は例外を送出すること。
-     *
-     * Given プレフィックスが不正な注文コードを用意する
-     * When 注文コードを生成する
-     * Then 形式不一致の例外を送出する
-     * </pre>
-     */
-    @Test
-    @DisplayName("注文コードのプレフィックスが不正な場合は例外を送出すること")
-    void shouldThrowExceptionWhenOrderCodePrefixIsInvalid() {
-        IllegalArgumentException actual =
-            assertThrows(IllegalArgumentException.class, () -> OrderCode.of("ABC000001"));
-
-        assertEquals("注文コード（ORD000001）の形式と不一致です。", actual.getMessage());
-    }
-
-    /**
-     * <pre>
-     * 注文コードの桁数が不正な場合は例外を送出すること。
-     *
-     * Given 桁数が不正な注文コードを用意する
-     * When 注文コードを生成する
-     * Then 形式不一致の例外を送出する
-     * </pre>
-     */
-    @Test
-    @DisplayName("注文コードの桁数が不正な場合は例外を送出すること")
-    void shouldThrowExceptionWhenOrderCodeLengthIsInvalid() {
-        IllegalArgumentException actual =
-            assertThrows(IllegalArgumentException.class, () -> OrderCode.of("ORD00001"));
-
-        assertEquals("注文コード（ORD000001）の形式と不一致です。", actual.getMessage());
+        assertEquals(expectedMessage, actual.getMessage());
     }
 }

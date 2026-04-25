@@ -9,7 +9,6 @@ import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderRequest
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,7 +44,7 @@ public class OrderController implements OrdersApi {
      * @return 注文レスポンス
      */
     @Override
-    public OrderResponse getOrderByOrderCode(@PathVariable final String orderCode) {
+    public OrderResponse getOrderByOrderCode(final String orderCode) {
         Order order = orderService.getOrderByOrderCode(orderCode)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
@@ -73,7 +72,7 @@ public class OrderController implements OrdersApi {
      * @return 注文レスポンス
      */
     @Override
-    public OrderResponse cancelOrder(@PathVariable final String orderCode) {
+    public OrderResponse cancelOrder(final String orderCode) {
         Order order = orderService.cancelOrder(orderCode)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,

@@ -42,7 +42,20 @@ local
 
 ---
 
-### 4. 保存して起動する
+### 4. 環境変数を設定する
+
+`application-local.properties` では datasource の認証情報を環境変数から読み込む。
+**環境変数** に以下を設定する。
+
+```text
+PHONE_ORDER_DB_USERNAME=local;PHONE_ORDER_DB_PASSWORD=local
+```
+
+値は `docker/docker-compose.yml` で起動するローカル PostgreSQL の設定に合わせる。
+
+---
+
+### 5. 保存して起動する
 
 設定を保存し、その実行構成でアプリを起動する。
 
@@ -52,6 +65,7 @@ local
 
 - `local` プロファイルを有効にすると、`application-local.properties` の設定が適用される。
 - ローカル用の datasource 設定や SQL 詳細ログ設定は `local` プロファイルで利用する。
+- ローカル用 datasource の認証情報は `PHONE_ORDER_DB_USERNAME` / `PHONE_ORDER_DB_PASSWORD` で渡す。
 - `application.properties` には全環境共通の設定を置き、ローカル専用設定は `application-local.properties` に分離する。
 
 ---

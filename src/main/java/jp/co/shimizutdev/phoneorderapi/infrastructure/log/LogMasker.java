@@ -132,6 +132,7 @@ public class LogMasker {
             case ObjectNode objectNode -> maskObjectNode(objectNode);
             case ArrayNode arrayNode -> maskArrayNode(arrayNode);
             default -> {
+                // ObjectNode / ArrayNode 以外の値ノードは再帰的に走査する項目がないため、マスキングしない
             }
         }
     }

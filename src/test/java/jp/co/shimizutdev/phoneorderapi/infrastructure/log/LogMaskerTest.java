@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -76,10 +78,11 @@ class LogMaskerTest {
 
         String actual = logMasker.maskText(text);
 
-        assertThat(actual).contains("\"token\":\"****\"");
-        assertThat(actual).contains("\"email\":\"****\"");
-        assertThat(actual).contains("\"password\":\"****\"");
-        assertThat(actual).contains("\"name\":\"taro\"");
+        assertThat(actual)
+            .contains("\"token\":\"****\"")
+            .contains("\"email\":\"****\"")
+            .contains("\"password\":\"****\"")
+            .contains("\"name\":\"taro\"");
     }
 
     /**
@@ -113,23 +116,18 @@ class LogMaskerTest {
     @Test
     @DisplayName("オブジェクトのマスク対象項目をマスクできること")
     void shouldMaskObjectFields() {
-        DummyRequest request = new DummyRequest(
-            "2026-04-07T10:15:30+09:00",
-            "secret-password",
-            "taro@example.com"
+        Map<String, String> request = Map.of(
+            "orderedAt", "2026-04-07T10:15:30+09:00",
+            "password", "secret-password",
+            "email", "taro@example.com"
         );
 
         String actual = logMasker.maskObject(request);
 
-        assertThat(actual).contains("\"orderedAt\":\"2026-04-07T10:15:30+09:00\"");
-        assertThat(actual).contains("\"password\":\"****\"");
-        assertThat(actual).contains("\"email\":\"****\"");
+        assertThat(actual)
+            .contains("\"orderedAt\":\"2026-04-07T10:15:30+09:00\"")
+            .contains("\"password\":\"****\"")
+            .contains("\"email\":\"****\"");
     }
 
-    private record DummyRequest(
-        String orderedAt,
-        String password,
-        String email
-    ) {
-    }
 }
