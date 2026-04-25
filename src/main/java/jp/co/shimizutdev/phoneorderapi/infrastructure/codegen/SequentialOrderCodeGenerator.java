@@ -56,8 +56,7 @@ public class SequentialOrderCodeGenerator implements OrderCodeGenerator {
         String numericPart = currentOrderCode.substring(ORDER_CODE_PREFIX.length());
 
         try {
-            int currentNumber = Integer.parseInt(numericPart);
-            return OrderCode.of(formatOrderCode(currentNumber + 1));
+            return OrderCode.of(formatOrderCode(Integer.parseInt(numericPart) + 1));
         } catch (NumberFormatException ex) {
             throw new IllegalStateException("注文コードの連番部が不正です。", ex);
         }
