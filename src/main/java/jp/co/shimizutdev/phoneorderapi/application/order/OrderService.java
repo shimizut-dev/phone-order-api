@@ -13,8 +13,8 @@ import java.util.Optional;
  * 注文サービス
  */
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class OrderService {
 
     /**

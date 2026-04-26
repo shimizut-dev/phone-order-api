@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.BaseAuditJpaEntity;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,11 +16,11 @@ import java.util.UUID;
 /**
  * 注文JPAエンティティ
  */
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "orders")
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderJpaEntity extends BaseAuditJpaEntity {
 
     /**

@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * メソッド開始/終了ログ出力アスペクトテスト
  */
-@ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest
+@ExtendWith(OutputCaptureExtension.class)
 @SqlMergeMode(MergeMode.MERGE)
 @Sql(
     scripts = "classpath:sql/cleanup/cleanup-transaction-tables.sql",

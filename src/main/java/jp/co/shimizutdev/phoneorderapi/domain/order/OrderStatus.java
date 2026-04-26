@@ -53,4 +53,17 @@ public enum OrderStatus {
             default -> throw new IllegalArgumentException("注文ステータスコードが不正です。");
         };
     }
+
+    /**
+     * 注文ステータスコードが有効か判定する
+     *
+     * @param code 注文ステータスコード
+     * @return 判定結果
+     */
+    public static boolean isValidCode(final String code) {
+        return switch (code) {
+            case "001", "002", "003", "004", "005", "006" -> true;
+            default -> false;
+        };
+    }
 }
