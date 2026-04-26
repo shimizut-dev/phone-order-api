@@ -11,6 +11,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -120,6 +123,34 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
+     * リクエストヘッダーのユーザー情報が監査項目へ反映されること。
+     *
+     * Given X-User-Id を含むリクエストコンテキストを設定する
+     * When 注文を作成する
+     * Then createdBy と updatedBy にリクエストユーザーが保存される
+     * </pre>
+     */
+    @Test
+    @DisplayName("リクエストヘッダーのユーザー情報が監査項目へ反映されること")
+    void shouldUseRequestUserForAuditWhenCreatingOrder() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", "user-123");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        try {
+            Order createdOrder = orderService.createOrder(OffsetDateTime.now());
+
+            Optional<OrderJpaEntity> actual = orderJpaRepository.findByOrderCode(createdOrder.getOrderCode().getValue());
+            assertTrue(actual.isPresent());
+            assertEquals("user-123", actual.get().getCreatedBy());
+            assertEquals("user-123", actual.get().getUpdatedBy());
+        } finally {
+            RequestContextHolder.resetRequestAttributes();
+        }
+    }
+
+    /**
+     * <pre>
      * 注文をキャンセルできること。
      *
      * Given 注文データが保存されている
@@ -140,6 +171,34 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
         Optional<OrderJpaEntity> savedOrder = orderJpaRepository.findByOrderCode("ORD000001");
         assertTrue(savedOrder.isPresent());
         assertEquals("006", savedOrder.get().getOrderStatus());
+    }
+
+    /**
+     * <pre>
+     * リクエストヘッダーのユーザー情報が更新監査項目へ反映されること。
+     *
+     * Given 既存注文と X-User-Id を含むリクエストコンテキストを用意する
+     * When 注文をキャンセルする
+     * Then updatedBy にリクエストユーザーが保存される
+     * </pre>
+     */
+    @Test
+    @DisplayName("リクエストヘッダーのユーザー情報が更新監査項目へ反映されること")
+    void shouldUseRequestUserForAuditWhenCancellingOrder() {
+        orderJpaRepository.save(reconstructOrderJpaEntity("ORD000001", "001"));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", "operator-1");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        try {
+            orderService.cancelOrder("ORD000001");
+
+            Optional<OrderJpaEntity> savedOrder = orderJpaRepository.findByOrderCode("ORD000001");
+            assertTrue(savedOrder.isPresent());
+            assertEquals("operator-1", savedOrder.get().getUpdatedBy());
+        } finally {
+            RequestContextHolder.resetRequestAttributes();
+        }
     }
 
     /**

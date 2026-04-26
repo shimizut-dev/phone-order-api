@@ -47,6 +47,7 @@ public class MethodLogAspect {
             + "execution(* jp.co.shimizutdev.phoneorderapi.application..*Service.*(..)) || "
             + "execution(* jp.co.shimizutdev.phoneorderapi.infrastructure.repository..*RepositoryImpl.*(..))"
     )
+    @SuppressWarnings("unused")
     public Object logMethod(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String className = signature.getDeclaringType().getSimpleName();
@@ -57,7 +58,14 @@ public class MethodLogAspect {
         stopWatch.start();
 
         log.info("[method start] methodName: {}", methodDisplayName);
-        log.info("[method start] arguments: [{}] {}", getRuntimeTypeName(joinPoint.getArgs()), abbreviate(logMasker.maskObject(joinPoint.getArgs())));
+
+        if (log.isDebugEnabled()) {
+            log.debug(
+                "[method start] arguments: [{}] {}",
+                getRuntimeTypeName(joinPoint.getArgs()),
+                abbreviate(logMasker.maskObject(joinPoint.getArgs()))
+            );
+        }
 
         try {
             Object returnValue = joinPoint.proceed();
@@ -65,12 +73,15 @@ public class MethodLogAspect {
             stopWatch.stop();
 
             log.info("[method end] methodName: {}", methodDisplayName);
-            log.info(
-                "[method end] return value: [{}] {}",
-                getDeclaredReturnTypeName(signature, returnValue),
-                abbreviate(logMasker.maskObject(returnValue))
-            );
             log.info("[method end] duration(ms): {}", stopWatch.getTotalTimeMillis());
+
+            if (log.isDebugEnabled()) {
+                log.debug(
+                    "[method end] return value: [{}] {}",
+                    getDeclaredReturnTypeName(signature, returnValue),
+                    abbreviate(logMasker.maskObject(returnValue))
+                );
+            }
 
             return returnValue;
         } catch (Throwable ex) {
@@ -118,6 +129,7 @@ public class MethodLogAspect {
         if (value == null) {
             return "null";
         }
+
         return value.getClass().getSimpleName();
     }
 

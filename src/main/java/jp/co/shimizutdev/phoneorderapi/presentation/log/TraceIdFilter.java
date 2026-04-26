@@ -28,6 +28,21 @@ public class TraceIdFilter extends OncePerRequestFilter {
     public static final String TRACE_ID_KEY = "traceId";
 
     /**
+     * リクエストから traceId を引き継ぐためのヘッダー名
+     */
+    private static final String REQUEST_ID_HEADER = "X-Request-Id";
+
+    /**
+     * リクエストから correlationId を引き継ぐためのヘッダー名
+     */
+    private static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
+
+    /**
+     * レスポンスへ traceId を返却するためのヘッダー名
+     */
+    private static final String TRACE_ID_HEADER = "X-Trace-Id";
+
+    /**
      * トレースIDを設定してフィルタチェーンを実行する。
      *
      * @param request     HTTPリクエスト
@@ -42,11 +57,35 @@ public class TraceIdFilter extends OncePerRequestFilter {
         @NonNull final HttpServletResponse response,
         @NonNull final FilterChain filterChain) throws ServletException, IOException {
 
+        String traceId = resolveTraceId(request);
+
         try {
-            MDC.put(TRACE_ID_KEY, UUID.randomUUID().toString());
+            MDC.put(TRACE_ID_KEY, traceId);
+            response.setHeader(TRACE_ID_HEADER, traceId);
             filterChain.doFilter(request, response);
         } finally {
             MDC.remove(TRACE_ID_KEY);
         }
+    }
+
+    /**
+     * リクエストから traceId を解決する
+     *
+     * @param request HTTP リクエスト
+     * @return traceId
+     */
+    private String resolveTraceId(final HttpServletRequest request) {
+        String requestId = request.getHeader(REQUEST_ID_HEADER);
+
+        if (requestId != null && !requestId.isBlank()) {
+            return requestId.trim();
+        }
+
+        String correlationId = request.getHeader(CORRELATION_ID_HEADER);
+        if (correlationId != null && !correlationId.isBlank()) {
+            return correlationId.trim();
+        }
+
+        return UUID.randomUUID().toString();
     }
 }
