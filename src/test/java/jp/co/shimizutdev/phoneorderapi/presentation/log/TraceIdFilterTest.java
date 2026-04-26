@@ -51,6 +51,31 @@ class TraceIdFilterTest {
 
     /**
      * <pre>
+     * X-Request-Id が存在する場合はその値を traceId として引き継ぐこと。
+     *
+     * Given X-Request-Id ヘッダーを含むリクエストを用意する
+     * When フィルタを実行する
+     * Then MDC とレスポンスヘッダーに同じ traceId が設定される
+     * </pre>
+     */
+    @Test
+    @DisplayName("X-Request-Id を traceId として引き継ぐこと")
+    void shouldReuseRequestIdHeaderAsTraceId() {
+        TraceIdFilter traceIdFilter = new TraceIdFilter();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.addHeader("X-Request-Id", "request-123");
+        AtomicReference<String> actualTraceId = new AtomicReference<>();
+        FilterChain filterChain = (req, res) -> actualTraceId.set(MDC.get(TraceIdFilter.TRACE_ID_KEY));
+
+        assertDoesNotThrow(() -> traceIdFilter.doFilter(request, response, filterChain));
+
+        assertEquals("request-123", actualTraceId.get());
+        assertEquals("request-123", response.getHeader("X-Trace-Id"));
+    }
+
+    /**
+     * <pre>
      * フィルタチェーン実行後にトレースIDが削除されること。
      *
      * Given トレースIDフィルタを用意する

@@ -6,10 +6,6 @@ import jp.co.shimizutdev.phoneorderapi.domain.order.*;
  * 注文JPAマッパー
  */
 public class OrderJpaMapper {
-    /**
-     * システムユーザ
-     */
-    private static final String SYSTEM_USER = "system";
 
     /**
      * コンストラクタ(インスタンス化を防止)
@@ -44,8 +40,6 @@ public class OrderJpaMapper {
         orderJpaEntity.setOrderCode(order.getOrderCode().getValue());
         orderJpaEntity.setOrderedAt(order.getOrderedAt().getValue());
         orderJpaEntity.setOrderStatus(order.getOrderStatus().getCode());
-        orderJpaEntity.setCreatedBy(SYSTEM_USER);
-        orderJpaEntity.setUpdatedBy(SYSTEM_USER);
         return orderJpaEntity;
     }
 

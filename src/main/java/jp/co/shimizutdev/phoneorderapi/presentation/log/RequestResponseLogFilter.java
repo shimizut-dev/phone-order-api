@@ -114,12 +114,15 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     private void logRequest(final ContentCachingRequestWrapper request) {
         log.info("[request] http method: {}", request.getMethod());
         log.info("[request] request uri: {}", request.getRequestURI());
-        log.info("[request] query string: {}", nullToEmpty(request.getQueryString()));
-        log.info("[request] parameters: {}", getParameters(request));
         log.info("[request] content-type: {}", nullToEmpty(request.getContentType()));
         log.info("[request] client ip: {}", getClientIpAddress(request));
         log.info("[request] request id: {}", getRequestId(request));
-        log.info("[request] headers: {}", getHeaders(request));
+
+        if (log.isDebugEnabled()) {
+            log.debug("[request] query string: {}", nullToEmpty(request.getQueryString()));
+            log.debug("[request] parameters: {}", getParameters(request));
+            log.debug("[request] headers: {}", getHeaders(request));
+        }
     }
 
     /**
@@ -172,13 +175,16 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
         final long durationMillis,
         final Exception exception) {
 
-        log.info("[request] body: {}", getRequestBody(request));
         log.info("[response] status: {}", response.getStatus());
         log.info("[response] content-type: {}", nullToEmpty(response.getContentType()));
-        log.info("[response] headers: {}", getHeaders(response));
-        log.info("[response] body: {}", getResponseBody(response));
-        log.info("[response] size(bytes): {}", response.getContentAsByteArray().length);
         log.info("[response] duration(ms): {}", durationMillis);
+
+        if (log.isDebugEnabled()) {
+            log.debug("[request] body: {}", getRequestBody(request));
+            log.debug("[response] headers: {}", getHeaders(response));
+            log.debug("[response] body: {}", getResponseBody(response));
+            log.debug("[response] size(bytes): {}", response.getContentAsByteArray().length);
+        }
 
         if (exception != null) {
             log.warn("[exception] class: {}", exception.getClass().getName());

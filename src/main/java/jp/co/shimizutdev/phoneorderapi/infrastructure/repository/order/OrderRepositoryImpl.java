@@ -81,7 +81,6 @@ public class OrderRepositoryImpl implements OrderRepository {
             .orElseThrow(() -> new IllegalStateException("更新対象の注文が見つかりません。"));
 
         orderJpaEntity.setOrderStatus(order.getOrderStatus().getCode());
-        orderJpaEntity.setUpdatedBy("system");
 
         return OrderJpaMapper.toDomain(orderJpaEntity);
     }
