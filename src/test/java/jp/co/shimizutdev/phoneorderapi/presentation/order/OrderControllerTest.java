@@ -56,7 +56,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
     @Nested
     @DisplayName("GET /api/v1/orders")
-    class ListOrders {
+    class GetOrders {
         /**
          * <pre>
          * 注文一覧を取得できること。
@@ -74,7 +74,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
             "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 'system', 'system')",
             "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000002', now(), '002', 'system', 'system')"
         })
-        void shouldReturnOrdersWhenListOrders() throws Exception {
+        void shouldReturnOrdersWhenGetOrders() throws Exception {
             mockMvc.perform(get("/api/v1/orders"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))

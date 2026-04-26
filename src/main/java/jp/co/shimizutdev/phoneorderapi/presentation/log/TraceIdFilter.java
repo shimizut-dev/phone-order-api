@@ -23,9 +23,9 @@ import java.util.UUID;
 public class TraceIdFilter extends OncePerRequestFilter {
 
     /**
-     * MDCキー
+     * トレースIDキー
      */
-    public static final String KEY = "traceId";
+    public static final String TRACE_ID_KEY = "traceId";
 
     /**
      * トレースIDを設定してフィルタチェーンを実行する。
@@ -43,10 +43,10 @@ public class TraceIdFilter extends OncePerRequestFilter {
         @NonNull final FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            MDC.put(KEY, UUID.randomUUID().toString());
+            MDC.put(TRACE_ID_KEY, UUID.randomUUID().toString());
             filterChain.doFilter(request, response);
         } finally {
-            MDC.remove(KEY);
+            MDC.remove(TRACE_ID_KEY);
         }
     }
 }

@@ -28,7 +28,7 @@ public class OrderJpaMapper {
             OrderId.of(orderJpaEntity.getId()),
             OrderCode.of(orderJpaEntity.getOrderCode()),
             OrderedAt.of(orderJpaEntity.getOrderedAt()),
-            OrderStatus.toOrderStatus(orderJpaEntity.getOrderStatus())
+            OrderStatus.fromCode(orderJpaEntity.getOrderStatus())
         );
     }
 

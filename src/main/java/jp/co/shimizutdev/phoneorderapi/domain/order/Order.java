@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -57,17 +56,17 @@ public class Order {
     /**
      * 注文を生成する
      *
-     * @param orderedAt          注文日時
-     * @param orderCodeGenerator 注文コード採番
+     * @param orderCode 注文コード
+     * @param orderedAt 注文日時
      * @return 注文
      */
     public static Order create(
-        final OffsetDateTime orderedAt,
-        final OrderCodeGenerator orderCodeGenerator) {
+        final OrderCode orderCode,
+        final OrderedAt orderedAt) {
         return new Order(
             OrderId.generate(),
-            orderCodeGenerator.generate(),
-            OrderedAt.of(orderedAt),
+            orderCode,
+            orderedAt,
             OrderStatus.RECEIVED
         );
     }

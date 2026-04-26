@@ -37,12 +37,12 @@ public enum OrderStatus {
     }
 
     /**
-     * コードから注文ステータスへ変換する
+     * コードから注文ステータスへ生成する
      *
      * @param code コード
      * @return 注文ステータス
      */
-    public static OrderStatus toOrderStatus(final String code) {
+    public static OrderStatus fromCode(final String code) {
         return switch (code) {
             case "001" -> OrderStatus.RECEIVED;
             case "002" -> OrderStatus.UNDER_REVIEW;

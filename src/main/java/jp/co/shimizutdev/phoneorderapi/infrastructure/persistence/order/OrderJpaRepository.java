@@ -1,7 +1,7 @@
 package jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -9,7 +9,6 @@ import java.util.UUID;
 /**
  * 注文JPAリポジトリ
  */
-@Repository
 public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> {
 
     /**
@@ -21,10 +20,10 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
     Optional<OrderJpaEntity> findByOrderCode(String orderCode);
 
     /**
-     * 指定プレフィックスで始まる注文JPAエンティティの最大値を取得
+     * DB の注文コード採番関数を呼び出す。
      *
-     * @param prefix 注文コードプレフィックス
-     * @return 注文JPAエンティティ
+     * @return 採番済み注文コード
      */
-    Optional<OrderJpaEntity> findTopByOrderCodeStartingWithOrderByOrderCodeDesc(String prefix);
+    @Query(value = "select next_order_code()", nativeQuery = true)
+    String nextOrderCode();
 }
