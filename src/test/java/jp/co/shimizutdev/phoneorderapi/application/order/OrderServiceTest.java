@@ -1,8 +1,8 @@
 package jp.co.shimizutdev.phoneorderapi.application.order;
 
-import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
-import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCannotBeCancelledException;
+import jp.co.shimizutdev.phoneorderapi.domain.order.*;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaMapper;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaRepository;
 import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
 import org.junit.jupiter.api.AfterEach;
@@ -170,13 +170,13 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
      * @return 注文JPAエンティティ
      */
     private OrderJpaEntity reconstructOrderJpaEntity(final String orderCode, final String orderStatus) {
-        OrderJpaEntity order = new OrderJpaEntity();
-        order.setId(UUID.randomUUID());
-        order.setOrderCode(orderCode);
-        order.setOrderedAt(OffsetDateTime.now());
-        order.setOrderStatus(orderStatus);
-        order.setCreatedBy("system");
-        order.setUpdatedBy("system");
-        return order;
+        Order order = Order.reconstruct(
+            OrderId.of(UUID.randomUUID()),
+            OrderCode.of(orderCode),
+            OrderedAt.of(OffsetDateTime.now()),
+            OrderStatus.fromCode(orderStatus)
+        );
+
+        return OrderJpaMapper.toEntity(order);
     }
 }

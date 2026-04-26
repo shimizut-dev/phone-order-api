@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCannotBeCancelledException;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.InvalidPersistedOrderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -145,6 +146,29 @@ public class ApiExceptionHandler {
         return buildErrorResponse(
             HttpStatus.CONFLICT,
             ApiErrorResponseMessages.ORDER_CANNOT_BE_CANCELLED,
+            request,
+            List.of()
+        );
+    }
+
+    /**
+     * 永続化済みデータ不整合を 500 Internal Server Error に変換する。
+     *
+     * @param ex      永続化済みデータ不整合例外
+     * @param request HTTP リクエスト
+     * @return API エラーレスポンス
+     */
+    @SuppressWarnings("unused")
+    @ExceptionHandler(InvalidPersistedOrderException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidPersistedOrderException(
+        final InvalidPersistedOrderException ex,
+        final HttpServletRequest request) {
+
+        log.error("永続化済み注文データが不正です。path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
+
+        return buildErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            ApiErrorResponseMessages.INTERNAL_SERVER_ERROR,
             request,
             List.of()
         );

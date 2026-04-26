@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * リクエスト/レスポンスのログを出力するフィルタテスト
  */
-@ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@ExtendWith(OutputCaptureExtension.class)
 class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
 
     @Autowired

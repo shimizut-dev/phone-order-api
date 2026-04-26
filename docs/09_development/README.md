@@ -19,6 +19,12 @@
 - `git-commit-message.md`
 - `chatgpt-thread-guidelines.md`
 - `implementation-naming-rules.md`
+- `jpa-entity-and-mapper-rules.md`
+- `java-annotation-order-rules.md`
+- `java-final-usage-rules.md`
+- `lombok-usage-rules.md`
+- `spring-aop-implementation-rules.md`
+- `value-object-design-rules.md`
 - `validation-message-key-naming-rules.md`
 - `test-code-naming-and-javadoc-rules.md`
 - `log-operation-rules.md`

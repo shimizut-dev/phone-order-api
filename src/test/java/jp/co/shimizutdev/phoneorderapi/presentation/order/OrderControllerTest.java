@@ -205,6 +205,32 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(jsonPath("$.path").value("/api/v1/orders/ORD000001"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(0)));
         }
+
+        /**
+         * <pre>
+         * DB上の注文ステータスが不正な場合は500を返すこと。
+         *
+         * Given DBに不正な注文ステータスの注文データが登録されている
+         * When 注文コードで注文取得APIを実行する
+         * Then 500 Internal Server Error が返る
+         * </pre>
+         *
+         * @throws Exception 例外
+         */
+        @Test
+        @DisplayName("DB上の注文ステータスが不正な場合は500を返すこと")
+        @Sql(statements = {
+            "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '999', 'system', 'system')"
+        })
+        void shouldReturnInternalServerErrorWhenPersistedOrderStatusIsInvalid() throws Exception {
+            mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD000001"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
+                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+                .andExpect(jsonPath("$.path").value("/api/v1/orders/ORD000001"))
+                .andExpect(jsonPath("$.validationErrors", hasSize(0)));
+        }
     }
 
     @Nested
