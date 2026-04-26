@@ -24,14 +24,15 @@ class OrderTest {
      */
     @Test
     @DisplayName("注文を登録できること")
-    void shouldOfOrder() {
+    void shouldCreateOrder() {
         OffsetDateTime orderedAt = OffsetDateTime.parse("2026-04-09T10:15:30+09:00");
-        OrderCodeGenerator orderCodeGenerator = () -> OrderCode.of("ORD000001");
+        OrderedAt actualOrderedAt = OrderedAt.of(orderedAt);
+        OrderCode orderCode = OrderCode.of("ORD000001");
 
-        Order actual = Order.create(orderedAt, orderCodeGenerator);
+        Order actual = Order.create(orderCode, actualOrderedAt);
 
         assertEquals(OrderCode.of("ORD000001"), actual.getOrderCode());
-        assertEquals(OrderedAt.of(orderedAt), actual.getOrderedAt());
+        assertEquals(actualOrderedAt, actual.getOrderedAt());
         assertEquals(OrderStatus.RECEIVED, actual.getOrderStatus());
     }
 

@@ -37,9 +37,9 @@ public class OrderCode {
     }
 
     /**
-     * 注文コードを生成する
+     * 注文コード(String)から注文コードを生成する
      *
-     * @param value 値
+     * @param value 注文コード(String)
      * @return 注文コード
      */
     public static OrderCode of(final String value) {

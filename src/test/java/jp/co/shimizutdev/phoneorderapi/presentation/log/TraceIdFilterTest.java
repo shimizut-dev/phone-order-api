@@ -42,7 +42,7 @@ class TraceIdFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         AtomicReference<String> actualTraceId = new AtomicReference<>();
-        FilterChain filterChain = (req, res) -> actualTraceId.set(MDC.get(TraceIdFilter.KEY));
+        FilterChain filterChain = (req, res) -> actualTraceId.set(MDC.get(TraceIdFilter.TRACE_ID_KEY));
 
         assertDoesNotThrow(() -> traceIdFilter.doFilter(request, response, filterChain));
 
@@ -69,7 +69,7 @@ class TraceIdFilterTest {
 
         assertDoesNotThrow(() -> traceIdFilter.doFilter(request, response, filterChain));
 
-        assertNull(MDC.get(TraceIdFilter.KEY));
+        assertNull(MDC.get(TraceIdFilter.TRACE_ID_KEY));
     }
 
     /**

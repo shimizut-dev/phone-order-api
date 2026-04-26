@@ -39,8 +39,9 @@ public class OrderId {
     }
 
     /**
-     * 注文IDを生成する
+     * 注文ID(UUID)から注文IDを生成する
      *
+     * @param value 注文ID(UUID)
      * @return 注文ID
      */
     public static OrderId of(final UUID value) {

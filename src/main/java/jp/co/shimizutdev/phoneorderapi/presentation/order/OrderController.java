@@ -2,6 +2,7 @@ package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
 import jakarta.validation.Valid;
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
+import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.presentation.error.ApiErrorResponseMessages;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.api.OrdersApi;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderRequest;
@@ -33,7 +34,8 @@ public class OrderController implements OrdersApi {
      */
     @Override
     public List<OrderResponse> getOrders() {
-        return OrderMapper.toResponseList(orderService.getOrders());
+        List<Order> orders = orderService.getOrders();
+        return OrderMapper.toResponseList(orders);
     }
 
     /**
@@ -60,7 +62,8 @@ public class OrderController implements OrdersApi {
      */
     @Override
     public OrderResponse createOrder(@Valid @RequestBody final OrderRequest orderRequest) {
-        return OrderMapper.toResponse(orderService.createOrder(orderRequest.getOrderedAt()));
+        Order order = orderService.createOrder(orderRequest.getOrderedAt());
+        return OrderMapper.toResponse(order);
     }
 
     /**

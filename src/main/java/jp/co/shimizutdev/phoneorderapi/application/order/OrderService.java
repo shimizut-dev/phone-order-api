@@ -1,9 +1,6 @@
 package jp.co.shimizutdev.phoneorderapi.application.order;
 
-import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
-import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCode;
-import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCodeGenerator;
-import jp.co.shimizutdev.phoneorderapi.domain.order.OrderRepository;
+import jp.co.shimizutdev.phoneorderapi.domain.order.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +54,8 @@ public class OrderService {
      */
     @Transactional
     public Order createOrder(final OffsetDateTime orderedAt) {
-        Order order = Order.create(orderedAt, orderCodeGenerator);
+        OrderCode orderCode = orderCodeGenerator.generate();
+        Order order = Order.create(orderCode, OrderedAt.of(orderedAt));
         return orderRepository.create(order);
     }
 

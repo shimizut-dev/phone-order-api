@@ -246,8 +246,58 @@ OrderedAt.of
 例
 
 ```text
-Order.create(orderedAt, orderCodeGenerator)
+Order.create(orderCode, orderedAt)
 Order.reconstruct(orderId, orderCode, orderedAt, orderStatus)
+```
+
+### ドメイン生成系メソッドの使い分け
+
+domain 層の生成系メソッドは、責務に応じて次のように使い分ける。
+
+#### `create`
+
+- 新規の entity / aggregate を業務ルールに従って生成する場合に使用する
+- 初期状態の設定や採番済み値の受け取りなど、新規生成の意味を持つ場合に使用する
+
+例
+
+```text
+Order.create(orderCode, orderedAt)
+```
+
+#### `reconstruct`
+
+- 永続化済みデータや外部データから entity / aggregate を再構築する場合に使用する
+- 新規生成ではなく、既存状態をそのまま復元する意味で使用する
+
+例
+
+```text
+Order.reconstruct(orderId, orderCode, orderedAt, orderStatus)
+```
+
+#### `of`
+
+- 値オブジェクトを既存の値から生成する場合に使用する
+- 文字列や日時などの raw 値を検証し、値オブジェクトへ包む意味で使用する
+
+例
+
+```text
+OrderId.of(uuid)
+OrderCode.of("ORD000001")
+OrderedAt.of(offsetDateTime)
+```
+
+#### `fromCode`
+
+- enum や区分値をコード値から解決する場合に使用する
+- 変換元が明確なコード値であり、コードから対応する列挙値を返す意味で使用する
+
+例
+
+```text
+OrderStatus.fromCode("001")
 ```
 
 ### 列挙型
@@ -300,6 +350,27 @@ create
 update
 ```
 
+### ドメインサービス
+
+ドメインサービスは、entity / value object / repository だけでは表現しにくい
+ドメイン概念を表す interface とする。
+
+技術実装は domain に持たせず、契約は domain、実装は infrastructure に置く。
+採番のように業務上意味のある処理であっても、DB sequence などの技術詳細は
+infrastructure の実装へ閉じ込める。
+
+例
+
+```text
+OrderCodeGenerator
+```
+
+使い分け
+
+- `OrderCodeGenerator` は domain service として扱う
+- `SequenceOrderCodeGenerator` は `OrderCodeGenerator` の infrastructure 実装として扱う
+- `OrderCodeGenerator` は repository ではない
+
 ---
 
 ## infrastructure層
@@ -343,7 +414,7 @@ OrderRepositoryImpl
 例
 
 ```text
-SequentialOrderCodeGenerator
+SequenceOrderCodeGenerator
 ```
 
 ### 設定クラス
@@ -548,7 +619,10 @@ deleteOrder
 OrderId.of
 OrderCode.of
 OrderedAt.of
+Order.create
 Order.reconstruct
+OrderStatus.fromCode
+OrderCodeGenerator
 findByOrderCode
 save
 ```
@@ -559,7 +633,7 @@ save
 OrderJpaRepository
 OrderJpaEntity
 OrderRepositoryImpl
-SequentialOrderCodeGenerator
+SequenceOrderCodeGenerator
 JpaAuditConfig
 ```
 

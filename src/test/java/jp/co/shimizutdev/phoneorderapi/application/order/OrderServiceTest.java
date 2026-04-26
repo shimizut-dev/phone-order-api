@@ -85,7 +85,7 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
      */
     @Test
     @DisplayName("注文一覧を取得できること")
-    void shouldListOrders() {
+    void shouldGetOrders() {
         orderJpaRepository.save(reconstructOrderJpaEntity("ORD000001", "001"));
         orderJpaRepository.save(reconstructOrderJpaEntity("ORD000002", "002"));
 

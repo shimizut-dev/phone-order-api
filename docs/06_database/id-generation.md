@@ -25,8 +25,8 @@
 
 例
 
-- ORD-000001
-- DLV-000001
+- ORD000001
+- DLV000001
 
 ---
 
@@ -39,14 +39,14 @@ PostgreSQL の sequence を使用する。
 例
 
 ```
-create sequence order_seq;
+create sequence order_code_seq;
 ```
 
 ---
 
 # 採番タイミング
 
-採番は PostgreSQL のレコード登録時に行う。
+採番は PostgreSQL の sequence / 関数呼び出し時に行う。
 
 理由
 
@@ -62,8 +62,8 @@ create sequence order_seq;
 例
 
 ```
-ORD-000001
-ORD-000002
+ORD000001
+ORD000002
 ```
 
 ---
@@ -73,7 +73,7 @@ ORD-000002
 例
 
 ```
-ORD- || LPAD(nextval('order_seq')::text, 6, '0')
+'ORD' || LPAD(nextval('order_code_seq')::text, 6, '0')
 ```
 
 ---

@@ -32,9 +32,9 @@ public class OrderedAt {
     }
 
     /**
-     * 注文日時を生成する
+     * 注文日時(OffsetDateTime)から注文日時を生成する
      *
-     * @param value 値
+     * @param value 注文日時(OffsetDateTime)
      * @return 注文日時
      */
     public static OrderedAt of(final OffsetDateTime value) {
