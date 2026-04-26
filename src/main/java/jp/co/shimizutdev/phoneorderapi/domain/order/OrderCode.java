@@ -45,4 +45,14 @@ public class OrderCode {
     public static OrderCode of(final String value) {
         return new OrderCode(value);
     }
+
+    /**
+     * 注文コード文字列が有効形式か判定する
+     *
+     * @param value 注文コード文字列
+     * @return 判定結果
+     */
+    public static boolean isValid(final String value) {
+        return value != null && ORDER_CODE_PATTERN.matcher(value).matches();
+    }
 }

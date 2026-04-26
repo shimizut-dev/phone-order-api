@@ -3,6 +3,7 @@ package jp.co.shimizutdev.phoneorderapi.domain.order;
 import jakarta.persistence.EntityManager;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.config.JpaAuditConfig;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaMapper;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaRepository;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.repository.order.OrderRepositoryImpl;
 import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
@@ -26,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * 注文リポジトリテスト
  */
 @DataJpaTest
-@Import({JpaAuditConfig.class, OrderRepositoryImpl.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import({JpaAuditConfig.class, OrderRepositoryImpl.class})
 class OrderRepositoryTest extends AbstractPostgreSQLTest {
 
     /**
@@ -250,13 +251,16 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
         final OffsetDateTime orderedAt,
         final String orderStatus) {
 
-        OrderJpaEntity order = new OrderJpaEntity();
-        order.setId(orderId);
-        order.setOrderCode(orderCode);
-        order.setOrderedAt(orderedAt);
-        order.setOrderStatus(orderStatus);
-        order.setCreatedBy("system");
-        order.setUpdatedBy("before-update");
-        return order;
+        Order order = Order.reconstruct(
+            OrderId.of(orderId),
+            OrderCode.of(orderCode),
+            OrderedAt.of(orderedAt),
+            OrderStatus.fromCode(orderStatus)
+        );
+
+        OrderJpaEntity orderJpaEntity = OrderJpaMapper.toEntity(order);
+        orderJpaEntity.setUpdatedBy("before-update");
+
+        return orderJpaEntity;
     }
 }

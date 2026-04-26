@@ -3,6 +3,7 @@ package jp.co.shimizutdev.phoneorderapi.infrastructure.persistence;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,11 +18,11 @@ import java.time.OffsetDateTime;
 /**
  * 基底監査JPAエンティティ
  */
-@Getter
-@Setter
-@NoArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseAuditJpaEntity {
 
     /**
