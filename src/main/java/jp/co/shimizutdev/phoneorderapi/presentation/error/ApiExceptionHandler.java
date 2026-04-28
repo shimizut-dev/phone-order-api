@@ -5,6 +5,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCannotBeCancelledException;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderNotFoundException;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderVersionConflictException;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.InvalidPersistedOrderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,13 +43,15 @@ public class ApiExceptionHandler {
      *
      * @param ex      バリデーション例外
      * @param request HTTP リクエスト
-     * @return バリデーションエラーを含む API エラーレスポンス
+     * @return バリデーションエラーを表す API エラーレスポンス
      */
     @SuppressWarnings("unused")
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValidException(
         final MethodArgumentNotValidException ex,
         final HttpServletRequest request) {
+
+        logHandledException(ApiErrorResponseMessages.VALIDATION_ERROR, request, ex);
 
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
@@ -65,13 +70,15 @@ public class ApiExceptionHandler {
      *
      * @param ex      制約違反例外
      * @param request HTTP リクエスト
-     * @return バリデーションエラーを含む API エラーレスポンス
+     * @return バリデーションエラーを表す API エラーレスポンス
      */
     @SuppressWarnings("unused")
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(
         final ConstraintViolationException ex,
         final HttpServletRequest request) {
+
+        logHandledException(ApiErrorResponseMessages.VALIDATION_ERROR, request, ex);
 
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
@@ -85,7 +92,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 業務入力値の不正を表す {@link IllegalArgumentException} を 400 Bad Request に変換する。
+     * 不正な引数を表す {@link IllegalArgumentException} を 400 Bad Request に変換する。
      *
      * @param ex      不正引数例外
      * @param request HTTP リクエスト
@@ -97,9 +104,12 @@ public class ApiExceptionHandler {
         final IllegalArgumentException ex,
         final HttpServletRequest request) {
 
+        String message = resolveMessage(ex.getMessage(), ApiErrorResponseMessages.VALIDATION_ERROR);
+        logHandledException(message, request, ex);
+
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
-            resolveMessage(ex.getMessage(), ApiErrorResponseMessages.VALIDATION_ERROR),
+            message,
             request,
             List.of()
         );
@@ -118,7 +128,7 @@ public class ApiExceptionHandler {
         final HttpMessageNotReadableException ex,
         final HttpServletRequest request) {
 
-        log.debug("不正なリクエストボディを受信しました。path={}", request.getRequestURI(), ex);
+        logHandledException(ApiErrorResponseMessages.INVALID_REQUEST_BODY, request, ex);
 
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
@@ -141,11 +151,34 @@ public class ApiExceptionHandler {
         final OrderCannotBeCancelledException ex,
         final HttpServletRequest request) {
 
-        log.debug("キャンセルできない注文に対するキャンセル要求を受信しました。path={}", request.getRequestURI(), ex);
+        logHandledException(ApiErrorResponseMessages.ORDER_CANNOT_BE_CANCELLED, request, ex);
 
         return buildErrorResponse(
             HttpStatus.CONFLICT,
             ApiErrorResponseMessages.ORDER_CANNOT_BE_CANCELLED,
+            request,
+            List.of()
+        );
+    }
+
+    /**
+     * 注文の楽観ロック競合を 409 Conflict に変換する。
+     *
+     * @param ex      楽観ロック競合例外
+     * @param request HTTP リクエスト
+     * @return API エラーレスポンス
+     */
+    @SuppressWarnings("unused")
+    @ExceptionHandler({OrderVersionConflictException.class, ObjectOptimisticLockingFailureException.class})
+    public ResponseEntity<ApiErrorResponse> handleOptimisticLockException(
+        final RuntimeException ex,
+        final HttpServletRequest request) {
+
+        logHandledException(ApiErrorResponseMessages.ORDER_VERSION_CONFLICT, request, ex);
+
+        return buildErrorResponse(
+            HttpStatus.CONFLICT,
+            ApiErrorResponseMessages.ORDER_VERSION_CONFLICT,
             request,
             List.of()
         );
@@ -164,7 +197,11 @@ public class ApiExceptionHandler {
         final InvalidPersistedOrderException ex,
         final HttpServletRequest request) {
 
-        log.error("永続化済み注文データが不正です。path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
+        logHandledUnexpectedException(
+            resolveMessage(ex.getMessage(), ApiErrorResponseMessages.INTERNAL_SERVER_ERROR),
+            request,
+            ex
+        );
 
         return buildErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -175,7 +212,30 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * コントローラから明示的に送出された HTTP ステータス付き例外をエラーレスポンスへ変換する。
+     * コントローラから明示的に送出された 404 をエラーレスポンスへ変換する。
+     *
+     * @param ex      注文未存在例外
+     * @param request HTTP リクエスト
+     * @return API エラーレスポンス
+     */
+    @SuppressWarnings("unused")
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleOrderNotFoundException(
+        final OrderNotFoundException ex,
+        final HttpServletRequest request) {
+
+        logHandledException(ApiErrorResponseMessages.ORDER_NOT_FOUND, request, ex);
+
+        return buildErrorResponse(
+            HttpStatus.NOT_FOUND,
+            ApiErrorResponseMessages.ORDER_NOT_FOUND,
+            request,
+            List.of()
+        );
+    }
+
+    /**
+     * コントローラから送出された HTTP ステータス例外をエラーレスポンスへ変換する。
      *
      * @param ex      HTTP ステータス例外
      * @param request HTTP リクエスト
@@ -187,9 +247,12 @@ public class ApiExceptionHandler {
         final ResponseStatusException ex,
         final HttpServletRequest request) {
 
+        String message = resolveMessage(ex.getReason(), ApiErrorResponseMessages.REQUEST_FAILED);
+        logHandledException(message, request, ex);
+
         return buildErrorResponse(
             ex.getStatusCode(),
-            resolveMessage(ex.getReason(), ApiErrorResponseMessages.REQUEST_FAILED),
+            message,
             request,
             List.of()
         );
@@ -208,7 +271,11 @@ public class ApiExceptionHandler {
         final Exception ex,
         final HttpServletRequest request) {
 
-        log.error("想定外の例外が発生しました。path={}", request.getRequestURI(), ex);
+        logHandledUnexpectedException(
+            ApiErrorResponseMessages.INTERNAL_SERVER_ERROR,
+            request,
+            ex
+        );
 
         return buildErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -259,9 +326,9 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * メッセージが null または空白の場合に、デフォルトメッセージへ補完する。
+     * メッセージが null または空の場合にデフォルトメッセージへ置き換える。
      *
-     * @param message        判定対象メッセージ
+     * @param message        変換元メッセージ
      * @param defaultMessage デフォルトメッセージ
      * @return メッセージ
      */
@@ -272,7 +339,37 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 指定したステータスとメッセージから統一形式のエラーレスポンスを生成する。
+     * ハンドリング済み例外をデバッグログに出力する。
+     *
+     * @param message ログメッセージ
+     * @param request HTTP リクエスト
+     * @param ex      例外
+     */
+    private void logHandledException(
+        final String message,
+        final HttpServletRequest request,
+        final Exception ex) {
+
+        log.debug("path={}, message={}", request.getRequestURI(), message, ex);
+    }
+
+    /**
+     * 想定外またはサーバー内部例外をエラーログに出力する。
+     *
+     * @param message ログメッセージ
+     * @param request HTTP リクエスト
+     * @param ex      例外
+     */
+    private void logHandledUnexpectedException(
+        final String message,
+        final HttpServletRequest request,
+        final Exception ex) {
+
+        log.error("path={}, message={}", request.getRequestURI(), message, ex);
+    }
+
+    /**
+     * 指定したステータスとメッセージから統一形式のエラーレスポンスを組み立てる。
      *
      * @param statusCode       HTTP ステータス
      * @param message          エラーメッセージ

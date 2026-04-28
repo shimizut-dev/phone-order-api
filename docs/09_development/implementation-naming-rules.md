@@ -247,7 +247,7 @@ OrderedAt.of
 
 ```text
 Order.create(orderCode, orderedAt)
-Order.reconstruct(orderId, orderCode, orderedAt, orderStatus)
+Order.reconstruct(orderId, orderCode, orderedAt, orderStatus, Version.of(version))
 ```
 
 ### ドメイン生成系メソッドの使い分け
@@ -273,7 +273,7 @@ Order.create(orderCode, orderedAt)
 例
 
 ```text
-Order.reconstruct(orderId, orderCode, orderedAt, orderStatus)
+Order.reconstruct(orderId, orderCode, orderedAt, orderStatus, Version.of(version))
 ```
 
 #### `of`
@@ -468,6 +468,10 @@ public Optional<Order> getOrderByOrderCode(String orderCode) {
 public Order createOrder(OffsetDateTime orderedAt) {
     // ...
 }
+
+public Order cancelOrder(String orderCode, long version) {
+    // ...
+}
 ```
 
 ### domain Repository の例
@@ -544,6 +548,9 @@ public Optional<Order> getOrderByOrderCode(String orderCode) {
     // ...
 }
 ```
+
+- 参照系で存在しない可能性をそのまま返す場合は `Optional` を使う
+- 登録系・更新系は `Optional` を返さず、未存在は例外で表現する
 
 ### domain Repository の例
 

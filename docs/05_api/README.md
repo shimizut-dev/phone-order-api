@@ -45,6 +45,7 @@
 - エンドポイント追加・変更時は `openapi.yaml` を先に更新する
 - リクエスト例、レスポンス例、curl 生成に必要な情報は `openapi.yaml` に集約する
 - 共通エラーレスポンスは `openapi.yaml` の `components/schemas` と `components/responses` に集約する
+- 更新系 API で楽観的ロックを行う場合は、レスポンスに `version` を含め、更新要求で `version` を受け取る
 - openapi-generator の警告抑制を優先し、リクエスト例は schema / property example に、レスポンス例は media type example
   に記載する
 - `operationId` とスキーマ名は生成 Java の名前に影響するため、実装側と合わせて安定させる

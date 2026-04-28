@@ -8,7 +8,7 @@ import jp.co.shimizutdev.phoneorderapi.domain.order.*;
 public class OrderJpaMapper {
 
     /**
-     * コンストラクタ(インスタンス化を防止)
+     * コンストラクタ(インスタンス化を禁止)
      */
     private OrderJpaMapper() {
     }
@@ -24,17 +24,19 @@ public class OrderJpaMapper {
             toOrderId(orderJpaEntity),
             toOrderCode(orderJpaEntity),
             toOrderedAt(orderJpaEntity),
-            toOrderStatus(orderJpaEntity)
+            toOrderStatus(orderJpaEntity),
+            toVersion(orderJpaEntity)
         );
     }
 
     /**
-     * 注文を注文JPAエンティティへ変換する
+     * 新規登録用の注文を注文JPAエンティティへ変換する。
+     * `@Version` の初期値は JPA に採番させるため設定しない。
      *
      * @param order 注文
      * @return 注文JPAエンティティ
      */
-    public static OrderJpaEntity toEntity(final Order order) {
+    public static OrderJpaEntity toNewEntity(final Order order) {
         OrderJpaEntity orderJpaEntity = new OrderJpaEntity();
         orderJpaEntity.setId(order.getOrderId().getValue());
         orderJpaEntity.setOrderCode(order.getOrderCode().getValue());
@@ -97,5 +99,19 @@ public class OrderJpaMapper {
         }
 
         return OrderStatus.fromCode(orderJpaEntity.getOrderStatus());
+    }
+
+    /**
+     * バージョンを再構築する
+     *
+     * @param orderJpaEntity 注文JPAエンティティ
+     * @return バージョン
+     */
+    private static Version toVersion(final OrderJpaEntity orderJpaEntity) {
+        if (orderJpaEntity.getVersion() == null || orderJpaEntity.getVersion() < 0) {
+            throw new InvalidPersistedOrderException(InvalidPersistedOrderMessages.INVALID_ORDER_VERSION);
+        }
+
+        return Version.of(orderJpaEntity.getVersion());
     }
 }

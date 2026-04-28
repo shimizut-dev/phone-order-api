@@ -19,6 +19,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
      */
     Optional<OrderJpaEntity> findByOrderCode(String orderCode);
 
+    Optional<OrderJpaEntity> findByIdAndVersion(UUID id, Long version);
+
     /**
      * DB の注文コード採番関数を呼び出す。
      *

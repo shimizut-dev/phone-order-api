@@ -55,9 +55,11 @@ paths:
                 - orderCode: ORD000001
                   orderedAt: '2026-04-07T10:15:30+09:00'
                   orderStatus: '001'
+                  version: 0
                 - orderCode: ORD000002
                   orderedAt: '2026-04-07T11:00:00+09:00'
                   orderStatus: '002'
+                  version: 1
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -68,6 +70,7 @@ paths:
       description: 注文日時を指定して注文を登録します。作成された注文は受付状態で返却します。
       operationId: createOrder
       requestBody:
+        x-codegen-request-body-name: createOrderRequest
         required: true
         content:
           application/json:
@@ -84,6 +87,7 @@ paths:
                 orderCode: ORD000001
                 orderedAt: '2026-04-07T10:15:30+09:00'
                 orderStatus: '001'
+                version: 0
         '400':
           $ref: '#/components/responses/BadRequestError'
         '500':
@@ -109,6 +113,7 @@ paths:
                 orderCode: ORD000001
                 orderedAt: '2026-04-07T10:15:30+09:00'
                 orderStatus: '001'
+                version: 0
         '400':
           $ref: '#/components/responses/InvalidOrderCodeError'
         '404':
@@ -125,6 +130,13 @@ paths:
       operationId: cancelOrder
       parameters:
         - $ref: '#/components/parameters/OrderCode'
+      requestBody:
+        x-codegen-request-body-name: cancelOrderRequest
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelOrderRequest'
       responses:
         '200':
           description: 注文キャンセル成功
@@ -136,6 +148,7 @@ paths:
                 orderCode: ORD000001
                 orderedAt: '2026-04-07T10:15:30+09:00'
                 orderStatus: '006'
+                version: 1
         '400':
           $ref: '#/components/responses/InvalidOrderCodeError'
         '404':
@@ -246,6 +259,19 @@ components:
           description: 注文日時。タイムゾーンオフセット付き ISO 8601 形式。
           example: '2026-04-07T10:15:30+09:00'
 
+    CancelOrderRequest:
+      type: object
+      description: 注文キャンセルリクエスト。
+      required:
+        - version
+      properties:
+        version:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 注文バージョン。楽観的ロックに使用します。
+          example: 0
+
     OrderResponse:
       type: object
       description: 注文レスポンス。
@@ -253,6 +279,7 @@ components:
         - orderCode
         - orderedAt
         - orderStatus
+        - version
       properties:
         orderCode:
           type: string
@@ -283,6 +310,12 @@ components:
             - '005'
             - '006'
           example: '001'
+        version:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 注文バージョン。楽観的ロックに使用します。
+          example: 0
 
     ErrorResponse:
       type: object

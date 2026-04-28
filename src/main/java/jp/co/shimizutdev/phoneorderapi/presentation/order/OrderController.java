@@ -1,15 +1,14 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
-import jakarta.validation.Valid;
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.presentation.error.ApiErrorResponseMessages;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.api.OrdersApi;
+import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.CancelOrderRequest;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderRequest;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,7 +34,7 @@ public class OrderController implements OrdersApi {
     @Override
     public List<OrderResponse> getOrders() {
         List<Order> orders = orderService.getOrders();
-        return OrderMapper.toResponseList(orders);
+        return OrderMapper.toResponses(orders);
     }
 
     /**
@@ -57,28 +56,27 @@ public class OrderController implements OrdersApi {
     /**
      * 注文を登録する
      *
-     * @param orderRequest 注文リクエスト
+     * @param createOrderRequest 注文登録リクエスト
      * @return 注文レスポンス
      */
     @Override
-    public OrderResponse createOrder(@Valid @RequestBody final OrderRequest orderRequest) {
-        Order order = orderService.createOrder(orderRequest.getOrderedAt());
+    public OrderResponse createOrder(final OrderRequest createOrderRequest) {
+        Order order = orderService.createOrder(createOrderRequest.getOrderedAt());
         return OrderMapper.toResponse(order);
     }
 
     /**
      * 注文をキャンセルする
      *
-     * @param orderCode 注文コード
+     * @param orderCode          注文コード
+     * @param cancelOrderRequest 注文キャンセルリクエスト
      * @return 注文レスポンス
      */
     @Override
-    public OrderResponse cancelOrder(final String orderCode) {
-        return orderService.cancelOrder(orderCode)
-            .map(OrderMapper::toResponse)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                ApiErrorResponseMessages.ORDER_NOT_FOUND
-            ));
+    public OrderResponse cancelOrder(
+        final String orderCode,
+        final CancelOrderRequest cancelOrderRequest) {
+        Order order = orderService.cancelOrder(orderCode, cancelOrderRequest.getVersion());
+        return OrderMapper.toResponse(order);
     }
 }
