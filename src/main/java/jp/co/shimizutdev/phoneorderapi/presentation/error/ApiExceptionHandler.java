@@ -38,7 +38,7 @@ public class ApiExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     /**
-     * リクエストボディの Bean Validation エラーを 400 Bad Request に変換する。
+     * リクエストボディの Bean Validation エラーを 400 Bad Request に変換する
      *
      * @param ex      バリデーション例外
      * @param request HTTP リクエスト
@@ -65,7 +65,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * パラメータなどの制約違反を 400 Bad Request に変換する。
+     * パラメータなどの制約違反を 400 Bad Request に変換する
      *
      * @param ex      制約違反例外
      * @param request HTTP リクエスト
@@ -91,7 +91,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 不正な引数を表す {@link IllegalArgumentException} を 400 Bad Request に変換する。
+     * 不正な引数を表す {@link IllegalArgumentException} を 400 Bad Request に変換する
      *
      * @param ex      不正引数例外
      * @param request HTTP リクエスト
@@ -118,7 +118,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * JSON の構文不正や型不一致を 400 Bad Request に変換する。
+     * JSON の構文不正や型不一致を 400 Bad Request に変換する
      *
      * @param ex      メッセージ変換例外
      * @param request HTTP リクエスト
@@ -141,7 +141,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 注文キャンセル不可の業務例外を 409 Conflict に変換する。
+     * 注文キャンセル不可の業務例外を 409 Conflict に変換する
      *
      * @param ex      注文キャンセル不可例外
      * @param request HTTP リクエスト
@@ -164,7 +164,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 注文の楽観ロック競合を 409 Conflict に変換する。
+     * 注文の楽観ロック競合を 409 Conflict に変換する
      *
      * @param ex      楽観ロック競合例外
      * @param request HTTP リクエスト
@@ -187,7 +187,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 永続化済みデータ不整合を 500 Internal Server Error に変換する。
+     * 永続化済みデータ不整合を 500 Internal Server Error に変換する
      *
      * @param ex      永続化済みデータ不整合例外
      * @param request HTTP リクエスト
@@ -214,7 +214,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 注文未存在例外を 404 Not Found に変換する。
+     * 注文未存在例外を 404 Not Found に変換する
      *
      * @param ex      注文未存在例外
      * @param request HTTP リクエスト
@@ -237,7 +237,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 想定外例外を 500 Internal Server Error に変換し、詳細はサーバーログへ記録する。
+     * 想定外例外を 500 Internal Server Error に変換し、詳細はサーバーログへ記録する
      *
      * @param ex      想定外例外
      * @param request HTTP リクエスト
@@ -264,7 +264,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * フィールド単位のバリデーションエラーを API 用のエラー表現へ変換する。
+     * フィールド単位のバリデーションエラーを API 用のエラー表現へ変換する
      *
      * @param fieldError フィールドエラー
      * @return API 用バリデーションエラー
@@ -277,7 +277,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 制約違反を API 用のエラー表現へ変換する。
+     * 制約違反を API 用のエラー表現へ変換する
      *
      * @param violation 制約違反
      * @return API 用バリデーションエラー
@@ -290,7 +290,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 制約違反のプロパティパスからクライアントへ返却する項目名を抽出する。
+     * 制約違反のプロパティパスからクライアントへ返却する項目名を抽出する
      *
      * @param violation 制約違反
      * @return 項目名
@@ -304,7 +304,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * メッセージが null または空の場合にデフォルトメッセージへ置き換える。
+     * メッセージが null または空の場合にデフォルトメッセージへ置き換える
      *
      * @param message        変換元メッセージ
      * @param defaultMessage デフォルトメッセージ
@@ -317,7 +317,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * ハンドリング済み例外をデバッグログに出力する。
+     * ハンドリング済み例外をデバッグログに出力する
      *
      * @param message ログメッセージ
      * @param request HTTP リクエスト
@@ -340,7 +340,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 想定外またはサーバー内部例外をエラーログに出力する。
+     * 想定外またはサーバー内部例外をエラーログに出力する
      *
      * @param message ログメッセージ
      * @param request HTTP リクエスト
@@ -363,7 +363,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * 指定したステータスとメッセージから統一形式のエラーレスポンスを組み立てる。
+     * 指定したステータスとメッセージから統一形式のエラーレスポンスを組み立てる
      *
      * @param statusCode       HTTP ステータス
      * @param message          エラーメッセージ
@@ -387,7 +387,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * エラーレスポンス本体を生成する。
+     * エラーレスポンス本体を生成する
      *
      * @param statusCode       HTTP ステータス
      * @param message          エラーメッセージ
@@ -412,7 +412,7 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * HTTP ステータスコードを API レスポンス用のエラーコード文字列へ変換する。
+     * HTTP ステータスコードを API レスポンス用のエラーコード文字列へ変換する
      *
      * @param statusCode HTTP ステータス
      * @return エラーコード文字列

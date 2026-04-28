@@ -49,14 +49,10 @@ class ApiExceptionHandlerTest {
 
     /**
      * <pre>
-     * IllegalArgumentException発生時に400エラーレスポンスを返すこと。
-     *
      * Given IllegalArgumentExceptionを送出するAPIがある
      * When IllegalArgumentException発生APIを実行する
      * Then 400 Bad Requestのエラーレスポンスが返る
      * </pre>
-     *
-     * @throws Exception 例外
      */
     @Test
     @DisplayName("IllegalArgumentException is mapped to 400")
@@ -72,14 +68,10 @@ class ApiExceptionHandlerTest {
 
     /**
      * <pre>
-     * メッセージなしIllegalArgumentException発生時にバリデーションエラーメッセージで400エラーレスポンスを返すこと。
-     *
      * Given メッセージなしIllegalArgumentExceptionを送出するAPIがある
      * When メッセージなしIllegalArgumentException発生APIを実行する
      * Then 400 Bad Requestとバリデーションエラーメッセージのエラーレスポンスが返る
      * </pre>
-     *
-     * @throws Exception 例外
      */
     @Test
     @DisplayName("IllegalArgumentException without a message falls back to the validation error message")
@@ -95,14 +87,10 @@ class ApiExceptionHandlerTest {
 
     /**
      * <pre>
-     * バリデーションエラー発生時に400エラーレスポンスを返すこと。
-     *
      * Given バリデーションエラーとなるリクエストを受け付けるAPIがある
      * When 必須項目不足のリクエストでAPIを実行する
      * Then 400 Bad Requestとバリデーションエラー詳細が返る
      * </pre>
-     *
-     * @throws Exception 例外
      */
     @Test
     @DisplayName("Validation errors are mapped to 400")
@@ -121,14 +109,10 @@ class ApiExceptionHandlerTest {
 
     /**
      * <pre>
-     * 想定外例外発生時に汎用的な500エラーレスポンスを返すこと。
-     *
      * Given 想定外例外を送出するAPIがある
      * When 想定外例外発生APIを実行する
      * Then 500 Internal Server Errorと汎用エラーメッセージが返る
      * </pre>
-     *
-     * @throws Exception 例外
      */
     @Test
     @DisplayName("Unexpected exceptions are hidden behind a generic 500 response")
@@ -143,14 +127,10 @@ class ApiExceptionHandlerTest {
 
     /**
      * <pre>
-     * InvalidPersistedOrderException発生時に500エラーレスポンスを返すこと。
-     *
      * Given InvalidPersistedOrderExceptionを送出するAPIがある
      * When InvalidPersistedOrderException発生APIを実行する
      * Then 500 Internal Server Errorのエラーレスポンスが返る
      * </pre>
-     *
-     * @throws Exception 例外
      */
     @Test
     @DisplayName("InvalidPersistedOrderException is mapped to 500")

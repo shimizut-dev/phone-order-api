@@ -29,7 +29,7 @@ public class OrderController implements OrdersApi {
     /**
      * 注文一覧を取得する
      *
-     * @return 注文レスポンス一覧
+     * @return 注文レスポンス一覧。存在しない場合は空リスト
      */
     @Override
     public List<OrderResponse> getOrders() {

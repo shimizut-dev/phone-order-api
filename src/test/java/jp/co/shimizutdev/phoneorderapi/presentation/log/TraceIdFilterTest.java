@@ -28,8 +28,6 @@ class TraceIdFilterTest {
 
     /**
      * <pre>
-     * フィルタチェーン実行中にトレースIDが設定されること。
-     *
      * Given トレースIDフィルタを用意する
      * When フィルタを実行する
      * Then フィルタチェーン実行中にMDCへUUID形式のトレースIDが設定される
@@ -51,8 +49,6 @@ class TraceIdFilterTest {
 
     /**
      * <pre>
-     * X-Request-Id が存在する場合はその値を traceId として引き継ぐこと。
-     *
      * Given X-Request-Id ヘッダーを含むリクエストを用意する
      * When フィルタを実行する
      * Then MDC とレスポンスヘッダーに同じ traceId が設定される
@@ -76,8 +72,6 @@ class TraceIdFilterTest {
 
     /**
      * <pre>
-     * フィルタチェーン実行後にトレースIDが削除されること。
-     *
      * Given トレースIDフィルタを用意する
      * When フィルタを実行する
      * Then フィルタチェーン実行後にMDCからトレースIDが削除される
@@ -98,10 +92,10 @@ class TraceIdFilterTest {
     }
 
     /**
-     * UUID形式かどうかを判定する。
+     * UUID形式かどうかを判定する
      *
-     * @param value 値
-     * @return UUID形式の場合true
+     * @param value UUID形式判定対象文字列
+     * @return UUID形式の場合 true
      */
     private boolean isUuid(final String value) {
         if (value == null) {

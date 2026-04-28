@@ -24,7 +24,7 @@ public abstract class AbstractPostgreSQLTest {
     }
 
     /**
-     * テスト用データソースを設定する。
+     * テスト用データソースを設定する
      *
      * @param registry DynamicPropertyRegistry
      */

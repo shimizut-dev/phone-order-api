@@ -60,7 +60,7 @@ public class LogMasker {
     private final ObjectMapper objectMapper;
 
     /**
-     * ヘッダー値をマスキングする。
+     * ヘッダー値をマスキングする
      *
      * @param headerName  ヘッダー名
      * @param headerValue ヘッダー値
@@ -83,7 +83,7 @@ public class LogMasker {
     }
 
     /**
-     * テキストをマスキングする。
+     * テキストをマスキングする
      *
      * @param text テキスト
      * @return マスキング後テキスト
@@ -103,9 +103,9 @@ public class LogMasker {
     }
 
     /**
-     * オブジェクトをマスキングする。
+     * オブジェクトをマスキングする
      *
-     * @param value 値
+     * @param value マスキング対象オブジェクト
      * @return マスキング後文字列
      */
     public String maskObject(final Object value) {
@@ -123,7 +123,7 @@ public class LogMasker {
     }
 
     /**
-     * JSONノードを再帰的にマスキングする。
+     * JSONノードを再帰的にマスキングする
      *
      * @param node JSONノード
      */
@@ -138,7 +138,7 @@ public class LogMasker {
     }
 
     /**
-     * JSONオブジェクトをマスキングする。
+     * JSONオブジェクトをマスキングする
      *
      * @param objectNode JSONオブジェクト
      */
@@ -147,7 +147,7 @@ public class LogMasker {
     }
 
     /**
-     * JSONオブジェクトの項目をマスキングする。
+     * JSONオブジェクトの項目をマスキングする
      *
      * @param objectNode JSONオブジェクト
      * @param entry      項目
@@ -168,7 +168,7 @@ public class LogMasker {
     }
 
     /**
-     * JSON配列をマスキングする。
+     * JSON配列をマスキングする
      *
      * @param arrayNode JSON配列
      */
@@ -177,17 +177,17 @@ public class LogMasker {
     }
 
     /**
-     * マスク対象項目か判定する。
+     * マスク対象項目か判定する
      *
      * @param fieldName 項目名
-     * @return 判定結果
+     * @return マスク対象項目の場合 true
      */
     private boolean isMaskTargetField(final String fieldName) {
         return MASK_TARGET_FIELD_NAMES.contains(normalizeName(fieldName));
     }
 
     /**
-     * 項目名を比較用へ正規化する。
+     * 項目名を比較用へ正規化する
      *
      * @param name 名称
      * @return 正規化後名称
@@ -198,7 +198,7 @@ public class LogMasker {
     }
 
     /**
-     * 文字列を1行へ正規化する。
+     * 文字列を1行へ正規化する
      *
      * @param text テキスト
      * @return 正規化後テキスト

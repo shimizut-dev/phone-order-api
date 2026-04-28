@@ -22,6 +22,11 @@ public record ApiErrorResponse(
     List<ApiValidationError> validationErrors
 ) {
 
+    /**
+     * コンストラクタ
+     *
+     * <p>バリデーションエラー一覧は null を空リストに補正し、不変リストとして保持する</p>
+     */
     public ApiErrorResponse {
         validationErrors = validationErrors == null
             ? List.of()

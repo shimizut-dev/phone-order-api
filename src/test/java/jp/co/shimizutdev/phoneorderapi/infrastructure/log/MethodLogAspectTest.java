@@ -40,8 +40,6 @@ class MethodLogAspectTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * メソッド開始終了ログに戻り値型と件数が出力されること。
-     *
      * Given 注文データが複数件登録されている
      * When 注文一覧取得メソッドを実行する
      * Then 開始終了ログと戻り値型および件数が出力される

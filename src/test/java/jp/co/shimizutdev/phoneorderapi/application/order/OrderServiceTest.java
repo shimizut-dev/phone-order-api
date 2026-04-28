@@ -95,8 +95,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文コードで注文を取得できること。
-         *
          * Given 注文データが保存されている
          * When 注文コードで注文を取得する
          * Then 対象注文が取得できる
@@ -116,8 +114,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文コードに対応する注文が存在しない場合に注文未存在例外が発生すること。
-         *
          * Given 対象注文が登録されていない
          * When 注文コードで注文を取得する
          * Then 注文未存在例外が発生する
@@ -139,8 +135,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文一覧を取得できること。
-         *
          * Given 注文データが複数件保存されている
          * When 注文一覧を取得する
          * Then 保存された注文一覧が返る
@@ -168,8 +162,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文を登録できること。
-         *
          * Given 保存対象の注文レスポンスを用意する
          * When 注文を登録する
          * Then 注文が保存され注文コードと初期ステータスが設定される
@@ -192,8 +184,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * リクエストヘッダーのユーザー情報が監査項目へ反映されること。
-         *
          * Given X-User-Id を含むリクエストコンテキストを設定する
          * When 注文を作成する
          * Then createdBy と updatedBy にリクエストユーザーが保存される
@@ -225,8 +215,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文をキャンセルできること。
-         *
          * Given 注文データが保存されている
          * When 注文をキャンセルする
          * Then 注文ステータスがキャンセルで保存される
@@ -250,8 +238,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * リクエストヘッダーのユーザー情報が更新監査項目へ反映されること。
-         *
          * Given 既存注文と X-User-Id を含むリクエストコンテキストを用意する
          * When 注文をキャンセルする
          * Then updatedBy にリクエストユーザーが保存される
@@ -276,8 +262,15 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
             }
         }
 
+        /**
+         * <pre>
+         * Given キャンセル対象の注文データが保存されていない
+         * When 注文をキャンセルする
+         * Then 注文未存在例外が発生する
+         * </pre>
+         */
         @Test
-        @DisplayName("未存在の注文キャンセルは注文未存在例外になる")
+        @DisplayName("未存在の注文はキャンセルできないこと")
         void shouldThrowExceptionWhenCancelTargetDoesNotExist() {
             assertThrows(
                 OrderNotFoundException.class,
@@ -287,8 +280,6 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 完了済み注文はキャンセルできないこと。
-         *
          * Given 完了状態の注文データが保存されている
          * When 注文をキャンセルする
          * Then 注文キャンセル不可例外が発生する
@@ -307,15 +298,13 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * stale version でキャンセルした場合は競合例外が発生すること。
-         *
          * Given 対象注文データが保存されている
-         * When 古いversionではなく不一致のversionで注文をキャンセルする
+         * When 不一致のバージョンで注文をキャンセルする
          * Then 注文楽観的ロック競合例外が発生する
          * </pre>
          */
         @Test
-        @DisplayName("stale version でキャンセルすると競合になる")
+        @DisplayName("不一致のバージョンでキャンセルした場合は競合例外が発生すること")
         void shouldThrowExceptionWhenVersionDoesNotMatch() {
             insertOrder("ORD000001", "001", 0L);
 

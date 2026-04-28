@@ -66,8 +66,6 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * 注文一覧を取得できること。
-     *
      * Given 注文データが複数件登録されている
      * When 注文一覧を取得する
      * Then 登録された注文一覧が返る
@@ -91,8 +89,6 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * 注文コードで注文を取得できること。
-     *
      * Given 注文データが登録されている
      * When 注文コードで注文を取得する
      * Then 対象注文が返る
@@ -117,8 +113,6 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * 存在しない注文コードの場合に空を返すこと。
-     *
      * Given 注文データが登録されていない
      * When 注文コードで注文を取得する
      * Then 空が返る
@@ -134,8 +128,6 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * 注文を登録できること。
-     *
      * Given 登録対象の注文を用意する
      * When 注文を登録する
      * Then 注文が登録される
@@ -172,8 +164,6 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * 注文を更新できること。
-     *
      * Given 注文データが登録されている
      * When 注文を更新する
      * Then 注文ステータスが更新される
@@ -211,8 +201,6 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * stale version で更新した場合に競合例外が発生すること。
-     *
      * Given version が進んだ注文データが登録されている
      * When 古い version で注文を更新する
      * Then 注文の楽観ロック競合例外が発生する

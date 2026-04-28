@@ -36,11 +36,11 @@ public class MethodLogAspect {
     private final LogMasker logMasker;
 
     /**
-     * メソッド開始 / 終了ログを出力する。
+     * メソッド開始 / 終了ログを出力する
      *
      * @param joinPoint JoinPoint
-     * @return 戻り値
-     * @throws Throwable 例外
+     * @return 対象メソッドの戻り値
+     * @throws Throwable 対象メソッドの実行中に発生した例外
      */
     @Around(
         "execution(* jp.co.shimizutdev.phoneorderapi.presentation..*Controller.*(..)) || "
@@ -99,7 +99,7 @@ public class MethodLogAspect {
     }
 
     /**
-     * 宣言上の戻り値型を取得する。
+     * 宣言上の戻り値型を取得する
      *
      * @param signature   メソッドシグネチャ
      * @param returnValue 戻り値
@@ -120,10 +120,10 @@ public class MethodLogAspect {
     }
 
     /**
-     * 実行時の型名を取得する。
+     * 実行時の型名を取得する
      *
-     * @param value 値
-     * @return 型名
+     * @param value 型名取得対象
+     * @return 実行時の型名
      */
     private String getRuntimeTypeName(final Object value) {
         if (value == null) {
@@ -134,7 +134,7 @@ public class MethodLogAspect {
     }
 
     /**
-     * Typeを文字列へ整形する。
+     * Typeを文字列へ整形する
      *
      * @param type 型
      * @return 型名
@@ -152,7 +152,7 @@ public class MethodLogAspect {
     }
 
     /**
-     * 型名をシンプル名へ変換する。
+     * 型名をシンプル名へ変換する
      *
      * @param type 型
      * @return シンプル名
@@ -164,9 +164,9 @@ public class MethodLogAspect {
     }
 
     /**
-     * ログ文字列を最大文字数に省略する。
+     * ログ文字列を最大文字数に省略する
      *
-     * @param value 値
+     * @param value 省略対象文字列
      * @return 省略後文字列
      */
     private String abbreviate(final String value) {
@@ -182,10 +182,10 @@ public class MethodLogAspect {
     }
 
     /**
-     * null を空文字へ変換する。
+     * null を空文字へ変換する
      *
-     * @param value 値
-     * @return 変換後文字列
+     * @param value 変換対象文字列
+     * @return null の場合は空文字、それ以外の場合は変換対象文字列
      */
     private String nullToEmpty(final String value) {
         return value == null ? "" : value;
