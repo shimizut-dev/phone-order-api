@@ -19,7 +19,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -51,11 +50,11 @@ public class ApiExceptionHandler {
         final MethodArgumentNotValidException ex,
         final HttpServletRequest request) {
 
-        logHandledException(ApiErrorResponseMessages.VALIDATION_ERROR, request, ex);
+        logHandledException(ApiErrorMessages.VALIDATION_ERROR, request, ex);
 
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
-            ApiErrorResponseMessages.VALIDATION_ERROR,
+            ApiErrorMessages.VALIDATION_ERROR,
             request,
             ex.getBindingResult()
                 .getFieldErrors()
@@ -78,11 +77,11 @@ public class ApiExceptionHandler {
         final ConstraintViolationException ex,
         final HttpServletRequest request) {
 
-        logHandledException(ApiErrorResponseMessages.VALIDATION_ERROR, request, ex);
+        logHandledException(ApiErrorMessages.VALIDATION_ERROR, request, ex);
 
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
-            ApiErrorResponseMessages.VALIDATION_ERROR,
+            ApiErrorMessages.VALIDATION_ERROR,
             request,
             ex.getConstraintViolations()
                 .stream()
@@ -104,12 +103,15 @@ public class ApiExceptionHandler {
         final IllegalArgumentException ex,
         final HttpServletRequest request) {
 
-        String message = resolveMessage(ex.getMessage(), ApiErrorResponseMessages.VALIDATION_ERROR);
-        logHandledException(message, request, ex);
+        logHandledException(
+            resolveMessage(ex.getMessage(), ApiErrorMessages.VALIDATION_ERROR),
+            request,
+            ex
+        );
 
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
-            message,
+            ApiErrorMessages.VALIDATION_ERROR,
             request,
             List.of()
         );
@@ -128,11 +130,11 @@ public class ApiExceptionHandler {
         final HttpMessageNotReadableException ex,
         final HttpServletRequest request) {
 
-        logHandledException(ApiErrorResponseMessages.INVALID_REQUEST_BODY, request, ex);
+        logHandledException(ApiErrorMessages.INVALID_REQUEST_BODY, request, ex);
 
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
-            ApiErrorResponseMessages.INVALID_REQUEST_BODY,
+            ApiErrorMessages.INVALID_REQUEST_BODY,
             request,
             List.of()
         );
@@ -151,11 +153,11 @@ public class ApiExceptionHandler {
         final OrderCannotBeCancelledException ex,
         final HttpServletRequest request) {
 
-        logHandledException(ApiErrorResponseMessages.ORDER_CANNOT_BE_CANCELLED, request, ex);
+        logHandledException(ApiErrorMessages.ORDER_CANNOT_BE_CANCELLED, request, ex);
 
         return buildErrorResponse(
             HttpStatus.CONFLICT,
-            ApiErrorResponseMessages.ORDER_CANNOT_BE_CANCELLED,
+            ApiErrorMessages.ORDER_CANNOT_BE_CANCELLED,
             request,
             List.of()
         );
@@ -174,11 +176,11 @@ public class ApiExceptionHandler {
         final RuntimeException ex,
         final HttpServletRequest request) {
 
-        logHandledException(ApiErrorResponseMessages.ORDER_VERSION_CONFLICT, request, ex);
+        logHandledException(ApiErrorMessages.ORDER_VERSION_CONFLICT, request, ex);
 
         return buildErrorResponse(
             HttpStatus.CONFLICT,
-            ApiErrorResponseMessages.ORDER_VERSION_CONFLICT,
+            ApiErrorMessages.ORDER_VERSION_CONFLICT,
             request,
             List.of()
         );
@@ -198,21 +200,21 @@ public class ApiExceptionHandler {
         final HttpServletRequest request) {
 
         logHandledUnexpectedException(
-            resolveMessage(ex.getMessage(), ApiErrorResponseMessages.INTERNAL_SERVER_ERROR),
+            resolveMessage(ex.getMessage(), ApiErrorMessages.INTERNAL_SERVER_ERROR),
             request,
             ex
         );
 
         return buildErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            ApiErrorResponseMessages.INTERNAL_SERVER_ERROR,
+            ApiErrorMessages.INTERNAL_SERVER_ERROR,
             request,
             List.of()
         );
     }
 
     /**
-     * コントローラから明示的に送出された 404 をエラーレスポンスへ変換する。
+     * 注文未存在例外を 404 Not Found に変換する。
      *
      * @param ex      注文未存在例外
      * @param request HTTP リクエスト
@@ -224,35 +226,11 @@ public class ApiExceptionHandler {
         final OrderNotFoundException ex,
         final HttpServletRequest request) {
 
-        logHandledException(ApiErrorResponseMessages.ORDER_NOT_FOUND, request, ex);
+        logHandledException(ApiErrorMessages.ORDER_NOT_FOUND, request, ex);
 
         return buildErrorResponse(
             HttpStatus.NOT_FOUND,
-            ApiErrorResponseMessages.ORDER_NOT_FOUND,
-            request,
-            List.of()
-        );
-    }
-
-    /**
-     * コントローラから送出された HTTP ステータス例外をエラーレスポンスへ変換する。
-     *
-     * @param ex      HTTP ステータス例外
-     * @param request HTTP リクエスト
-     * @return API エラーレスポンス
-     */
-    @SuppressWarnings("unused")
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ApiErrorResponse> handleResponseStatusException(
-        final ResponseStatusException ex,
-        final HttpServletRequest request) {
-
-        String message = resolveMessage(ex.getReason(), ApiErrorResponseMessages.REQUEST_FAILED);
-        logHandledException(message, request, ex);
-
-        return buildErrorResponse(
-            ex.getStatusCode(),
-            message,
+            ApiErrorMessages.ORDER_NOT_FOUND,
             request,
             List.of()
         );
@@ -272,14 +250,14 @@ public class ApiExceptionHandler {
         final HttpServletRequest request) {
 
         logHandledUnexpectedException(
-            ApiErrorResponseMessages.INTERNAL_SERVER_ERROR,
+            ApiErrorMessages.INTERNAL_SERVER_ERROR,
             request,
             ex
         );
 
         return buildErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            ApiErrorResponseMessages.INTERNAL_SERVER_ERROR,
+            ApiErrorMessages.INTERNAL_SERVER_ERROR,
             request,
             List.of()
         );
@@ -294,7 +272,7 @@ public class ApiExceptionHandler {
     private ApiValidationError toValidationError(final FieldError fieldError) {
         return new ApiValidationError(
             fieldError.getField(),
-            resolveMessage(fieldError.getDefaultMessage(), ApiErrorResponseMessages.VALIDATION_ERROR)
+            resolveMessage(fieldError.getDefaultMessage(), ApiErrorMessages.VALIDATION_ERROR)
         );
     }
 
@@ -307,7 +285,7 @@ public class ApiExceptionHandler {
     private ApiValidationError toValidationError(final ConstraintViolation<?> violation) {
         return new ApiValidationError(
             extractViolationField(violation),
-            resolveMessage(violation.getMessage(), ApiErrorResponseMessages.VALIDATION_ERROR)
+            resolveMessage(violation.getMessage(), ApiErrorMessages.VALIDATION_ERROR)
         );
     }
 
@@ -350,7 +328,15 @@ public class ApiExceptionHandler {
         final HttpServletRequest request,
         final Exception ex) {
 
-        log.debug("path={}, message={}", request.getRequestURI(), message, ex);
+        if (log.isDebugEnabled()) {
+            log.debug(
+                "path={}, message={}, exceptionMessage={}",
+                request.getRequestURI(),
+                message,
+                resolveMessage(ex.getMessage(), message),
+                ex
+            );
+        }
     }
 
     /**
@@ -365,7 +351,15 @@ public class ApiExceptionHandler {
         final HttpServletRequest request,
         final Exception ex) {
 
-        log.error("path={}, message={}", request.getRequestURI(), message, ex);
+        if (log.isErrorEnabled()) {
+            log.error(
+                "path={}, message={}, exceptionMessage={}",
+                request.getRequestURI(),
+                message,
+                resolveMessage(ex.getMessage(), message),
+                ex
+            );
+        }
     }
 
     /**

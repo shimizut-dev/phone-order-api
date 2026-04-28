@@ -57,6 +57,7 @@ jakarta.validation.constraints.NotNull.message=必須項目です。
 その場合は、アノテーション側で明示的に `message = "{...}"` を指定する。
 
 ```java
+
 @NotNull(message = "{validation.order.orderedAt.required}")
 private OffsetDateTime orderedAt;
 ```

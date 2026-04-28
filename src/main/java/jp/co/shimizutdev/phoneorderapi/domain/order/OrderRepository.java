@@ -36,6 +36,7 @@ public interface OrderRepository {
      *
      * @param order 注文
      * @return 注文
+     * @throws OrderVersionConflictException 更新対象の注文バージョンが一致しない場合
      */
     Order update(Order order);
 }

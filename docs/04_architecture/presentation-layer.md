@@ -39,7 +39,7 @@ HTTP リクエスト / レスポンスを扱い、application layer との橋渡
 - OpenAPI 生成 API interface
 - OpenAPI 生成 Request / Response model
 - Mapper
-- `presentation.error` package (`ApiErrorResponse`, `ApiValidationError`, `ApiErrorResponseMessages`,
+- `presentation.error` package (`ApiErrorResponse`, `ApiValidationError`, `ApiErrorMessages`,
   `ApiExceptionHandler`)
 - Filter
 

@@ -2,15 +2,15 @@ package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
-import jp.co.shimizutdev.phoneorderapi.presentation.error.ApiErrorResponseMessages;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCannotBeCancelledException;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderNotFoundException;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderVersionConflictException;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.api.OrdersApi;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.CancelOrderRequest;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderRequest;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -42,15 +42,12 @@ public class OrderController implements OrdersApi {
      *
      * @param orderCode 注文コード
      * @return 注文レスポンス
+     * @throws OrderNotFoundException 注文コードに対応する注文が存在しない場合
      */
     @Override
     public OrderResponse getOrderByOrderCode(final String orderCode) {
-        return orderService.getOrderByOrderCode(orderCode)
-            .map(OrderMapper::toResponse)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                ApiErrorResponseMessages.ORDER_NOT_FOUND
-            ));
+        Order order = orderService.getOrderByOrderCode(orderCode);
+        return OrderMapper.toResponse(order);
     }
 
     /**
@@ -71,6 +68,9 @@ public class OrderController implements OrdersApi {
      * @param orderCode          注文コード
      * @param cancelOrderRequest 注文キャンセルリクエスト
      * @return 注文レスポンス
+     * @throws OrderNotFoundException 注文コードに対応する注文が存在しない場合
+     * @throws OrderCannotBeCancelledException 注文の状態によりキャンセルできない場合
+     * @throws OrderVersionConflictException 注文のバージョンが一致しない場合
      */
     @Override
     public OrderResponse cancelOrder(

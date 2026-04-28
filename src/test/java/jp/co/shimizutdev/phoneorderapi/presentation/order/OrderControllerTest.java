@@ -1,7 +1,7 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
-import jp.co.shimizutdev.phoneorderapi.presentation.error.ApiErrorResponseMessages;
+import jp.co.shimizutdev.phoneorderapi.presentation.error.ApiErrorMessages;
 import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -106,7 +106,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
                 .andExpect(jsonPath("$.path").value("/api/v1/orders"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(0)));
         }
@@ -156,7 +156,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         void shouldReturnNotFoundWhenOrderCodeDoesNotExist() throws Exception {
             mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD999999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("注文が見つかりません。"));
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.ORDER_NOT_FOUND));
         }
 
         /**
@@ -177,7 +177,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
                 .andExpect(jsonPath("$.path").value("/api/v1/orders/INVALID"))
                 .andExpect(jsonPath("$.validationErrors", not(empty())))
                 .andExpect(jsonPath("$.validationErrors[*].field", hasItem("orderCode")));
@@ -205,7 +205,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
                 .andExpect(jsonPath("$.path").value("/api/v1/orders/ORD000001"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(0)));
         }
@@ -231,7 +231,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
                 .andExpect(jsonPath("$.path").value("/api/v1/orders/ORD000001"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(0)));
         }
@@ -352,7 +352,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
                 .andExpect(jsonPath("$.path").value("/api/v1/orders"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(0)));
         }
@@ -415,7 +415,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{ }"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
                 .andExpect(jsonPath("$.validationErrors[*].field", hasItem("version")));
         }
 
@@ -443,7 +443,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("注文が見つかりません。"));
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.ORDER_NOT_FOUND));
         }
 
         /**
@@ -472,7 +472,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
                 .andExpect(jsonPath("$.path").value("/api/v1/orders/INVALID/cancel"))
                 .andExpect(jsonPath("$.validationErrors", not(empty())))
                 .andExpect(jsonPath("$.validationErrors[*].field", hasItem("orderCode")));
@@ -505,7 +505,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.ORDER_CANNOT_BE_CANCELLED));
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.ORDER_CANNOT_BE_CANCELLED));
         }
 
         /**
@@ -535,7 +535,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.ORDER_VERSION_CONFLICT));
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.ORDER_VERSION_CONFLICT));
         }
 
         /**
@@ -568,7 +568,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
-                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
                 .andExpect(jsonPath("$.path").value("/api/v1/orders/ORD000001/cancel"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(0)));
         }

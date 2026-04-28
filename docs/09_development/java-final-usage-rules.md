@@ -40,7 +40,7 @@ private final String value;
 例:
 
 ```java
-public Optional<Order> getOrderByOrderCode(final String orderCode) {
+public Order getOrderByOrderCode(final String orderCode) {
     // ...
 }
 ```
