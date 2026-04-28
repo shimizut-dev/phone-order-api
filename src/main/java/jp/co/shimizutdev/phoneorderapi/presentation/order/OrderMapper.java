@@ -32,7 +32,8 @@ public class OrderMapper {
         return new OrderResponse(
             order.getOrderCode().getValue(),
             order.getOrderedAt().getValue(),
-            OrderResponse.OrderStatusEnum.fromValue(order.getOrderStatus().getCode())
+            OrderResponse.OrderStatusEnum.fromValue(order.getOrderStatus().getCode()),
+            order.getVersion().getValue()
         );
     }
 
@@ -42,7 +43,7 @@ public class OrderMapper {
      * @param orders 注文一覧
      * @return 注文レスポンス一覧
      */
-    public static List<OrderResponse> toResponseList(final List<Order> orders) {
+    public static List<OrderResponse> toResponses(final List<Order> orders) {
         if (orders == null) {
             return Collections.emptyList();
         }

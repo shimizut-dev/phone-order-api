@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCode;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderRepository;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderVersionConflictException;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaMapper;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaRepository;
@@ -64,8 +65,9 @@ public class OrderRepositoryImpl implements OrderRepository {
      */
     @Override
     public Order create(final Order order) {
-        OrderJpaEntity orderJpaEntity = OrderJpaMapper.toEntity(order);
+        OrderJpaEntity orderJpaEntity = OrderJpaMapper.toNewEntity(order);
         entityManager.persist(orderJpaEntity);
+        entityManager.flush();
         return OrderJpaMapper.toDomain(orderJpaEntity);
     }
 
@@ -77,10 +79,13 @@ public class OrderRepositoryImpl implements OrderRepository {
      */
     @Override
     public Order update(final Order order) {
-        OrderJpaEntity orderJpaEntity = orderJpaRepository.findById(order.getOrderId().getValue())
-            .orElseThrow(() -> new IllegalStateException("更新対象の注文が見つかりません。"));
+        OrderJpaEntity orderJpaEntity = orderJpaRepository.findByIdAndVersion(
+                order.getOrderId().getValue(),
+                order.getVersion().getValue())
+            .orElseThrow(OrderVersionConflictException::new);
 
         orderJpaEntity.setOrderStatus(order.getOrderStatus().getCode());
+        entityManager.flush();
 
         return OrderJpaMapper.toDomain(orderJpaEntity);
     }

@@ -1,9 +1,6 @@
 package jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.BaseAuditJpaEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -47,4 +44,11 @@ public class OrderJpaEntity extends BaseAuditJpaEntity {
      */
     @Column(name = "order_status", nullable = false, length = 10)
     private String orderStatus;
+
+    /**
+     * バージョン
+     */
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
 }

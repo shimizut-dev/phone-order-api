@@ -53,10 +53,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
     @MockitoSpyBean
     private OrderService orderService;
 
-
     @Nested
     @DisplayName("GET /api/v1/orders")
     class GetOrders {
+
         /**
          * <pre>
          * 注文一覧を取得できること。
@@ -71,15 +71,17 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("注文一覧を取得できること")
         @Sql(statements = {
-            "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 'system', 'system')",
-            "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000002', now(), '002', 'system', 'system')"
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 0, 'system', 'system')",
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000002', now(), '002', 1, 'system', 'system')"
         })
         void shouldReturnOrdersWhenGetOrders() throws Exception {
             mockMvc.perform(get("/api/v1/orders"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[*].orderCode", hasItem("ORD000001")))
-                .andExpect(jsonPath("$[*].orderCode", hasItem("ORD000002")));
+                .andExpect(jsonPath("$[*].orderCode", hasItem("ORD000002")))
+                .andExpect(jsonPath("$[*].version", hasItem(0)))
+                .andExpect(jsonPath("$[*].version", hasItem(1)));
         }
 
         /**
@@ -113,6 +115,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
     @Nested
     @DisplayName("GET /api/v1/orders/{orderCode}")
     class GetOrderByOrderCode {
+
         /**
          * <pre>
          * 注文コードで注文を取得できること。
@@ -127,13 +130,14 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("注文コードで注文を取得できること")
         @Sql(statements = {
-            "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 'system', 'system')"
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 2, 'system', 'system')"
         })
         void shouldReturnOrderWhenOrderCodeExists() throws Exception {
             mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD000001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orderCode").value("ORD000001"))
-                .andExpect(jsonPath("$.orderStatus").value("001"));
+                .andExpect(jsonPath("$.orderStatus").value("001"))
+                .andExpect(jsonPath("$.version").value(2));
         }
 
         /**
@@ -220,7 +224,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("DB上の注文ステータスが不正な場合は500を返すこと")
         @Sql(statements = {
-            "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '999', 'system', 'system')"
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '999', 0, 'system', 'system')"
         })
         void shouldReturnInternalServerErrorWhenPersistedOrderStatusIsInvalid() throws Exception {
             mockMvc.perform(get("/api/v1/orders/{orderCode}", "ORD000001"))
@@ -236,6 +240,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
     @Nested
     @DisplayName("POST /api/v1/orders")
     class CreateOrder {
+
         /**
          * <pre>
          * 注文を登録できること。
@@ -261,7 +266,8 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
                     .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.orderCode", startsWith("ORD")))
-                .andExpect(jsonPath("$.orderStatus").value("001"));
+                .andExpect(jsonPath("$.orderStatus").value("001"))
+                .andExpect(jsonPath("$.version").value(0));
         }
 
         /**
@@ -278,14 +284,9 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("必須項目が不足している場合は400を返すこと")
         void shouldReturnBadRequestWhenRequiredFieldsAreMissing() throws Exception {
-            String requestBody = """
-                {
-                }
-                """;
-
             mockMvc.perform(post("/api/v1/orders")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBody))
+                    .content("{ }"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("入力値が不正です。"))
                 .andExpect(jsonPath("$.validationErrors", hasSize(1)))
@@ -360,6 +361,7 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
     @Nested
     @DisplayName("POST /api/v1/orders/{orderCode}/cancel")
     class CancelOrder {
+
         /**
          * <pre>
          * 注文をキャンセルできること。
@@ -374,13 +376,47 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("注文をキャンセルできること")
         @Sql(statements = {
-            "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 'system', 'system')"
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 0, 'system', 'system')"
         })
         void shouldCancelOrderWhenOrderExists() throws Exception {
-            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001"))
+            String requestBody = """
+                {
+                  "version": 0
+                }
+                """;
+
+            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orderCode").value("ORD000001"))
-                .andExpect(jsonPath("$.orderStatus").value("006"));
+                .andExpect(jsonPath("$.orderStatus").value("006"))
+                .andExpect(jsonPath("$.version").value(1));
+        }
+
+        /**
+         * <pre>
+         * versionが不足している場合は400を返すこと。
+         *
+         * Given versionが不足したキャンセルリクエストを用意する
+         * When 注文キャンセルAPIを実行する
+         * Then 400 Bad Request と入力エラー情報が返る
+         * </pre>
+         *
+         * @throws Exception 例外
+         */
+        @Test
+        @DisplayName("version未指定は400になる")
+        @Sql(statements = {
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 0, 'system', 'system')"
+        })
+        void shouldReturnBadRequestWhenVersionIsMissing() throws Exception {
+            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{ }"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
+                .andExpect(jsonPath("$.validationErrors[*].field", hasItem("version")));
         }
 
         /**
@@ -397,7 +433,15 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("注文コードに対応する注文が存在しない場合は404を返すこと")
         void shouldReturnNotFoundWhenCancelTargetDoesNotExist() throws Exception {
-            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD999999"))
+            String requestBody = """
+                {
+                  "version": 0
+                }
+                """;
+
+            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD999999")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("注文が見つかりません。"));
         }
@@ -416,7 +460,15 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("キャンセル対象の注文コード形式が不正な場合は400を返すこと")
         void shouldReturnBadRequestWhenCancelTargetOrderCodeFormatIsInvalid() throws Exception {
-            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "INVALID"))
+            String requestBody = """
+                {
+                  "version": 0
+                }
+                """;
+
+            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "INVALID")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
@@ -440,12 +492,50 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("キャンセル不可状態の注文は409を返すこと")
         @Sql(statements = {
-            "insert into orders (id, order_code, ordered_at, order_status, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '005', 'system', 'system')"
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '005', 0, 'system', 'system')"
         })
         void shouldReturnConflictWhenOrderCannotBeCancelled() throws Exception {
-            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001"))
+            String requestBody = """
+                {
+                  "version": 0
+                }
+                """;
+
+            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.ORDER_CANNOT_BE_CANCELLED));
+        }
+
+        /**
+         * <pre>
+         * stale version の注文キャンセルは409を返すこと。
+         *
+         * Given 対象注文が登録されている
+         * When 古いversionで注文キャンセルAPIを実行する
+         * Then 409 Conflict が返る
+         * </pre>
+         *
+         * @throws Exception 例外
+         */
+        @Test
+        @DisplayName("stale version は409になる")
+        @Sql(statements = {
+            "insert into orders (id, order_code, ordered_at, order_status, version, created_by, updated_by) values (gen_random_uuid(), 'ORD000001', now(), '001', 0, 'system', 'system')"
+        })
+        void shouldReturnConflictWhenVersionDoesNotMatch() throws Exception {
+            String requestBody = """
+                {
+                  "version": 1
+                }
+                """;
+
+            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.ORDER_VERSION_CONFLICT));
         }
 
         /**
@@ -462,11 +552,19 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
         @Test
         @DisplayName("注文キャンセル時に想定外エラーが発生した場合は500を返すこと")
         void shouldReturnInternalServerErrorWhenCancelOrderUnexpectedErrorOccurs() throws Exception {
+            String requestBody = """
+                {
+                  "version": 0
+                }
+                """;
+
             doThrow(new RuntimeException("unexpected error occurred"))
                 .when(orderService)
-                .cancelOrder("ORD000001");
+                .cancelOrder("ORD000001", 0L);
 
-            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001"))
+            mockMvc.perform(post("/api/v1/orders/{orderCode}/cancel", "ORD000001")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))

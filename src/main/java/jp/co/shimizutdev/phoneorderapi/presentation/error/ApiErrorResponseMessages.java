@@ -36,6 +36,11 @@ public final class ApiErrorResponseMessages {
     public static final String ORDER_CANNOT_BE_CANCELLED = "注文をキャンセルできません。";
 
     /**
+     * 注文の楽観的ロック競合時のメッセージ。
+     */
+    public static final String ORDER_VERSION_CONFLICT = "注文が他の更新で変更されました。最新データを取得してから再実行してください。";
+
+    /**
      * インスタンス化を防止する。
      */
     private ApiErrorResponseMessages() {

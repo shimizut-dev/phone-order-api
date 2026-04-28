@@ -35,22 +35,30 @@ public class Order {
     private final OrderStatus orderStatus;
 
     /**
+     * バージョン
+     */
+    private final Version version;
+
+    /**
      * コンストラクタ
      *
      * @param orderId     注文ID
      * @param orderCode   注文コード
      * @param orderedAt   注文日時
      * @param orderStatus 注文ステータス
+     * @param version     バージョン
      */
     private Order(
         final OrderId orderId,
         final OrderCode orderCode,
         final OrderedAt orderedAt,
-        final OrderStatus orderStatus) {
+        final OrderStatus orderStatus,
+        final Version version) {
         this.orderId = Objects.requireNonNull(orderId, "注文IDは必須です。");
         this.orderCode = Objects.requireNonNull(orderCode, "注文コードは必須です。");
         this.orderedAt = Objects.requireNonNull(orderedAt, "注文日時は必須です。");
         this.orderStatus = Objects.requireNonNull(orderStatus, "注文ステータスは必須です。");
+        this.version = Objects.requireNonNull(version, "バージョンは必須です。");
     }
 
     /**
@@ -67,7 +75,8 @@ public class Order {
             OrderId.generate(),
             orderCode,
             orderedAt,
-            OrderStatus.RECEIVED
+            OrderStatus.RECEIVED,
+            Version.of(0L)
         );
     }
 
@@ -78,27 +87,33 @@ public class Order {
      * @param orderCode   注文コード
      * @param orderedAt   注文日時
      * @param orderStatus 注文ステータス
+     * @param version     バージョン
      * @return 注文
      */
     public static Order reconstruct(
         final OrderId orderId,
         final OrderCode orderCode,
         final OrderedAt orderedAt,
-        final OrderStatus orderStatus) {
+        final OrderStatus orderStatus,
+        final Version version) {
         return new Order(
             orderId,
             orderCode,
             orderedAt,
-            orderStatus
+            orderStatus,
+            version
         );
     }
 
     /**
      * 注文をキャンセルする
      *
+     * @param requestedVersion 要求されたバージョン
      * @return キャンセル済み注文
      */
-    public Order cancel() {
+    public Order cancel(final Version requestedVersion) {
+        validateVersionMatch(requestedVersion);
+
         if (orderStatus == OrderStatus.COMPLETED || orderStatus == OrderStatus.CANCELLED) {
             throw new OrderCannotBeCancelledException();
         }
@@ -107,7 +122,19 @@ public class Order {
             orderId,
             orderCode,
             orderedAt,
-            OrderStatus.CANCELLED
+            OrderStatus.CANCELLED,
+            version
         );
+    }
+
+    /**
+     * バージョン一致を検証する
+     *
+     * @param requestedVersion 要求されたバージョン
+     */
+    private void validateVersionMatch(final Version requestedVersion) {
+        if (!version.equals(requestedVersion)) {
+            throw new OrderVersionConflictException();
+        }
     }
 }

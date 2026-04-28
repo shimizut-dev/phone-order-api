@@ -26,6 +26,11 @@ public final class InvalidPersistedOrderMessages {
     public static final String INVALID_ORDER_STATUS = "永続化済み注文データの注文ステータスが不正です。";
 
     /**
+     * バージョン不正メッセージ
+     */
+    public static final String INVALID_ORDER_VERSION = "永続化済み注文データのバージョンが不正です。";
+
+    /**
      * インスタンス化防止
      */
     private InvalidPersistedOrderMessages() {
