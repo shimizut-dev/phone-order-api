@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 注文サービス
@@ -41,9 +40,11 @@ public class OrderService {
      *
      * @param orderCode 注文コード
      * @return 注文
+     * @throws IllegalArgumentException 注文コードの形式が不正な場合
+     * @throws OrderNotFoundException 注文コードに対応する注文が存在しない場合
      */
-    public Optional<Order> getOrderByOrderCode(final String orderCode) {
-        return orderRepository.findByOrderCode(OrderCode.of(orderCode));
+    public Order getOrderByOrderCode(final String orderCode) {
+        return findOrderByOrderCode(orderCode);
     }
 
     /**
@@ -51,6 +52,7 @@ public class OrderService {
      *
      * @param orderedAt 注文日時
      * @return 注文
+     * @throws IllegalArgumentException 注文日時が指定されていない場合
      */
     @Transactional
     public Order createOrder(final OffsetDateTime orderedAt) {
@@ -63,13 +65,30 @@ public class OrderService {
      * 注文をキャンセルする
      *
      * @param orderCode 注文コード
+     * @param version   キャンセル要求時の注文バージョン
      * @return 注文
+     * @throws IllegalArgumentException 注文コードまたはバージョンが不正な場合
+     * @throws OrderNotFoundException 注文コードに対応する注文が存在しない場合
+     * @throws OrderCannotBeCancelledException 注文の状態によりキャンセルできない場合
+     * @throws OrderVersionConflictException 注文のバージョンが一致しない場合
      */
     @Transactional
     public Order cancelOrder(final String orderCode, final long version) {
-        Order order = orderRepository.findByOrderCode(OrderCode.of(orderCode))
-            .orElseThrow(OrderNotFoundException::new);
+        Order order = findOrderByOrderCode(orderCode);
 
         return orderRepository.update(order.cancel(Version.of(version)));
+    }
+
+    /**
+     * 注文コードで注文を取得し、存在しない場合は注文未存在例外を発生させる。
+     *
+     * @param orderCode 注文コード
+     * @return 注文
+     * @throws IllegalArgumentException 注文コードの形式が不正な場合
+     * @throws OrderNotFoundException   注文コードに対応する注文が存在しない場合
+     */
+    private Order findOrderByOrderCode(final String orderCode) {
+        return orderRepository.findByOrderCode(OrderCode.of(orderCode))
+            .orElseThrow(() -> OrderNotFoundException.byOrderCode(orderCode));
     }
 }

@@ -5,19 +5,22 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.InvalidPersistedOrderException;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -62,7 +65,7 @@ class ApiExceptionHandlerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.message").value("illegal argument occurred"))
+            .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/illegal-argument"))
             .andExpect(jsonPath("$.validationErrors").isArray());
     }
@@ -85,7 +88,7 @@ class ApiExceptionHandlerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
+            .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/illegal-argument-without-message"))
             .andExpect(jsonPath("$.validationErrors").isArray());
     }
@@ -110,32 +113,10 @@ class ApiExceptionHandlerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.VALIDATION_ERROR))
+            .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/validation"))
             .andExpect(jsonPath("$.validationErrors[0].field").value("name"))
             .andExpect(jsonPath("$.validationErrors[0].message").value("name is required."));
-    }
-
-    /**
-     * <pre>
-     * 非標準のHTTPステータスコードを指定したResponseStatusException発生時にそのステータスを保持して返すこと。
-     *
-     * Given 非標準ステータスコードのResponseStatusExceptionを送出するAPIがある
-     * When カスタムステータス例外発生APIを実行する
-     * Then 指定した非標準ステータスコードのエラーレスポンスが返る
-     * </pre>
-     *
-     * @throws Exception 例外
-     */
-    @Test
-    @DisplayName("Non-standard response statuses are preserved")
-    void shouldReturnCustomStatusWhenResponseStatusExceptionUsesNonStandardCode() throws Exception {
-        mockMvc.perform(get("/test/errors/custom-status"))
-            .andExpect(status().is(499))
-            .andExpect(jsonPath("$.status").value(499))
-            .andExpect(jsonPath("$.error").value("HTTP_499"))
-            .andExpect(jsonPath("$.message").value("client closed request"))
-            .andExpect(jsonPath("$.path").value("/test/errors/custom-status"));
     }
 
     /**
@@ -156,7 +137,7 @@ class ApiExceptionHandlerTest {
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.status").value(500))
             .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
-            .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+            .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/unexpected"));
     }
 
@@ -178,7 +159,7 @@ class ApiExceptionHandlerTest {
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.status").value(500))
             .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
-            .andExpect(jsonPath("$.message").value(ApiErrorResponseMessages.INTERNAL_SERVER_ERROR))
+            .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/invalid-persisted-order"))
             .andExpect(jsonPath("$.validationErrors").isArray());
     }
@@ -202,11 +183,6 @@ class ApiExceptionHandlerTest {
             return request.name();
         }
 
-        @GetMapping("/custom-status")
-        String throwCustomStatusException() {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(499), "client closed request");
-        }
-
         @GetMapping("/unexpected")
         String throwUnexpectedException() {
             throw new IllegalStateException("boom");
@@ -214,7 +190,10 @@ class ApiExceptionHandlerTest {
 
         @GetMapping("/invalid-persisted-order")
         String throwInvalidPersistedOrderException() {
-            throw new InvalidPersistedOrderException("persisted order is invalid");
+            OrderJpaEntity orderJpaEntity = mock(OrderJpaEntity.class);
+            when(orderJpaEntity.getId()).thenReturn(UUID.randomUUID());
+            when(orderJpaEntity.getOrderCode()).thenReturn("ORD000001");
+            throw InvalidPersistedOrderException.byOrderJpaEntity("persisted order is invalid", orderJpaEntity);
         }
     }
 

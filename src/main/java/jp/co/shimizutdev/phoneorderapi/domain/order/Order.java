@@ -110,12 +110,14 @@ public class Order {
      *
      * @param requestedVersion 要求されたバージョン
      * @return キャンセル済み注文
+     * @throws OrderVersionConflictException 要求されたバージョンと現在のバージョンが一致しない場合
+     * @throws OrderCannotBeCancelledException 注文の状態によりキャンセルできない場合
      */
     public Order cancel(final Version requestedVersion) {
         validateVersionMatch(requestedVersion);
 
         if (orderStatus == OrderStatus.COMPLETED || orderStatus == OrderStatus.CANCELLED) {
-            throw new OrderCannotBeCancelledException();
+            throw OrderCannotBeCancelledException.byOrder(this);
         }
 
         return new Order(
@@ -131,10 +133,11 @@ public class Order {
      * バージョン一致を検証する
      *
      * @param requestedVersion 要求されたバージョン
+     * @throws OrderVersionConflictException 要求されたバージョンと現在のバージョンが一致しない場合
      */
     private void validateVersionMatch(final Version requestedVersion) {
         if (!version.equals(requestedVersion)) {
-            throw new OrderVersionConflictException();
+            throw OrderVersionConflictException.byOrder(this, requestedVersion);
         }
     }
 }

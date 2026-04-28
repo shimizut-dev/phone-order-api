@@ -6,6 +6,7 @@ import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCode;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderRepository;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderVersionConflictException;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.InvalidPersistedOrderException;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaMapper;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaRepository;
@@ -37,6 +38,7 @@ public class OrderRepositoryImpl implements OrderRepository {
      * 注文一覧を取得する
      *
      * @return 注文一覧
+     * @throws InvalidPersistedOrderException 永続化済み注文データが不正な場合
      */
     @Override
     public List<Order> findAll() {
@@ -50,6 +52,7 @@ public class OrderRepositoryImpl implements OrderRepository {
      *
      * @param orderCode 注文コード
      * @return 注文
+     * @throws InvalidPersistedOrderException 永続化済み注文データが不正な場合
      */
     @Override
     public Optional<Order> findByOrderCode(final OrderCode orderCode) {
@@ -62,6 +65,7 @@ public class OrderRepositoryImpl implements OrderRepository {
      *
      * @param order 注文
      * @return 注文
+     * @throws InvalidPersistedOrderException 登録後の永続化済み注文データが不正な場合
      */
     @Override
     public Order create(final Order order) {
@@ -76,13 +80,15 @@ public class OrderRepositoryImpl implements OrderRepository {
      *
      * @param order 注文
      * @return 注文
+     * @throws OrderVersionConflictException 更新対象の注文バージョンが一致しない場合
+     * @throws InvalidPersistedOrderException 更新後の永続化済み注文データが不正な場合
      */
     @Override
     public Order update(final Order order) {
         OrderJpaEntity orderJpaEntity = orderJpaRepository.findByIdAndVersion(
                 order.getOrderId().getValue(),
                 order.getVersion().getValue())
-            .orElseThrow(OrderVersionConflictException::new);
+            .orElseThrow(() -> OrderVersionConflictException.byOrderForUpdate(order));
 
         orderJpaEntity.setOrderStatus(order.getOrderStatus().getCode());
         entityManager.flush();

@@ -8,6 +8,31 @@ import jp.co.shimizutdev.phoneorderapi.domain.order.*;
 public class OrderJpaMapper {
 
     /**
+     * 永続化済み注文データの注文ID不正時の例外メッセージ。
+     */
+    private static final String INVALID_ORDER_ID_MESSAGE = "永続化済み注文データの注文IDが不正です。";
+
+    /**
+     * 永続化済み注文データの注文コード不正時の例外メッセージ。
+     */
+    private static final String INVALID_ORDER_CODE_MESSAGE = "永続化済み注文データの注文コードが不正です。";
+
+    /**
+     * 永続化済み注文データの注文日時不正時の例外メッセージ。
+     */
+    private static final String INVALID_ORDERED_AT_MESSAGE = "永続化済み注文データの注文日時が不正です。";
+
+    /**
+     * 永続化済み注文データの注文ステータス不正時の例外メッセージ。
+     */
+    private static final String INVALID_ORDER_STATUS_MESSAGE = "永続化済み注文データの注文ステータスが不正です。";
+
+    /**
+     * 永続化済み注文データのバージョン不正時の例外メッセージ。
+     */
+    private static final String INVALID_ORDER_VERSION_MESSAGE = "永続化済み注文データのバージョンが不正です。";
+
+    /**
      * コンストラクタ(インスタンス化を禁止)
      */
     private OrderJpaMapper() {
@@ -18,6 +43,7 @@ public class OrderJpaMapper {
      *
      * @param orderJpaEntity 注文JPAエンティティ
      * @return 注文
+     * @throws InvalidPersistedOrderException 永続化済み注文データが不正な場合
      */
     public static Order toDomain(final OrderJpaEntity orderJpaEntity) {
         return Order.reconstruct(
@@ -50,10 +76,14 @@ public class OrderJpaMapper {
      *
      * @param orderJpaEntity 注文JPAエンティティ
      * @return 注文ID
+     * @throws InvalidPersistedOrderException 永続化済み注文データの注文IDが不正な場合
      */
     private static OrderId toOrderId(final OrderJpaEntity orderJpaEntity) {
         if (orderJpaEntity.getId() == null) {
-            throw new InvalidPersistedOrderException(InvalidPersistedOrderMessages.INVALID_ORDER_ID);
+            throw InvalidPersistedOrderException.byOrderJpaEntity(
+                INVALID_ORDER_ID_MESSAGE,
+                orderJpaEntity
+            );
         }
 
         return OrderId.of(orderJpaEntity.getId());
@@ -64,10 +94,14 @@ public class OrderJpaMapper {
      *
      * @param orderJpaEntity 注文JPAエンティティ
      * @return 注文コード
+     * @throws InvalidPersistedOrderException 永続化済み注文データの注文コードが不正な場合
      */
     private static OrderCode toOrderCode(final OrderJpaEntity orderJpaEntity) {
         if (!OrderCode.isValid(orderJpaEntity.getOrderCode())) {
-            throw new InvalidPersistedOrderException(InvalidPersistedOrderMessages.INVALID_ORDER_CODE);
+            throw InvalidPersistedOrderException.byOrderJpaEntity(
+                INVALID_ORDER_CODE_MESSAGE,
+                orderJpaEntity
+            );
         }
 
         return OrderCode.of(orderJpaEntity.getOrderCode());
@@ -78,10 +112,14 @@ public class OrderJpaMapper {
      *
      * @param orderJpaEntity 注文JPAエンティティ
      * @return 注文日時
+     * @throws InvalidPersistedOrderException 永続化済み注文データの注文日時が不正な場合
      */
     private static OrderedAt toOrderedAt(final OrderJpaEntity orderJpaEntity) {
         if (orderJpaEntity.getOrderedAt() == null) {
-            throw new InvalidPersistedOrderException(InvalidPersistedOrderMessages.INVALID_ORDERED_AT);
+            throw InvalidPersistedOrderException.byOrderJpaEntity(
+                INVALID_ORDERED_AT_MESSAGE,
+                orderJpaEntity
+            );
         }
 
         return OrderedAt.of(orderJpaEntity.getOrderedAt());
@@ -92,10 +130,14 @@ public class OrderJpaMapper {
      *
      * @param orderJpaEntity 注文JPAエンティティ
      * @return 注文ステータス
+     * @throws InvalidPersistedOrderException 永続化済み注文データの注文ステータスが不正な場合
      */
     private static OrderStatus toOrderStatus(final OrderJpaEntity orderJpaEntity) {
         if (!OrderStatus.isValidCode(orderJpaEntity.getOrderStatus())) {
-            throw new InvalidPersistedOrderException(InvalidPersistedOrderMessages.INVALID_ORDER_STATUS);
+            throw InvalidPersistedOrderException.byOrderJpaEntity(
+                INVALID_ORDER_STATUS_MESSAGE,
+                orderJpaEntity
+            );
         }
 
         return OrderStatus.fromCode(orderJpaEntity.getOrderStatus());
@@ -106,10 +148,14 @@ public class OrderJpaMapper {
      *
      * @param orderJpaEntity 注文JPAエンティティ
      * @return バージョン
+     * @throws InvalidPersistedOrderException 永続化済み注文データのバージョンが不正な場合
      */
     private static Version toVersion(final OrderJpaEntity orderJpaEntity) {
         if (orderJpaEntity.getVersion() == null || orderJpaEntity.getVersion() < 0) {
-            throw new InvalidPersistedOrderException(InvalidPersistedOrderMessages.INVALID_ORDER_VERSION);
+            throw InvalidPersistedOrderException.byOrderJpaEntity(
+                INVALID_ORDER_VERSION_MESSAGE,
+                orderJpaEntity
+            );
         }
 
         return Version.of(orderJpaEntity.getVersion());

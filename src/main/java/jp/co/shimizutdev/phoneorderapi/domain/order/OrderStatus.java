@@ -16,6 +16,11 @@ public enum OrderStatus {
     CANCELLED("006", "キャンセル");
 
     /**
+     * 注文ステータスコード不正時の例外メッセージ。
+     */
+    private static final String INVALID_CODE_MESSAGE = "注文ステータスコードが不正です。";
+
+    /**
      * コード
      */
     private final String code;
@@ -41,6 +46,7 @@ public enum OrderStatus {
      *
      * @param code コード
      * @return 注文ステータス
+     * @throws IllegalArgumentException 注文ステータスコードが不正な場合
      */
     public static OrderStatus fromCode(final String code) {
         return switch (code) {
@@ -50,7 +56,7 @@ public enum OrderStatus {
             case "004" -> OrderStatus.WAITING_SHIPMENT;
             case "005" -> OrderStatus.COMPLETED;
             case "006" -> OrderStatus.CANCELLED;
-            default -> throw new IllegalArgumentException("注文ステータスコードが不正です。");
+            default -> throw new IllegalArgumentException(INVALID_CODE_MESSAGE);
         };
     }
 

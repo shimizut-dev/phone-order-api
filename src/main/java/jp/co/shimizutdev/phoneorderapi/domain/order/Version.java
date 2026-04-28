@@ -13,6 +13,11 @@ import lombok.ToString;
 public class Version {
 
     /**
+     * バージョン値不正時の例外メッセージ。
+     */
+    private static final String INVALID_VALUE_MESSAGE = "バージョンは0以上である必要があります。";
+
+    /**
      * 値
      */
     private final long value;
@@ -24,7 +29,7 @@ public class Version {
      */
     private Version(final long value) {
         if (value < 0) {
-            throw new IllegalArgumentException("バージョンは0以上である必要があります。");
+            throw new IllegalArgumentException(INVALID_VALUE_MESSAGE);
         }
 
         this.value = value;
@@ -35,6 +40,7 @@ public class Version {
      *
      * @param value バージョン(long)
      * @return バージョン
+     * @throws IllegalArgumentException バージョンが0未満の場合
      */
     public static Version of(final long value) {
         return new Version(value);

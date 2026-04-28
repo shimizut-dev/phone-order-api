@@ -15,6 +15,11 @@ import java.util.regex.Pattern;
 public class OrderCode {
 
     /**
+     * 注文コード形式不一致時の例外メッセージ。
+     */
+    private static final String INVALID_FORMAT_MESSAGE = "注文コード（ORD000001）の形式と不一致です。";
+
+    /**
      * 注文コードパターン
      */
     private static final Pattern ORDER_CODE_PATTERN = Pattern.compile("^ORD\\d{6}$");
@@ -31,7 +36,7 @@ public class OrderCode {
      */
     private OrderCode(final String value) {
         if (value == null || !ORDER_CODE_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("注文コード（ORD000001）の形式と不一致です。");
+            throw new IllegalArgumentException(INVALID_FORMAT_MESSAGE);
         }
         this.value = value;
     }
@@ -41,6 +46,7 @@ public class OrderCode {
      *
      * @param value 注文コード(String)
      * @return 注文コード
+     * @throws IllegalArgumentException 注文コードの形式が不正な場合
      */
     public static OrderCode of(final String value) {
         return new OrderCode(value);

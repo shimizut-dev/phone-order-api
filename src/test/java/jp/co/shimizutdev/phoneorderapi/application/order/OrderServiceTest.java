@@ -107,12 +107,29 @@ class OrderServiceTest extends AbstractPostgreSQLTest {
         void shouldGetOrderByOrderCode() {
             insertOrder("ORD000001", "001", 2L);
 
-            Optional<Order> actual = orderService.getOrderByOrderCode("ORD000001");
+            Order actual = orderService.getOrderByOrderCode("ORD000001");
 
-            assertTrue(actual.isPresent());
-            assertEquals("ORD000001", actual.get().getOrderCode().getValue());
-            assertEquals("001", actual.get().getOrderStatus().getCode());
-            assertEquals(Version.of(2L), actual.get().getVersion());
+            assertEquals("ORD000001", actual.getOrderCode().getValue());
+            assertEquals("001", actual.getOrderStatus().getCode());
+            assertEquals(Version.of(2L), actual.getVersion());
+        }
+
+        /**
+         * <pre>
+         * 注文コードに対応する注文が存在しない場合に注文未存在例外が発生すること。
+         *
+         * Given 対象注文が登録されていない
+         * When 注文コードで注文を取得する
+         * Then 注文未存在例外が発生する
+         * </pre>
+         */
+        @Test
+        @DisplayName("注文コードに対応する注文が存在しない場合に注文未存在例外が発生すること")
+        void shouldThrowExceptionWhenOrderDoesNotExist() {
+            assertThrows(
+                OrderNotFoundException.class,
+                () -> orderService.getOrderByOrderCode("ORD999999")
+            );
         }
     }
 

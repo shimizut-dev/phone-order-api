@@ -1,9 +1,9 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.error;
 
 /**
- * APIエラーレスポンスメッセージ
+ * APIエラーメッセージ
  */
-public final class ApiErrorResponseMessages {
+public final class ApiErrorMessages {
 
     /**
      * バリデーションエラー時のメッセージ。
@@ -14,11 +14,6 @@ public final class ApiErrorResponseMessages {
      * リクエストボディの形式が不正な場合のメッセージ。
      */
     public static final String INVALID_REQUEST_BODY = "リクエストボディの形式が不正です。";
-
-    /**
-     * リクエスト処理に失敗した場合のメッセージ。
-     */
-    public static final String REQUEST_FAILED = "リクエスト処理に失敗しました。";
 
     /**
      * サーバー内部でエラーが発生した場合のメッセージ。
@@ -43,6 +38,6 @@ public final class ApiErrorResponseMessages {
     /**
      * インスタンス化を防止する。
      */
-    private ApiErrorResponseMessages() {
+    private ApiErrorMessages() {
     }
 }
