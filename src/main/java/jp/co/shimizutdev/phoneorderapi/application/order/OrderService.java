@@ -66,9 +66,10 @@ public class OrderService {
      * @return 注文
      */
     @Transactional
-    public Optional<Order> cancelOrder(final String orderCode) {
-        return orderRepository.findByOrderCode(OrderCode.of(orderCode))
-            .map(Order::cancel)
-            .map(orderRepository::update);
+    public Order cancelOrder(final String orderCode, final long version) {
+        Order order = orderRepository.findByOrderCode(OrderCode.of(orderCode))
+            .orElseThrow(OrderNotFoundException::new);
+
+        return orderRepository.update(order.cancel(Version.of(version)));
     }
 }
