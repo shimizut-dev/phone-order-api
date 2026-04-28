@@ -30,14 +30,10 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
 
     /**
      * <pre>
-     * マスク対象ヘッダーとボディ項目がログでマスクされること。
-     *
      * Given マスク対象ヘッダーとマスク対象項目を含むリクエストを用意する
      * When 注文登録APIを実行する
      * Then ログ出力時にヘッダーとボディ項目がマスクされる
      * </pre>
-     *
-     * @throws Exception 例外
      */
     @Test
     @DisplayName("マスク対象ヘッダーとボディ項目がログでマスクされること")

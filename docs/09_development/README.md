@@ -27,6 +27,7 @@
 - `value-object-design-rules.md`
 - `validation-message-key-naming-rules.md`
 - `test-code-naming-and-javadoc-rules.md`
+- `javadoc-generation-guideline.md`
 - `log-operation-rules.md`
 - `intellij-local-profile-setup.md`
 - `document-format-guideline.md`
@@ -40,6 +41,7 @@
 - 実装命名規則
 - バリデーションメッセージ運用
 - テストコード規約
+- Javadoc 生成手順
 - ログ運用
 - IntelliJ / local プロファイル設定
 - ドキュメントフォーマット統一

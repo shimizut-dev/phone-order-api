@@ -43,7 +43,7 @@ public class TraceIdFilter extends OncePerRequestFilter {
     private static final String TRACE_ID_HEADER = "X-Trace-Id";
 
     /**
-     * トレースIDを設定してフィルタチェーンを実行する。
+     * トレースIDを設定してフィルタチェーンを実行する
      *
      * @param request     HTTPリクエスト
      * @param response    HTTPレスポンス

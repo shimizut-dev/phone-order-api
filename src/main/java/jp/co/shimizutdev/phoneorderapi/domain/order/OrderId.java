@@ -16,14 +16,14 @@ import java.util.UUID;
 public class OrderId {
 
     /**
-     * 値
+     * 注文ID
      */
     private final UUID value;
 
     /**
      * コンストラクタ
      *
-     * @param value 値
+     * @param value 注文ID
      */
     private OrderId(final UUID value) {
         this.value = Objects.requireNonNull(value, "注文IDは必須です。");

@@ -37,7 +37,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     /**
      * 注文一覧を取得する
      *
-     * @return 注文一覧
+     * @return 注文一覧。存在しない場合は空リスト
      * @throws InvalidPersistedOrderException 永続化済み注文データが不正な場合
      */
     @Override
@@ -51,7 +51,7 @@ public class OrderRepositoryImpl implements OrderRepository {
      * 注文コードで注文を取得する
      *
      * @param orderCode 注文コード
-     * @return 注文
+     * @return 注文。存在しない場合は空の Optional
      * @throws InvalidPersistedOrderException 永続化済み注文データが不正な場合
      */
     @Override

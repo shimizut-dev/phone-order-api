@@ -29,7 +29,7 @@ public class OrderService {
     /**
      * 注文一覧を取得する
      *
-     * @return 注文一覧
+     * @return 注文一覧。存在しない場合は空リスト
      */
     public List<Order> getOrders() {
         return orderRepository.findAll();
@@ -80,7 +80,7 @@ public class OrderService {
     }
 
     /**
-     * 注文コードで注文を取得し、存在しない場合は注文未存在例外を発生させる。
+     * 注文コードで注文を取得し、存在しない場合は注文未存在例外を発生させる
      *
      * @param orderCode 注文コード
      * @return 注文

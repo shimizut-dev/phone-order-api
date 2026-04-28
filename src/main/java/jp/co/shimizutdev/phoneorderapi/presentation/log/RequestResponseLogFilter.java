@@ -46,7 +46,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     private final LogMasker logMasker;
 
     /**
-     * リクエスト / レスポンスのログを出力する。
+     * リクエスト / レスポンスのログを出力する
      *
      * @param request     HTTPリクエスト
      * @param response    HTTPレスポンス
@@ -81,7 +81,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * リクエストをラップする。
+     * リクエストをラップする
      *
      * @param request HTTPリクエスト
      * @return ラップ済みリクエスト
@@ -94,7 +94,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * レスポンスをラップする。
+     * レスポンスをラップする
      *
      * @param response HTTPレスポンス
      * @return ラップ済みレスポンス
@@ -107,7 +107,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * リクエストログを出力する。
+     * リクエストログを出力する
      *
      * @param request HTTPリクエスト
      */
@@ -126,10 +126,10 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * パラメータを取得する。
+     * パラメータを取得する
      *
      * @param request HTTPリクエスト
-     * @return パラメータ
+     * @return パラメータ文字列。存在しない場合は空文字
      */
     private String getParameters(final ContentCachingRequestWrapper request) {
         return request.getParameterMap().entrySet().stream()
@@ -138,10 +138,10 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * リクエストヘッダーを取得する。
+     * リクエストヘッダーを取得する
      *
      * @param request HTTPリクエスト
-     * @return ヘッダー
+     * @return リクエストヘッダー文字列。存在しない場合は空文字
      */
     private String getHeaders(final ContentCachingRequestWrapper request) {
         return Collections.list(request.getHeaderNames()).stream()
@@ -150,10 +150,10 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * レスポンスヘッダーを取得する。
+     * レスポンスヘッダーを取得する
      *
      * @param response HTTPレスポンス
-     * @return ヘッダー
+     * @return レスポンスヘッダー文字列。存在しない場合は空文字
      */
     private String getHeaders(final ContentCachingResponseWrapper response) {
         return response.getHeaderNames().stream()
@@ -162,7 +162,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * リクエスト / レスポンスの完了後ログを出力する。
+     * リクエスト / レスポンスの完了後ログを出力する
      *
      * @param request        HTTPリクエスト
      * @param response       HTTPレスポンス
@@ -193,7 +193,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * リクエスト本文を取得する。
+     * リクエスト本文を取得する
      *
      * @param request HTTPリクエスト
      * @return リクエスト本文
@@ -207,7 +207,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * レスポンス本文を取得する。
+     * レスポンス本文を取得する
      *
      * @param response HTTPレスポンス
      * @return レスポンス本文
@@ -221,7 +221,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 本文を取得する。
+     * 本文を取得する
      *
      * @param contentType Content-Type
      * @param encoding    文字コード名
@@ -245,10 +245,10 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Content-Type がログ出力対象か判定する。
+     * Content-Type がログ出力対象か判定する
      *
      * @param contentType Content-Type
-     * @return 判定結果
+     * @return Content-Type がログ出力対象の場合 true
      */
     private boolean isLoggableContentType(final String contentType) {
         if (contentType == null || contentType.isBlank()) {
@@ -263,7 +263,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * リクエストIDを取得する。
+     * リクエストIDを取得する
      *
      * @param request HTTPリクエスト
      * @return リクエストID
@@ -277,7 +277,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * クライアントIPアドレスを取得する。
+     * クライアントIPアドレスを取得する
      *
      * @param request HTTPリクエスト
      * @return クライアントIPアドレス
@@ -291,7 +291,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 文字コードを取得する。
+     * 文字コードを取得する
      *
      * @param encoding 文字コード名
      * @return 文字コード
@@ -304,7 +304,7 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 本文を最大文字数に省略する。
+     * 本文を最大文字数に省略する
      *
      * @param body 本文
      * @return 省略後本文
@@ -322,10 +322,10 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * null を空文字へ変換する。
+     * null を空文字へ変換する
      *
-     * @param value 値
-     * @return 変換後の値
+     * @param value 変換対象文字列
+     * @return null の場合は空文字、それ以外の場合は変換対象文字列
      */
     private String nullToEmpty(final String value) {
         return value == null ? "" : value;

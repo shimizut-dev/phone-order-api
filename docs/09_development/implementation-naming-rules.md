@@ -500,108 +500,15 @@ OrderJpaEntity save(OrderJpaEntity entity);
 
 ## Javadoc の記載ルール
 
-Javadoc は日本語で記載する。  
-命名ルールと対応する日本語を使用する。
-
-### `@throws` の記載ルール
-
-`@throws` は checked exception だけでなく、呼び出し側が仕様として知るべき `RuntimeException` にも記載する。
-
-記載する例:
-
-- 業務ルール違反を表す例外
-- ユースケース上、呼び出し側が結果として扱うべき例外
-- 値オブジェクトや変換処理で、入力値・永続化済みデータの不正を表す例外
-
-記載しない例:
-
-- プログラミングミスや内部実装都合の例外
-- 通常は発生させない想定外例外
-- `NullPointerException` など、メソッド仕様として扱わない低レベル例外
-
-例:
-
-```text
-/**
- * 注文をキャンセルする
- *
- * @param orderCode 注文コード
- * @param version   キャンセル要求時の注文バージョン
- * @return 注文
- * @throws IllegalArgumentException 注文コードまたはバージョンが不正な場合
- * @throws OrderNotFoundException 注文コードに対応する注文が存在しない場合
- * @throws OrderCannotBeCancelledException 注文の状態によりキャンセルできない場合
- * @throws OrderVersionConflictException 注文のバージョンが一致しない場合
- */
-public Order cancelOrder(String orderCode, long version) {
-    // ...
-}
-```
-
-### presentation の例
-
-```text
-/**
- * 注文一覧を取得
- *
- * @return 注文レスポンス一覧
- */
-public List<OrderResponse> getOrders() {
-    // ...
-}
-
-/**
- * 注文コードで注文を取得
- *
- * @param orderCode 注文コード
- * @return 注文レスポンス
- */
-public OrderResponse getOrderByOrderCode(String orderCode) {
-    // ...
-}
-```
-
-### application の例
-
-```text
-/**
- * 注文一覧を取得する
- *
- * @return 注文一覧
- */
-public List<Order> getOrders() {
-    // ...
-}
-
-/**
- * 注文コードで注文を取得する
- *
- * @param orderCode 注文コード
- * @return 注文
- * @throws OrderNotFoundException 注文コードに対応する注文が存在しない場合
- */
-public Order getOrderByOrderCode(String orderCode) {
-    // ...
-}
-```
+Javadoc の共通記載ルールと生成手順は `javadoc-generation-guideline.md` を正本とする。
+本資料では実装命名ルールのみを扱い、Javadoc の詳細な記載例、`@param`、`@return`、`@throws`、テスト Javadoc のルールは
+`javadoc-generation-guideline.md` を参照する。
 
 - 参照系で存在しない可能性をそのまま返す場合は `Optional` を使う
 - 参照系でもユースケース上「対象が必要」な場合は `Optional` を返さず、未存在は例外で表現する
 - 登録系・更新系は `Optional` を返さず、未存在は例外で表現する
 
-### domain Repository の例
-
-```text
-/**
- * 注文コードで注文を取得する
- *
- * @param orderCode 注文コード
- * @return 注文
- */
-Optional<Order> findByOrderCode(OrderCode orderCode);
-```
-
-### Request / Response の例
+### Request / Response の補足
 
 ```text
 // API 入出力モデルは OpenAPI から生成する。

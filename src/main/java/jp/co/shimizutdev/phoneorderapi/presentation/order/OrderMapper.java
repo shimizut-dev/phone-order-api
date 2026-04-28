@@ -22,7 +22,7 @@ public class OrderMapper {
      * 注文を注文レスポンスへ変換する
      *
      * @param order 注文
-     * @return 注文レスポンス
+     * @return 注文レスポンス。注文が null の場合は null
      */
     public static OrderResponse toResponse(final Order order) {
         if (order == null) {
@@ -41,7 +41,7 @@ public class OrderMapper {
      * 注文一覧を注文レスポンス一覧へ変換する
      *
      * @param orders 注文一覧
-     * @return 注文レスポンス一覧
+     * @return 注文レスポンス一覧。注文一覧が null の場合は空リスト
      */
     public static List<OrderResponse> toResponses(final List<Order> orders) {
         if (orders == null) {

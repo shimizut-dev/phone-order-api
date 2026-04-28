@@ -15,19 +15,19 @@ import java.time.OffsetDateTime;
 public class OrderedAt {
 
     /**
-     * 注文日時未指定時の例外メッセージ。
+     * 注文日時未指定時の例外メッセージ
      */
     private static final String REQUIRED_MESSAGE = "注文日時は必須です。";
 
     /**
-     * 値
+     * 注文日時
      */
     private final OffsetDateTime value;
 
     /**
      * コンストラクタ
      *
-     * @param value 値
+     * @param value 注文日時
      */
     private OrderedAt(final OffsetDateTime value) {
         if (value == null) {

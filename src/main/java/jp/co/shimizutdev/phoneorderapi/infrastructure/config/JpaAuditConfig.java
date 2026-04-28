@@ -42,7 +42,7 @@ public class JpaAuditConfig {
     /**
      * 現在の HTTP リクエストを取得する
      *
-     * @return HTTP リクエスト
+     * @return HTTP リクエスト。存在しない場合は空の Optional
      */
     private Optional<HttpServletRequest> currentRequest() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())

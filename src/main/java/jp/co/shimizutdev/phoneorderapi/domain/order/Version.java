@@ -13,19 +13,19 @@ import lombok.ToString;
 public class Version {
 
     /**
-     * バージョン値不正時の例外メッセージ。
+     * バージョン値不正時の例外メッセージ
      */
     private static final String INVALID_VALUE_MESSAGE = "バージョンは0以上である必要があります。";
 
     /**
-     * 値
+     * バージョン値
      */
     private final long value;
 
     /**
      * コンストラクタ
      *
-     * @param value 値
+     * @param value バージョン値
      */
     private Version(final long value) {
         if (value < 0) {

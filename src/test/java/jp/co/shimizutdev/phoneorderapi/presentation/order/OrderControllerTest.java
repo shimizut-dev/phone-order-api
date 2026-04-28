@@ -59,14 +59,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文一覧を取得できること。
-         *
          * Given 注文データが複数件登録されている
          * When 注文一覧取得APIを実行する
          * Then 200 OK と注文一覧が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文一覧を取得できること")
@@ -86,14 +82,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文一覧取得時に想定外エラーが発生した場合は500を返すこと。
-         *
          * Given 注文サービスでRuntimeExceptionが発生する
          * When 注文一覧取得APIを実行する
          * Then 500 Internal Server Errorが返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文一覧取得時に想定外エラーが発生した場合は500を返すこと")
@@ -118,14 +110,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文コードで注文を取得できること。
-         *
          * Given 注文データが登録されている
          * When 注文コードで注文取得APIを実行する
          * Then 200 OK と注文情報が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文コードで注文を取得できること")
@@ -142,14 +130,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文コードに対応する注文が存在しない場合は404を返すこと。
-         *
          * Given 対象注文が登録されていない
          * When 注文コードで注文取得APIを実行する
          * Then 404 Not Found が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文コードに対応する注文が存在しない場合は404を返すこと")
@@ -161,14 +145,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文コード形式が不正な場合は400を返すこと。
-         *
          * Given 不正形式の注文コードを用意する
          * When 注文コードで注文取得APIを実行する
          * Then 400 Bad Request が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文コード形式が不正な場合は400を返すこと")
@@ -185,14 +165,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文取得時に想定外エラーが発生した場合は500を返すこと。
-         *
          * Given 注文サービスでRuntimeExceptionが発生する
          * When 注文コードで注文取得APIを実行する
          * Then 500 Internal Server Error が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文取得時に想定外エラーが発生した場合は500を返すこと")
@@ -212,14 +188,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * DB上の注文ステータスが不正な場合は500を返すこと。
-         *
          * Given DBに不正な注文ステータスの注文データが登録されている
          * When 注文コードで注文取得APIを実行する
          * Then 500 Internal Server Error が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("DB上の注文ステータスが不正な場合は500を返すこと")
@@ -243,14 +215,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文を登録できること。
-         *
          * Given 正常な注文リクエストを用意する
          * When 注文登録APIを実行する
          * Then 201 Created と登録された注文情報が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文を登録できること")
@@ -272,14 +240,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 必須項目が不足している場合は400を返すこと。
-         *
          * Given 必須項目が不足したリクエストを用意する
          * When 注文登録APIを実行する
          * Then 400 Bad Request と入力エラー情報が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("必須項目が不足している場合は400を返すこと")
@@ -296,14 +260,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 不正形式のリクエストボディの場合は400を返すこと。
-         *
          * Given 不正形式のリクエストボディを用意する
          * When 注文登録APIを実行する
          * Then 400 Bad Request と形式不正メッセージが返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("不正形式のリクエストボディの場合は400を返すこと")
@@ -324,14 +284,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文登録時に想定外エラーが発生した場合は500を返すこと。
-         *
          * Given 注文サービスでRuntimeExceptionが発生する
          * When 注文登録APIを実行する
          * Then 500 Internal Server Error が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文登録時に想定外エラーが発生した場合は500を返すこと")
@@ -364,14 +320,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文をキャンセルできること。
-         *
          * Given 注文データが登録されている
          * When 注文キャンセルAPIを実行する
          * Then 200 OK とキャンセル済み注文情報が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文をキャンセルできること")
@@ -396,14 +348,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * versionが不足している場合は400を返すこと。
-         *
          * Given versionが不足したキャンセルリクエストを用意する
          * When 注文キャンセルAPIを実行する
          * Then 400 Bad Request と入力エラー情報が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("version未指定は400になる")
@@ -421,14 +369,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文コードに対応する注文が存在しない場合は404を返すこと。
-         *
          * Given 対象注文が登録されていない
          * When 注文キャンセルAPIを実行する
          * Then 404 Not Found が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文コードに対応する注文が存在しない場合は404を返すこと")
@@ -448,14 +392,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * キャンセル対象の注文コード形式が不正な場合は400を返すこと。
-         *
          * Given 不正形式の注文コードを用意する
          * When 注文キャンセルAPIを実行する
          * Then 400 Bad Request が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("キャンセル対象の注文コード形式が不正な場合は400を返すこと")
@@ -480,14 +420,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * キャンセル不可状態の注文は409を返すこと。
-         *
          * Given 完了状態の注文データが登録されている
          * When 注文キャンセルAPIを実行する
          * Then 409 Conflict が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("キャンセル不可状態の注文は409を返すこと")
@@ -510,14 +446,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * stale version の注文キャンセルは409を返すこと。
-         *
          * Given 対象注文が登録されている
          * When 古いversionで注文キャンセルAPIを実行する
          * Then 409 Conflict が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("stale version は409になる")
@@ -540,14 +472,10 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
-         * 注文キャンセル時に想定外エラーが発生した場合は500を返すこと。
-         *
          * Given 注文サービスでRuntimeExceptionが発生する
          * When 注文キャンセルAPIを実行する
          * Then 500 Internal Server Error が返る
          * </pre>
-         *
-         * @throws Exception 例外
          */
         @Test
         @DisplayName("注文キャンセル時に想定外エラーが発生した場合は500を返すこと")

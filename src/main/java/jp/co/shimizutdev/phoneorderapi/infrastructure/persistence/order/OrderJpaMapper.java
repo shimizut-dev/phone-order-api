@@ -8,32 +8,32 @@ import jp.co.shimizutdev.phoneorderapi.domain.order.*;
 public class OrderJpaMapper {
 
     /**
-     * 永続化済み注文データの注文ID不正時の例外メッセージ。
+     * 永続化済み注文データの注文ID不正時の例外メッセージ
      */
     private static final String INVALID_ORDER_ID_MESSAGE = "永続化済み注文データの注文IDが不正です。";
 
     /**
-     * 永続化済み注文データの注文コード不正時の例外メッセージ。
+     * 永続化済み注文データの注文コード不正時の例外メッセージ
      */
     private static final String INVALID_ORDER_CODE_MESSAGE = "永続化済み注文データの注文コードが不正です。";
 
     /**
-     * 永続化済み注文データの注文日時不正時の例外メッセージ。
+     * 永続化済み注文データの注文日時不正時の例外メッセージ
      */
     private static final String INVALID_ORDERED_AT_MESSAGE = "永続化済み注文データの注文日時が不正です。";
 
     /**
-     * 永続化済み注文データの注文ステータス不正時の例外メッセージ。
+     * 永続化済み注文データの注文ステータス不正時の例外メッセージ
      */
     private static final String INVALID_ORDER_STATUS_MESSAGE = "永続化済み注文データの注文ステータスが不正です。";
 
     /**
-     * 永続化済み注文データのバージョン不正時の例外メッセージ。
+     * 永続化済み注文データのバージョン不正時の例外メッセージ
      */
     private static final String INVALID_ORDER_VERSION_MESSAGE = "永続化済み注文データのバージョンが不正です。";
 
     /**
-     * コンストラクタ(インスタンス化を禁止)
+     * コンストラクタ(インスタンス化を防止)
      */
     private OrderJpaMapper() {
     }
@@ -56,8 +56,8 @@ public class OrderJpaMapper {
     }
 
     /**
-     * 新規登録用の注文を注文JPAエンティティへ変換する。
-     * `@Version` の初期値は JPA に採番させるため設定しない。
+     * 新規登録用の注文を注文JPAエンティティへ変換する
+     * `@Version` の初期値は JPA に採番させるため設定しない
      *
      * @param order 注文
      * @return 注文JPAエンティティ

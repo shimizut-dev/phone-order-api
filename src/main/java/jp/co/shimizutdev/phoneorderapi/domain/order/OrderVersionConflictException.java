@@ -6,19 +6,19 @@ package jp.co.shimizutdev.phoneorderapi.domain.order;
 public class OrderVersionConflictException extends RuntimeException {
 
     /**
-     * キャンセル要求時のバージョン競合を表すログ用メッセージテンプレート。
+     * キャンセル要求時のバージョン競合を表すログ用メッセージテンプレート
      */
     private static final String CANCEL_MESSAGE_TEMPLATE =
         "注文のバージョンが競合しています: orderId=%s, orderCode=%s, currentVersion=%d, requestedVersion=%d";
 
     /**
-     * 更新時のバージョン競合を表すログ用メッセージテンプレート。
+     * 更新時のバージョン競合を表すログ用メッセージテンプレート
      */
     private static final String UPDATE_MESSAGE_TEMPLATE =
         "注文のバージョンが競合しています: orderId=%s, orderCode=%s, version=%d";
 
     /**
-     * 指定されたメッセージを持つ例外を生成する。
+     * コンストラクタ
      *
      * @param message 例外メッセージ
      */
@@ -27,7 +27,7 @@ public class OrderVersionConflictException extends RuntimeException {
     }
 
     /**
-     * 要求バージョンと現在バージョンが一致しない場合の例外を生成する。
+     * 要求バージョンと現在バージョンが一致しない場合の例外を生成する
      *
      * @param order            バージョン競合が発生した注文
      * @param requestedVersion 要求されたバージョン
@@ -48,7 +48,7 @@ public class OrderVersionConflictException extends RuntimeException {
     }
 
     /**
-     * 永続化層で注文更新対象が見つからない場合の例外を生成する。
+     * 永続化層で注文更新対象が見つからない場合の例外を生成する
      *
      * @param order 更新対象の注文
      * @return 注文バージョン競合例外

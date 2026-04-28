@@ -16,7 +16,7 @@ public enum OrderStatus {
     CANCELLED("006", "キャンセル");
 
     /**
-     * 注文ステータスコード不正時の例外メッセージ。
+     * 注文ステータスコード不正時の例外メッセージ
      */
     private static final String INVALID_CODE_MESSAGE = "注文ステータスコードが不正です。";
 
@@ -64,7 +64,7 @@ public enum OrderStatus {
      * 注文ステータスコードが有効か判定する
      *
      * @param code 注文ステータスコード
-     * @return 判定結果
+     * @return 注文ステータスコードが有効な場合 true
      */
     public static boolean isValidCode(final String code) {
         return switch (code) {

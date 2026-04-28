@@ -6,13 +6,13 @@ package jp.co.shimizutdev.phoneorderapi.domain.order;
 public class OrderCannotBeCancelledException extends RuntimeException {
 
     /**
-     * 注文キャンセル不可時のログ用メッセージテンプレート。
+     * 注文キャンセル不可時のログ用メッセージテンプレート
      */
     private static final String MESSAGE_TEMPLATE =
         "注文をキャンセルできません: orderId=%s, orderCode=%s, status=%s";
 
     /**
-     * 指定されたメッセージを持つ例外を生成する。
+     * コンストラクタ
      *
      * @param message 例外メッセージ
      */
@@ -21,7 +21,7 @@ public class OrderCannotBeCancelledException extends RuntimeException {
     }
 
     /**
-     * 注文の状態によりキャンセルできない場合の例外を生成する。
+     * 注文の状態によりキャンセルできない場合の例外を生成する
      *
      * @param order キャンセルできない注文
      * @return 注文キャンセル不可例外
