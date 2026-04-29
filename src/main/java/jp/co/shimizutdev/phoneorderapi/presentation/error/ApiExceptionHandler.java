@@ -7,6 +7,7 @@ import jakarta.validation.Path;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCannotBeCancelledException;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderNotFoundException;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderVersionConflictException;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.config.InvalidAuditorException;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.InvalidPersistedOrderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,6 +136,29 @@ public class ApiExceptionHandler {
         return buildErrorResponse(
             HttpStatus.BAD_REQUEST,
             ApiErrorMessages.INVALID_REQUEST_BODY,
+            request,
+            List.of()
+        );
+    }
+
+    /**
+     * 監査ユーザー不正例外を 400 Bad Request に変換する
+     *
+     * @param ex      監査ユーザー不正例外
+     * @param request HTTP リクエスト
+     * @return API エラーレスポンス
+     */
+    @SuppressWarnings("unused")
+    @ExceptionHandler(InvalidAuditorException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidAuditorException(
+        final InvalidAuditorException ex,
+        final HttpServletRequest request) {
+
+        logHandledException(ApiErrorMessages.INVALID_AUDITOR, request, ex);
+
+        return buildErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            ApiErrorMessages.INVALID_AUDITOR,
             request,
             List.of()
         );

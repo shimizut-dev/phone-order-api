@@ -267,6 +267,8 @@ order_line_kind varchar(10) not null
 | 作成者  | `created_by` | `varchar(50)` | `not null` |
 | 更新日時 | `updated_at` | `timestamptz` | `not null` |
 | 更新者  | `updated_by` | `varchar(50)` | `not null` |
+| 削除日時 | `deleted_at` | `timestamptz` | nullable   |
+| 削除者  | `deleted_by` | `varchar(50)` | nullable   |
 
 例
 
@@ -274,8 +276,16 @@ order_line_kind varchar(10) not null
 created_at timestamptz not null default CURRENT_TIMESTAMP,
 created_by varchar(50) not null,
 updated_at timestamptz not null default CURRENT_TIMESTAMP,
-updated_by varchar(50) not null
+updated_by varchar(50) not null,
+deleted_at timestamptz,
+deleted_by varchar(50)
 ```
+
+補足
+
+- `created_by` / `updated_by` / `deleted_by` に保存する監査ユーザーは 50 文字以内とする
+- アプリケーションは `X-User-Id`、`X-User-Name`、`X-Actor` の順で監査ユーザーを解決する
+- 監査ユーザーが 50 文字を超える場合は、DB エラーではなく API 入力不正として扱う
 
 ---
 

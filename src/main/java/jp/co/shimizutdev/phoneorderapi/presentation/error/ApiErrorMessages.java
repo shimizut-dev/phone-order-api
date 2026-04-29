@@ -16,6 +16,11 @@ public final class ApiErrorMessages {
     public static final String INVALID_REQUEST_BODY = "リクエストボディの形式が不正です。";
 
     /**
+     * 監査ユーザーが不正な場合のメッセージ
+     */
+    public static final String INVALID_AUDITOR = "監査ユーザーは50文字以内で指定してください。";
+
+    /**
      * サーバー内部でエラーが発生した場合のメッセージ
      */
     public static final String INTERNAL_SERVER_ERROR = "サーバー内部でエラーが発生しました。";
