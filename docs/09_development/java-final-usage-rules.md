@@ -40,7 +40,7 @@ private final String value;
 例:
 
 ```java
-public Order getOrderByOrderCode(final String orderCode) {
+public Order getOrderByOrderCode(final OrderCode orderCode) {
     // ...
 }
 ```
@@ -72,7 +72,7 @@ public Order getOrderByOrderCode(final String orderCode) {
 例:
 
 ```java
-public Order createOrder(final OffsetDateTime orderedAt) {
+public Order createOrder(final OrderedAt orderedAt) {
     // ...
 }
 

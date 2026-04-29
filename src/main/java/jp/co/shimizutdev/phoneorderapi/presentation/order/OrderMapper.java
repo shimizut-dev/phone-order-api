@@ -1,6 +1,8 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
+import jp.co.shimizutdev.phoneorderapi.domain.common.PageResult;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
+import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderPageResponse;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 
 import java.util.Collections;
@@ -52,5 +54,26 @@ public class OrderMapper {
             .map(OrderMapper::toResponse)
             .filter(Objects::nonNull)
             .toList();
+    }
+
+    /**
+     * ページング済みの注文一覧をページング済みの注文レスポンスへ変換する
+     *
+     * @param orders ページング済みの注文一覧
+     * @return ページング済みの注文レスポンス
+     * @throws NullPointerException ページング済みの注文一覧が null の場合
+     */
+    public static OrderPageResponse toPageResponse(final PageResult<Order> orders) {
+        Objects.requireNonNull(orders, "ページング済み注文一覧は必須です。");
+
+        return new OrderPageResponse(
+            toResponses(orders.items()),
+            orders.page(),
+            orders.size(),
+            orders.totalElements(),
+            orders.totalPages(),
+            orders.hasNext(),
+            orders.hasPrevious()
+        );
     }
 }

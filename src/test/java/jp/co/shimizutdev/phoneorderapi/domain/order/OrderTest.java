@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,7 +16,7 @@ class OrderTest {
 
     /**
      * <pre>
-     * Given 注文日時と注文コード採番を用意する
+     * Given 注文日時と注文コードを用意する
      * When 注文を登録する
      * Then 注文コードと注文日時と初期ステータスが設定される
      * </pre>
@@ -29,10 +30,10 @@ class OrderTest {
 
         Order actual = Order.create(orderCode, actualOrderedAt);
 
-        assertEquals(OrderCode.of("ORD000001"), actual.getOrderCode());
-        assertEquals(actualOrderedAt, actual.getOrderedAt());
-        assertEquals(OrderStatus.RECEIVED, actual.getOrderStatus());
-        assertEquals(Version.of(0L), actual.getVersion());
+        assertEquals("ORD000001", actual.getOrderCode().getValue());
+        assertEquals("2026-04-09T10:15:30+09:00", actual.getOrderedAt().getValue().toString());
+        assertEquals("001", actual.getOrderStatus().getCode());
+        assertEquals(0L, actual.getVersion().getValue());
     }
 
     /**
@@ -47,7 +48,7 @@ class OrderTest {
     void shouldCancelOrder() {
         OffsetDateTime orderedAt = OffsetDateTime.parse("2026-04-09T10:15:30+09:00");
         Order order = Order.reconstruct(
-            OrderId.generate(),
+            OrderId.of(UUID.fromString("00000000-0000-0000-0000-000000000001")),
             OrderCode.of("ORD000001"),
             OrderedAt.of(orderedAt),
             OrderStatus.RECEIVED,
@@ -56,11 +57,11 @@ class OrderTest {
 
         Order actual = order.cancel(Version.of(3L));
 
-        assertEquals(OrderStatus.CANCELLED, actual.getOrderStatus());
-        assertEquals(order.getOrderId(), actual.getOrderId());
-        assertEquals(order.getOrderCode(), actual.getOrderCode());
-        assertEquals(order.getOrderedAt(), actual.getOrderedAt());
-        assertEquals(Version.of(3L), actual.getVersion());
+        assertEquals("006", actual.getOrderStatus().getCode());
+        assertEquals("00000000-0000-0000-0000-000000000001", actual.getOrderId().getValue().toString());
+        assertEquals("ORD000001", actual.getOrderCode().getValue());
+        assertEquals("2026-04-09T10:15:30+09:00", actual.getOrderedAt().getValue().toString());
+        assertEquals(3L, actual.getVersion().getValue());
     }
 
     /**
@@ -74,7 +75,7 @@ class OrderTest {
     @DisplayName("完了済み注文はキャンセルできないこと")
     void shouldThrowExceptionWhenCompletedOrderIsCancelled() {
         Order order = Order.reconstruct(
-            OrderId.generate(),
+            OrderId.of(UUID.fromString("00000000-0000-0000-0000-000000000002")),
             OrderCode.of("ORD000001"),
             OrderedAt.of(OffsetDateTime.parse("2026-04-09T10:15:30+09:00")),
             OrderStatus.COMPLETED,
@@ -82,9 +83,14 @@ class OrderTest {
         );
         Version requestedVersion = Version.of(1L);
 
-        assertThrows(
+        OrderCannotBeCancelledException actual = assertThrows(
             OrderCannotBeCancelledException.class,
             () -> order.cancel(requestedVersion)
+        );
+
+        assertEquals(
+            "注文をキャンセルできません: orderId=00000000-0000-0000-0000-000000000002, orderCode=ORD000001, status=COMPLETED",
+            actual.getMessage()
         );
     }
 
@@ -99,7 +105,7 @@ class OrderTest {
     @DisplayName("stale version でキャンセルすると競合例外になる")
     void shouldThrowExceptionWhenVersionDoesNotMatch() {
         Order order = Order.reconstruct(
-            OrderId.generate(),
+            OrderId.of(UUID.fromString("00000000-0000-0000-0000-000000000003")),
             OrderCode.of("ORD000001"),
             OrderedAt.of(OffsetDateTime.parse("2026-04-09T10:15:30+09:00")),
             OrderStatus.RECEIVED,
@@ -107,9 +113,14 @@ class OrderTest {
         );
         Version requestedVersion = Version.of(2L);
 
-        assertThrows(
+        OrderVersionConflictException actual = assertThrows(
             OrderVersionConflictException.class,
             () -> order.cancel(requestedVersion)
+        );
+
+        assertEquals(
+            "注文のバージョンが競合しています: orderId=00000000-0000-0000-0000-000000000003, orderCode=ORD000001, currentVersion=1, requestedVersion=2",
+            actual.getMessage()
         );
     }
 }

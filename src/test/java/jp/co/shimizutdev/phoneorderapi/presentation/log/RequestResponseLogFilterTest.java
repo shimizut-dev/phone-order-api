@@ -41,6 +41,8 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
         mockMvc.perform(post("/api/v1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer secret-token")
+                .header("X-Request-Id", "request-123")
+                .header("X-Forwarded-For", "203.0.113.10, 203.0.113.11")
                 .content("""
                     {
                       "orderedAt": "invalid-date-time",
@@ -52,10 +54,27 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
         assertThat(output)
             .contains("[request] http method: POST")
             .contains("[request] request uri: /api/v1/orders")
+            .contains("[request] content-type: application/json")
+            .contains("[request] client ip: 203.0.113.10")
+            .contains("[request] request id: request-123")
+            .contains("[request] query string:")
+            .contains("[request] parameters:")
             .contains("Authorization=****")
+            .contains("X-Request-Id=request-123")
+            .contains("X-Forwarded-For=203.0.113.10, 203.0.113.11")
             .contains("[request] body:")
+            .contains("\"orderedAt\":\"invalid-date-time\"")
             .contains("\"password\":\"****\"")
             .contains("[response] status: 400")
-            .contains("[response] body:");
+            .contains("[response] content-type: application/json")
+            .contains("[response] duration(ms):")
+            .contains("[response] headers:")
+            .contains("[response] body:")
+            .contains("\"status\":400")
+            .contains("\"error\":\"BAD_REQUEST\"")
+            .contains("\"message\":\"リクエストボディの形式が不正です。\"")
+            .contains("\"path\":\"/api/v1/orders\"")
+            .contains("\"validationErrors\":[]")
+            .contains("[response] size(bytes):");
     }
 }

@@ -1,6 +1,8 @@
 package jp.co.shimizutdev.phoneorderapi.domain.order;
 
 import jakarta.persistence.EntityManager;
+import jp.co.shimizutdev.phoneorderapi.domain.common.PageResult;
+import jp.co.shimizutdev.phoneorderapi.domain.common.PagingCondition;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.config.JpaAuditConfig;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaRepository;
@@ -16,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -67,24 +68,90 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
     /**
      * <pre>
      * Given 注文データが複数件登録されている
-     * When 注文一覧を取得する
-     * Then 登録された注文一覧が返る
+     * When ページング条件を指定して注文一覧を取得する
+     * Then 注文日時降順、同一日時は注文コード降順のページング済み注文一覧とページ情報が返る
      * </pre>
      */
     @Test
-    @DisplayName("注文一覧を取得できること")
+    @DisplayName("注文一覧を注文日時降順かつ注文コード降順で取得できること")
     void shouldFindAllOrders() {
         OffsetDateTime orderedAt = OffsetDateTime.parse("2026-04-09T10:15:30+09:00");
-        insertOrder(UUID.randomUUID(), "ORD000001", orderedAt, "001", 0L);
-        insertOrder(UUID.randomUUID(), "ORD000002", orderedAt, "002", 1L);
+        insertOrder(UUID.fromString("00000000-0000-0000-0000-000000000001"), "ORD000001", orderedAt, "001", 0L);
+        insertOrder(UUID.fromString("00000000-0000-0000-0000-000000000002"), "ORD000002", orderedAt, "002", 1L);
 
-        List<Order> actual = orderRepository.findAll();
+        PageResult<Order> actual = orderRepository.findAll(PagingCondition.of(0, 20));
 
+        assertEquals(2, actual.items().size());
+        assertEquals("00000000-0000-0000-0000-000000000002", actual.items().getFirst().getOrderId().getValue().toString());
+        assertEquals("ORD000002", actual.items().getFirst().getOrderCode().getValue());
+        assertEquals("2026-04-09T01:15:30Z", actual.items().getFirst().getOrderedAt().getValue().toInstant().toString());
+        assertEquals("002", actual.items().getFirst().getOrderStatus().getCode());
+        assertEquals(1L, actual.items().getFirst().getVersion().getValue());
+        assertEquals("00000000-0000-0000-0000-000000000001", actual.items().get(1).getOrderId().getValue().toString());
+        assertEquals("ORD000001", actual.items().get(1).getOrderCode().getValue());
+        assertEquals("2026-04-09T01:15:30Z", actual.items().get(1).getOrderedAt().getValue().toInstant().toString());
+        assertEquals("001", actual.items().get(1).getOrderStatus().getCode());
+        assertEquals(0L, actual.items().get(1).getVersion().getValue());
+        assertEquals(0, actual.page());
+        assertEquals(20, actual.size());
+        assertEquals(2, actual.totalElements());
+        assertEquals(1, actual.totalPages());
+        assertFalse(actual.hasNext());
+        assertFalse(actual.hasPrevious());
+    }
+
+    /**
+     * <pre>
+     * Given 注文データが3件登録されている
+     * When ページング条件を指定して注文一覧を取得する
+     * Then 指定ページの注文一覧とページ情報が返る
+     * </pre>
+     */
+    @Test
+    @DisplayName("注文一覧をページ指定で取得できること")
+    void shouldFindOrdersByPage() {
+        insertOrder(UUID.fromString("00000000-0000-0000-0000-000000000001"), "ORD000001", OffsetDateTime.parse("2026-04-09T10:00:00+09:00"), "001", 0L);
+        insertOrder(UUID.fromString("00000000-0000-0000-0000-000000000002"), "ORD000002", OffsetDateTime.parse("2026-04-09T11:00:00+09:00"), "001", 0L);
+        insertOrder(UUID.fromString("00000000-0000-0000-0000-000000000003"), "ORD000003", OffsetDateTime.parse("2026-04-09T12:00:00+09:00"), "001", 0L);
+
+        PageResult<Order> actual = orderRepository.findAll(PagingCondition.of(1, 2));
+
+        assertEquals(1, actual.items().size());
+        assertEquals("00000000-0000-0000-0000-000000000001", actual.items().getFirst().getOrderId().getValue().toString());
+        assertEquals("ORD000001", actual.items().getFirst().getOrderCode().getValue());
+        assertEquals("2026-04-09T01:00:00Z", actual.items().getFirst().getOrderedAt().getValue().toInstant().toString());
+        assertEquals("001", actual.items().getFirst().getOrderStatus().getCode());
+        assertEquals(0L, actual.items().getFirst().getVersion().getValue());
+        assertEquals(1, actual.page());
         assertEquals(2, actual.size());
-        assertTrue(actual.stream().anyMatch(order ->
-            OrderCode.of("ORD000001").equals(order.getOrderCode()) && Version.of(0L).equals(order.getVersion())));
-        assertTrue(actual.stream().anyMatch(order ->
-            OrderCode.of("ORD000002").equals(order.getOrderCode()) && Version.of(1L).equals(order.getVersion())));
+        assertEquals(3, actual.totalElements());
+        assertEquals(2, actual.totalPages());
+        assertFalse(actual.hasNext());
+        assertTrue(actual.hasPrevious());
+    }
+
+    /**
+     * <pre>
+     * Given 注文データが2件登録されている
+     * When 総ページ数を超えるページング条件を指定して注文一覧を取得する
+     * Then 空の注文一覧と指定ページのページ情報が返る
+     * </pre>
+     */
+    @Test
+    @DisplayName("範囲外ページは空ページを返すこと")
+    void shouldReturnEmptyPageWhenPageIsOutOfRange() {
+        insertOrder(UUID.fromString("00000000-0000-0000-0000-000000000001"), "ORD000001", OffsetDateTime.parse("2026-04-09T10:00:00+09:00"), "001", 0L);
+        insertOrder(UUID.fromString("00000000-0000-0000-0000-000000000002"), "ORD000002", OffsetDateTime.parse("2026-04-09T11:00:00+09:00"), "001", 0L);
+
+        PageResult<Order> actual = orderRepository.findAll(PagingCondition.of(2, 2));
+
+        assertEquals(0, actual.items().size());
+        assertEquals(2, actual.page());
+        assertEquals(2, actual.size());
+        assertEquals(2, actual.totalElements());
+        assertEquals(1, actual.totalPages());
+        assertFalse(actual.hasNext());
+        assertTrue(actual.hasPrevious());
     }
 
     /**
@@ -97,18 +164,18 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
     @Test
     @DisplayName("注文コードで注文を取得できること")
     void shouldFindOrderByOrderCode() {
-        UUID orderId = UUID.randomUUID();
+        UUID orderId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         OffsetDateTime orderedAt = OffsetDateTime.parse("2026-04-09T10:15:30+09:00");
         insertOrder(orderId, "ORD000001", orderedAt, "001", 2L);
 
         Optional<Order> actual = orderRepository.findByOrderCode(OrderCode.of("ORD000001"));
 
         assertTrue(actual.isPresent());
-        assertEquals(OrderId.of(orderId), actual.get().getOrderId());
-        assertEquals(OrderCode.of("ORD000001"), actual.get().getOrderCode());
-        assertEquals(orderedAt.toInstant(), actual.get().getOrderedAt().getValue().toInstant());
-        assertEquals(OrderStatus.RECEIVED, actual.get().getOrderStatus());
-        assertEquals(Version.of(2L), actual.get().getVersion());
+        assertEquals("00000000-0000-0000-0000-000000000001", actual.get().getOrderId().getValue().toString());
+        assertEquals("ORD000001", actual.get().getOrderCode().getValue());
+        assertEquals("2026-04-09T01:15:30Z", actual.get().getOrderedAt().getValue().toInstant().toString());
+        assertEquals("001", actual.get().getOrderStatus().getCode());
+        assertEquals(2L, actual.get().getVersion().getValue());
     }
 
     /**
@@ -136,7 +203,7 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
     @Test
     @DisplayName("注文を登録できること")
     void shouldCreateOrder() {
-        UUID orderId = UUID.randomUUID();
+        UUID orderId = UUID.fromString("00000000-0000-0000-0000-000000000002");
         OffsetDateTime orderedAt = OffsetDateTime.parse("2026-04-09T10:15:30+09:00");
         Order order = Order.reconstruct(
             OrderId.of(orderId),
@@ -149,11 +216,11 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
         Order actual = orderRepository.create(order);
         entityManager.clear();
 
-        assertEquals(OrderId.of(orderId), actual.getOrderId());
-        assertEquals(OrderCode.of("ORD000001"), actual.getOrderCode());
-        assertEquals(OrderedAt.of(orderedAt), actual.getOrderedAt());
-        assertEquals(OrderStatus.RECEIVED, actual.getOrderStatus());
-        assertEquals(Version.of(0L), actual.getVersion());
+        assertEquals("00000000-0000-0000-0000-000000000002", actual.getOrderId().getValue().toString());
+        assertEquals("ORD000001", actual.getOrderCode().getValue());
+        assertEquals("2026-04-09T01:15:30Z", actual.getOrderedAt().getValue().toInstant().toString());
+        assertEquals("001", actual.getOrderStatus().getCode());
+        assertEquals(0L, actual.getVersion().getValue());
 
         Optional<OrderJpaEntity> savedOrder = orderJpaRepository.findById(orderId);
         assertTrue(savedOrder.isPresent());
@@ -172,7 +239,7 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
     @Test
     @DisplayName("注文を更新できること")
     void shouldUpdateOrder() {
-        UUID orderId = UUID.randomUUID();
+        UUID orderId = UUID.fromString("00000000-0000-0000-0000-000000000003");
         OffsetDateTime orderedAt = OffsetDateTime.parse("2026-04-09T10:15:30+09:00");
         insertOrder(orderId, "ORD000001", orderedAt, "001", 0L);
 
@@ -187,14 +254,19 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
         Order actual = orderRepository.update(order);
         entityManager.clear();
 
-        assertEquals(OrderId.of(orderId), actual.getOrderId());
-        assertEquals(OrderCode.of("ORD000001"), actual.getOrderCode());
-        assertEquals(OrderStatus.CANCELLED, actual.getOrderStatus());
-        assertEquals(Version.of(1L), actual.getVersion());
+        assertEquals("00000000-0000-0000-0000-000000000003", actual.getOrderId().getValue().toString());
+        assertEquals("ORD000001", actual.getOrderCode().getValue());
+        assertEquals("2026-04-09T01:15:30Z", actual.getOrderedAt().getValue().toInstant().toString());
+        assertEquals("006", actual.getOrderStatus().getCode());
+        assertEquals(1L, actual.getVersion().getValue());
 
         Optional<OrderJpaEntity> savedOrder = orderJpaRepository.findById(orderId);
         assertTrue(savedOrder.isPresent());
+        assertEquals("00000000-0000-0000-0000-000000000003", savedOrder.get().getId().toString());
+        assertEquals("ORD000001", savedOrder.get().getOrderCode());
+        assertEquals("2026-04-09T01:15:30Z", savedOrder.get().getOrderedAt().toInstant().toString());
         assertEquals("006", savedOrder.get().getOrderStatus());
+        assertEquals("system", savedOrder.get().getCreatedBy());
         assertEquals("system", savedOrder.get().getUpdatedBy());
         assertEquals(1L, savedOrder.get().getVersion());
     }
@@ -209,7 +281,7 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
     @Test
     @DisplayName("stale version で更新すると競合例外になる")
     void shouldThrowExceptionWhenUpdatingWithStaleVersion() {
-        UUID orderId = UUID.randomUUID();
+        UUID orderId = UUID.fromString("00000000-0000-0000-0000-000000000004");
         OffsetDateTime orderedAt = OffsetDateTime.parse("2026-04-09T10:15:30+09:00");
         insertOrder(orderId, "ORD000001", orderedAt, "001", 1L);
 
@@ -221,9 +293,14 @@ class OrderRepositoryTest extends AbstractPostgreSQLTest {
             Version.of(0L)
         );
 
-        assertThrows(
+        OrderVersionConflictException actual = assertThrows(
             OrderVersionConflictException.class,
             () -> orderRepository.update(order)
+        );
+
+        assertEquals(
+            "注文のバージョンが競合しています: orderId=00000000-0000-0000-0000-000000000004, orderCode=ORD000001, version=0",
+            actual.getMessage()
         );
     }
 

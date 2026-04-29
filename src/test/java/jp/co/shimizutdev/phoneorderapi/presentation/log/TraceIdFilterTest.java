@@ -45,6 +45,7 @@ class TraceIdFilterTest {
         assertDoesNotThrow(() -> traceIdFilter.doFilter(request, response, filterChain));
 
         assertTrue(isUuid(actualTraceId.get()));
+        assertEquals(actualTraceId.get(), response.getHeader("X-Trace-Id"));
     }
 
     /**
@@ -68,6 +69,7 @@ class TraceIdFilterTest {
 
         assertEquals("request-123", actualTraceId.get());
         assertEquals("request-123", response.getHeader("X-Trace-Id"));
+        assertNull(MDC.get(TraceIdFilter.TRACE_ID_KEY));
     }
 
     /**

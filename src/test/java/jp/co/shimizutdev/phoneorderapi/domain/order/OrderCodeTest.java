@@ -43,12 +43,9 @@ class OrderCodeTest {
     @ValueSource(strings = {"   ", "ABC000001", "ORD00001"})
     @DisplayName("不正な形式の注文コードを生成しようとすると例外が発生すること")
     void shouldThrowExceptionWhenOrderCodeFormatIsInvalid(final String value) {
-        String expectedMessage =
-            assertThrows(IllegalArgumentException.class, () -> OrderCode.of("invalid")).getMessage();
-
         IllegalArgumentException actual =
             assertThrows(IllegalArgumentException.class, () -> OrderCode.of(value));
 
-        assertEquals(expectedMessage, actual.getMessage());
+        assertEquals("注文コード（ORD000001）の形式と不一致です。", actual.getMessage());
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,11 +73,9 @@ class LogMaskerTest {
 
         String actual = logMasker.maskText(text);
 
-        assertThat(actual)
-            .contains("\"token\":\"****\"")
-            .contains("\"email\":\"****\"")
-            .contains("\"password\":\"****\"")
-            .contains("\"name\":\"taro\"");
+        assertThat(actual).isEqualTo(
+            "{\"token\":\"****\",\"profile\":{\"email\":\"****\",\"name\":\"taro\"},\"children\":[{\"password\":\"****\"}]}"
+        );
     }
 
     /**
@@ -106,18 +105,16 @@ class LogMaskerTest {
     @Test
     @DisplayName("オブジェクトのマスク対象項目をマスクできること")
     void shouldMaskObjectFields() {
-        Map<String, String> request = Map.of(
-            "orderedAt", "2026-04-07T10:15:30+09:00",
-            "password", "secret-password",
-            "email", "taro@example.com"
-        );
+        Map<String, String> request = new LinkedHashMap<>();
+        request.put("orderedAt", "2026-04-07T10:15:30+09:00");
+        request.put("password", "secret-password");
+        request.put("email", "taro@example.com");
 
         String actual = logMasker.maskObject(request);
 
-        assertThat(actual)
-            .contains("\"orderedAt\":\"2026-04-07T10:15:30+09:00\"")
-            .contains("\"password\":\"****\"")
-            .contains("\"email\":\"****\"");
+        assertThat(actual).isEqualTo(
+            "{\"orderedAt\":\"2026-04-07T10:15:30+09:00\",\"password\":\"****\",\"email\":\"****\"}"
+        );
     }
 
 }
