@@ -40,26 +40,39 @@ paths:
       tags:
         - Orders
       summary: 注文一覧を取得する
-      description: 登録済みの注文一覧を取得します。
+      description: |
+        登録済みの注文一覧を取得します。
+        注文日時の降順、同一日時の場合は注文コードの降順で返します。
+        総ページ数を超える page を指定した場合は、空の items と指定ページのページ情報を返します。
       operationId: getOrders
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
       responses:
         '200':
           description: 注文一覧取得成功
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OrderResponse'
+                $ref: '#/components/schemas/OrderPageResponse'
               example:
-                - orderCode: ORD000001
-                  orderedAt: '2026-04-07T10:15:30+09:00'
-                  orderStatus: '001'
-                  version: 0
-                - orderCode: ORD000002
-                  orderedAt: '2026-04-07T11:00:00+09:00'
-                  orderStatus: '002'
-                  version: 1
+                items:
+                  - orderCode: ORD000002
+                    orderedAt: '2026-04-07T11:00:00+09:00'
+                    orderStatus: '002'
+                    version: 1
+                  - orderCode: ORD000001
+                    orderedAt: '2026-04-07T10:15:30+09:00'
+                    orderStatus: '001'
+                    version: 0
+                page: 0
+                size: 20
+                totalElements: 2
+                totalPages: 1
+                hasNext: false
+                hasPrevious: false
+        '400':
+          $ref: '#/components/responses/BadRequestError'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -171,6 +184,29 @@ components:
         minLength: 9
         maxLength: 9
         example: ORD000001
+    Page:
+      name: page
+      in: query
+      required: false
+      description: 取得ページ番号。0 始まり。省略時は 0。
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+        example: 0
+    Size:
+      name: size
+      in: query
+      required: false
+      description: 1ページあたりの取得件数。1 から 100 まで指定できます。省略時は 20。
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
 
   responses:
     BadRequestError:
@@ -316,6 +352,57 @@ components:
           minimum: 0
           description: 注文バージョン。楽観的ロックに使用します。
           example: 0
+
+    OrderPageResponse:
+      type: object
+      description: ページング済み注文一覧レスポンス。
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+        - hasNext
+        - hasPrevious
+      properties:
+        items:
+          type: array
+          description: 取得した注文一覧。
+          items:
+            $ref: '#/components/schemas/OrderResponse'
+        page:
+          type: integer
+          format: int32
+          minimum: 0
+          description: 取得ページ番号。0 始まり。
+          example: 0
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          description: 1ページあたりの取得件数。
+          example: 20
+        totalElements:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 条件に一致する総件数。
+          example: 123
+        totalPages:
+          type: integer
+          format: int32
+          minimum: 0
+          description: 総件数とページサイズから算出した総ページ数。
+          example: 7
+        hasNext:
+          type: boolean
+          description: 次ページが存在する場合は true。
+          example: true
+        hasPrevious:
+          type: boolean
+          description: 前ページが存在する場合は true。
+          example: false
 
     ErrorResponse:
       type: object

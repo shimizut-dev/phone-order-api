@@ -2,6 +2,8 @@ package jp.co.shimizutdev.phoneorderapi.infrastructure.repository.order;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jp.co.shimizutdev.phoneorderapi.domain.common.PageResult;
+import jp.co.shimizutdev.phoneorderapi.domain.common.PagingCondition;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCode;
 import jp.co.shimizutdev.phoneorderapi.domain.order.OrderRepository;
@@ -11,6 +13,9 @@ import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpa
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaMapper;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,14 +42,32 @@ public class OrderRepositoryImpl implements OrderRepository {
     /**
      * 注文一覧を取得する
      *
-     * @return 注文一覧。存在しない場合は空リスト
+     * @param pagingCondition ページング条件
+     * @return 注文日時降順、同一日時は注文コード降順のページング済み注文一覧。存在しない場合または範囲外ページの場合は空のページ
      * @throws InvalidPersistedOrderException 永続化済み注文データが不正な場合
      */
     @Override
-    public List<Order> findAll() {
-        return orderJpaRepository.findAll().stream()
+    public PageResult<Order> findAll(final PagingCondition pagingCondition) {
+        Page<OrderJpaEntity> page = orderJpaRepository.findAll(
+            PageRequest.of(
+                pagingCondition.page(),
+                pagingCondition.size(),
+                Sort.by(Sort.Direction.DESC, "orderedAt")
+                    .and(Sort.by(Sort.Direction.DESC, "orderCode"))
+            )
+        );
+
+        List<Order> orders = page.getContent().stream()
             .map(OrderJpaMapper::toDomain)
             .toList();
+
+        return new PageResult<>(
+            orders,
+            pagingCondition.page(),
+            pagingCondition.size(),
+            page.getTotalElements(),
+            page.getTotalPages()
+        );
     }
 
     /**

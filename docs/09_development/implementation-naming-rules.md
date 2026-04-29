@@ -456,20 +456,23 @@ public OrderResponse createOrder(@RequestBody OrderRequest requestDto) {
 
 ### application の例
 
+Application Service の公開メソッド引数は、HTTP や JSON の表現ではなくドメイン型を基本とする。
+API 入力値からドメイン型への変換は presentation layer で行う。
+
 ```text
-public List<Order> getOrders() {
+public PageResult<Order> getOrders(PagingCondition pagingCondition) {
     // ...
 }
 
-public Order getOrderByOrderCode(String orderCode) {
+public Order getOrderByOrderCode(OrderCode orderCode) {
     // ...
 }
 
-public Order createOrder(OffsetDateTime orderedAt) {
+public Order createOrder(OrderedAt orderedAt) {
     // ...
 }
 
-public Order cancelOrder(String orderCode, long version) {
+public Order cancelOrder(OrderCode orderCode, Version version) {
     // ...
 }
 ```
@@ -477,7 +480,7 @@ public Order cancelOrder(String orderCode, long version) {
 ### domain Repository の例
 
 ```text
-List<Order> findAll();
+PageResult<Order> findAll(PagingCondition pagingCondition);
 
 Optional<Order> findByOrderCode(OrderCode orderCode);
 

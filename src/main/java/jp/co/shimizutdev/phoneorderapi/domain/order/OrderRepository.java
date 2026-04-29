@@ -1,6 +1,8 @@
 package jp.co.shimizutdev.phoneorderapi.domain.order;
 
-import java.util.List;
+import jp.co.shimizutdev.phoneorderapi.domain.common.PageResult;
+import jp.co.shimizutdev.phoneorderapi.domain.common.PagingCondition;
+
 import java.util.Optional;
 
 /**
@@ -11,9 +13,10 @@ public interface OrderRepository {
     /**
      * 注文一覧を取得する
      *
-     * @return 注文一覧。存在しない場合は空リスト
+     * @param pagingCondition ページング条件
+     * @return 注文日時降順、同一日時は注文コード降順のページング済み注文一覧。存在しない場合または範囲外ページの場合は空のページ
      */
-    List<Order> findAll();
+    PageResult<Order> findAll(PagingCondition pagingCondition);
 
     /**
      * 注文コードで注文を取得する

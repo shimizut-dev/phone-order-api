@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,10 +27,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * API例外ハンドラテスト
+ */
 class ApiExceptionHandlerTest {
 
+    /**
+     * MockMvc
+     */
     private MockMvc mockMvc;
 
+    /**
+     * テスト前処理
+     */
     @BeforeEach
     void setUp() {
         ObjectMapper objectMapper = new ObjectMapper()
@@ -55,15 +65,16 @@ class ApiExceptionHandlerTest {
      * </pre>
      */
     @Test
-    @DisplayName("IllegalArgumentException is mapped to 400")
+    @DisplayName("IllegalArgumentExceptionは400に変換されること")
     void shouldReturnBadRequestWhenIllegalArgumentExceptionOccurs() throws Exception {
         mockMvc.perform(get("/test/errors/illegal-argument"))
             .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").isString())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/illegal-argument"))
-            .andExpect(jsonPath("$.validationErrors").isArray());
+            .andExpect(jsonPath("$.validationErrors", hasSize(0)));
     }
 
     /**
@@ -74,15 +85,16 @@ class ApiExceptionHandlerTest {
      * </pre>
      */
     @Test
-    @DisplayName("IllegalArgumentException without a message falls back to the validation error message")
+    @DisplayName("メッセージなしIllegalArgumentExceptionはバリデーションエラーメッセージで400に変換されること")
     void shouldReturnValidationErrorMessageWhenIllegalArgumentExceptionHasNoMessage() throws Exception {
         mockMvc.perform(get("/test/errors/illegal-argument-without-message"))
             .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").isString())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/illegal-argument-without-message"))
-            .andExpect(jsonPath("$.validationErrors").isArray());
+            .andExpect(jsonPath("$.validationErrors", hasSize(0)));
     }
 
     /**
@@ -93,16 +105,18 @@ class ApiExceptionHandlerTest {
      * </pre>
      */
     @Test
-    @DisplayName("Validation errors are mapped to 400")
+    @DisplayName("バリデーションエラーは400に変換されること")
     void shouldReturnBadRequestWhenValidationErrorOccurs() throws Exception {
         mockMvc.perform(post("/test/errors/validation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
             .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").isString())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/validation"))
+            .andExpect(jsonPath("$.validationErrors", hasSize(1)))
             .andExpect(jsonPath("$.validationErrors[0].field").value("name"))
             .andExpect(jsonPath("$.validationErrors[0].message").value("name is required."));
     }
@@ -115,14 +129,16 @@ class ApiExceptionHandlerTest {
      * </pre>
      */
     @Test
-    @DisplayName("Unexpected exceptions are hidden behind a generic 500 response")
+    @DisplayName("想定外例外は汎用メッセージの500に変換されること")
     void shouldReturnInternalServerErrorWhenUnexpectedExceptionOccurs() throws Exception {
         mockMvc.perform(get("/test/errors/unexpected"))
             .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.timestamp").isString())
             .andExpect(jsonPath("$.status").value(500))
             .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
             .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
-            .andExpect(jsonPath("$.path").value("/test/errors/unexpected"));
+            .andExpect(jsonPath("$.path").value("/test/errors/unexpected"))
+            .andExpect(jsonPath("$.validationErrors", hasSize(0)));
     }
 
     /**
@@ -133,15 +149,16 @@ class ApiExceptionHandlerTest {
      * </pre>
      */
     @Test
-    @DisplayName("InvalidPersistedOrderException is mapped to 500")
+    @DisplayName("InvalidPersistedOrderExceptionは500に変換されること")
     void shouldReturnInternalServerErrorWhenInvalidPersistedOrderExceptionOccurs() throws Exception {
         mockMvc.perform(get("/test/errors/invalid-persisted-order"))
             .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.timestamp").isString())
             .andExpect(jsonPath("$.status").value(500))
             .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
             .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
             .andExpect(jsonPath("$.path").value("/test/errors/invalid-persisted-order"))
-            .andExpect(jsonPath("$.validationErrors").isArray());
+            .andExpect(jsonPath("$.validationErrors", hasSize(0)));
     }
 
     @RestController
@@ -171,7 +188,7 @@ class ApiExceptionHandlerTest {
         @GetMapping("/invalid-persisted-order")
         String throwInvalidPersistedOrderException() {
             OrderJpaEntity orderJpaEntity = mock(OrderJpaEntity.class);
-            when(orderJpaEntity.getId()).thenReturn(UUID.randomUUID());
+            when(orderJpaEntity.getId()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000001"));
             when(orderJpaEntity.getOrderCode()).thenReturn("ORD000001");
             throw InvalidPersistedOrderException.byOrderJpaEntity("persisted order is invalid", orderJpaEntity);
         }

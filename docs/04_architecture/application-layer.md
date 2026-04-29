@@ -15,8 +15,7 @@ application layer はユースケースを実現する層である。
 - ユースケース実行
 - トランザクション境界の管理
 - repository を用いた集約取得・保存
-- presentation と domain の橋渡し
-- 入出力DTOの管理
+- domain object を用いた処理の流れの制御
 
 ---
 
@@ -30,24 +29,24 @@ application layer はユースケースを実現する層である。
 
 ### 4.1 注文作成
 
-1. 入力DTOを受け取る
-2. ドメインオブジェクトを生成する
-3. Order を作成する
-4. repository で保存する
-5. 出力DTOに変換して返却する
+1. 注文日時などのドメイン型を受け取る
+2. Order を作成する
+3. repository で保存する
+4. 保存後の Order を返却する
 
 ### 4.2 注文参照
 
-1. repository から Order を取得する
-2. 出力DTOへ変換する
+1. 注文コードなどのドメイン型を受け取る
+2. repository から Order を取得する
 3. 結果を返却する
 
 ### 4.3 注文キャンセル
 
-1. repository から Order を取得する
-2. キャンセル可能か判定する
-3. Order を更新する
-4. 保存する
+1. 注文コードとバージョンなどのドメイン型を受け取る
+2. repository から Order を取得する
+3. キャンセル可能か判定する
+4. Order を更新する
+5. 保存後の Order を返却する
 
 ---
 
@@ -62,6 +61,8 @@ application layer はユースケースを実現する層である。
 ## 6. application に置かないもの
 
 - HTTP 固有処理
+- API 入出力DTO
+- API 入力値からドメイン型への変換
 - SQL 実装
 - DB entity
 - ドメインルールの本体
@@ -74,5 +75,7 @@ application layer はユースケースを実現する層である。
 - 逆に業務ルールを application に書きすぎない
 - 「処理の流れ」は application
 - 「業務上の正しさ」は domain
+- Application Service の公開メソッド引数は、`OrderCode`、`OrderedAt`、`Version`、`PagingCondition` などのドメイン型を基本とする
+- `String`、`OffsetDateTime`、`long` などの API 入力値は presentation layer でドメイン型へ変換する
 
 ---

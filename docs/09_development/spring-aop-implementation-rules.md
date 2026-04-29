@@ -46,7 +46,7 @@ Spring の proxy / AOP を前提にした実装上の注意点を統一し、動
 public class OrderService {
 
     @Transactional
-    public Order createOrder(final OffsetDateTime orderedAt) {
+    public Order createOrder(final OrderedAt orderedAt) {
         // ...
     }
 }
