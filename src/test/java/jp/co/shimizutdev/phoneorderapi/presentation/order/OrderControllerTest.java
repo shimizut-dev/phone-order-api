@@ -415,6 +415,34 @@ class OrderControllerTest extends AbstractPostgreSQLTest {
 
         /**
          * <pre>
+         * Given 50文字を超える X-User-Id を含む注文リクエストを用意する
+         * When 注文登録APIを実行する
+         * Then 400 Bad Request と監査ユーザー不正メッセージが返る
+         * </pre>
+         */
+        @Test
+        @DisplayName("X-User-Idが50文字を超える場合は400を返すこと")
+        void shouldReturnBadRequestWhenUserIdHeaderIsTooLong() throws Exception {
+            String requestBody = """
+                {
+                  "orderedAt": "2026-04-07T10:15:30+09:00"
+                }
+                """;
+
+            mockMvc.perform(post("/api/v1/orders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("X-User-Id", "a".repeat(51))
+                    .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.message").value(ApiErrorMessages.INVALID_AUDITOR))
+                .andExpect(jsonPath("$.path").value("/api/v1/orders"))
+                .andExpect(jsonPath("$.validationErrors", hasSize(0)));
+        }
+
+        /**
+         * <pre>
          * Given 注文サービスでRuntimeExceptionが発生する
          * When 注文登録APIを実行する
          * Then 500 Internal Server Error が返る

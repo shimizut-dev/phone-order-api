@@ -43,10 +43,28 @@ infrastructure layer は技術的関心事を担当する。
 - Repository 実装
 - DB Mapper
 - 外部接続設定
+- JPA 監査設定
 
 ---
 
-## 6. infrastructure に置かないもの
+## 6. JPA 監査設定
+
+JPA 監査では、作成者・更新者を以下のリクエストヘッダーから解決する。
+
+優先順:
+
+1. `X-User-Id`
+2. `X-User-Name`
+3. `X-Actor`
+
+いずれも指定されていない場合は `system` を使用する。
+
+監査ユーザーは `created_by` / `updated_by` の DB 定義に合わせて 50 文字以内とする。
+50 文字を超える場合は `InvalidAuditorException` を送出し、API 層で `400 Bad Request` に変換する。
+
+---
+
+## 7. infrastructure に置かないもの
 
 - ユースケース本体
 - ドメインルール
@@ -54,7 +72,7 @@ infrastructure layer は技術的関心事を担当する。
 
 ---
 
-## 7. 将来拡張
+## 8. 将来拡張
 
 将来は以下の実装追加を想定する。
 

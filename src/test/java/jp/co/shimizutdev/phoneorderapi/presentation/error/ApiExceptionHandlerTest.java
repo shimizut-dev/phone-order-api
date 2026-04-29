@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.config.InvalidAuditorException;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.InvalidPersistedOrderException;
 import jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order.OrderJpaEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -123,6 +124,26 @@ class ApiExceptionHandlerTest {
 
     /**
      * <pre>
+     * Given 監査ユーザー不正例外を送出するAPIがある
+     * When 監査ユーザー不正例外発生APIを実行する
+     * Then 400 Bad Requestのエラーレスポンスが返る
+     * </pre>
+     */
+    @Test
+    @DisplayName("監査ユーザー不正例外は400に変換されること")
+    void shouldReturnBadRequestWhenInvalidAuditorExceptionOccurs() throws Exception {
+        mockMvc.perform(get("/test/errors/invalid-auditor"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").isString())
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value(ApiErrorMessages.INVALID_AUDITOR))
+            .andExpect(jsonPath("$.path").value("/test/errors/invalid-auditor"))
+            .andExpect(jsonPath("$.validationErrors", hasSize(0)));
+    }
+
+    /**
+     * <pre>
      * Given 想定外例外を送出するAPIがある
      * When 想定外例外発生APIを実行する
      * Then 500 Internal Server Errorと汎用エラーメッセージが返る
@@ -143,13 +164,13 @@ class ApiExceptionHandlerTest {
 
     /**
      * <pre>
-     * Given InvalidPersistedOrderExceptionを送出するAPIがある
-     * When InvalidPersistedOrderException発生APIを実行する
+     * Given 永続化済み注文データ不整合例外を送出するAPIがある
+     * When 永続化済み注文データ不整合例外発生APIを実行する
      * Then 500 Internal Server Errorのエラーレスポンスが返る
      * </pre>
      */
     @Test
-    @DisplayName("InvalidPersistedOrderExceptionは500に変換されること")
+    @DisplayName("永続化済み注文データ不整合例外は500に変換されること")
     void shouldReturnInternalServerErrorWhenInvalidPersistedOrderExceptionOccurs() throws Exception {
         mockMvc.perform(get("/test/errors/invalid-persisted-order"))
             .andExpect(status().isInternalServerError())
@@ -178,6 +199,11 @@ class ApiExceptionHandlerTest {
         @PostMapping("/validation")
         String validate(@Valid @RequestBody final TestRequest request) {
             return request.name();
+        }
+
+        @GetMapping("/invalid-auditor")
+        String throwInvalidAuditorException() {
+            throw new InvalidAuditorException(ApiErrorMessages.INVALID_AUDITOR);
         }
 
         @GetMapping("/unexpected")
