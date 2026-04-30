@@ -171,6 +171,7 @@ IntelliJ IDEA から起動する場合の環境変数設定手順は
 ```
 
 `generate-sources` フェーズで OpenAPI Generator が実行され、API インターフェースと API 入出力モデルが生成されます。
+GitHub Actions では Debian Trixie Slim コンテナ上で `sh ./mvnw test` を実行し、tracked file がビルド後に変化しないことも検証します。
 
 ---
 
