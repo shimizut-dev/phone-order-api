@@ -64,7 +64,7 @@ PHONE_ORDER_DB_USERNAME=local;PHONE_ORDER_DB_PASSWORD=local
 ## 補足
 
 - `local` プロファイルを有効にすると、`application-local.properties` の設定が適用される。
-- ローカル用の datasource 設定や SQL 詳細ログ設定は `local` プロファイルで利用する。
+- ローカル用の datasource 設定、Flyway の `baseline-on-migrate`、SQL 詳細ログ設定は `local` プロファイルで利用する。
 - ローカル用 datasource の認証情報は `PHONE_ORDER_DB_USERNAME` / `PHONE_ORDER_DB_PASSWORD` で渡す。
 - `application.properties` には全環境共通の設定を置き、ローカル専用設定は `application-local.properties` に分離する。
 
