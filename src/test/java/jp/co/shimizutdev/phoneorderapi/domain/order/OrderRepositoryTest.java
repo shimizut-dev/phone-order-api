@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * 注文リポジトリテスト
  */
-@DataJpaTest
+@DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({JpaAuditConfig.class, OrderRepositoryImpl.class})
 class OrderRepositoryTest extends AbstractPostgreSQLTest {

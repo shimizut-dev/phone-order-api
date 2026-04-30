@@ -3,6 +3,7 @@ package jp.co.shimizutdev.phoneorderapi.infrastructure.log;
 import jp.co.shimizutdev.phoneorderapi.application.order.OrderService;
 import jp.co.shimizutdev.phoneorderapi.domain.common.PagingCondition;
 import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
+import jp.co.shimizutdev.phoneorderapi.support.ResetLogLevel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,8 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * メソッド開始/終了ログ出力アスペクトテスト
  */
-@SpringBootTest
+@SpringBootTest(properties = "logging.level.jp.co.shimizutdev.phoneorderapi.infrastructure.log.MethodLogAspect=DEBUG")
 @ExtendWith(OutputCaptureExtension.class)
+@ResetLogLevel(MethodLogAspect.class)
 @SqlMergeMode(MergeMode.MERGE)
 @Sql(
     scripts = "classpath:sql/cleanup/cleanup-transaction-tables.sql",
