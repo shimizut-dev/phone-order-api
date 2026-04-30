@@ -1,18 +1,18 @@
 # 09_development
 
-開発ルール・運用ルールを管理します。
+開発ルールと開発環境手順の一覧
 
 ---
 
-## 目的
+## 概要
 
-- 日々の実装判断をそろえる
-- Git / テスト / 命名 / ログ / ドキュメントのルールを集約する
-- ローカル開発時のセットアップ手順を明確にする
+- 日々の実装時に参照する
+- Git / テスト / 命名 / ログ / ドキュメントのルールを管理する
+- ローカル開発時のセットアップや IntelliJ 手順を管理する
 
 ---
 
-## 管理資料
+## 文書一覧
 
 - `development-flow.md`
 - `git-branch-naming.md`
@@ -30,34 +30,14 @@
 - `javadoc-generation-guideline.md`
 - `log-operation-rules.md`
 - `intellij-local-profile-setup.md`
+- `intellij-generated-sources-setup.md`
 - `document-format-guideline.md`
 
 ---
 
-## 主な扱い
+## よく参照する文書
 
-- 開発フロー
-- Git 運用
-- 実装命名規則
-- バリデーションメッセージ運用
-- テストコード規約
-- Javadoc 生成手順
-- ログ運用
-- IntelliJ / local プロファイル設定
-- ドキュメントフォーマット統一
-
----
-
-## 運用ルール
-
-- 実装ルールを追加したら本ディレクトリへ集約する
-- 上位設計ではなく日々の開発判断をここに記載する
-- ルールを削除・改訂した場合は README の管理資料も同時に見直す
-
----
-
-## 優先して参照する資料
-
-- 命名規則は `implementation-naming-rules.md`
-- ローカル起動設定は `intellij-local-profile-setup.md`
-- ドキュメント書式は `document-format-guideline.md`
+- 実装時の流れ: `development-flow.md`
+- ローカル起動設定: `intellij-local-profile-setup.md`
+- OpenAPI generated sources 復旧: `intellij-generated-sources-setup.md`
+- ドキュメント形式: `document-format-guideline.md`
