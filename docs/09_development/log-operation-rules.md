@@ -77,7 +77,10 @@ SQLログは Hibernate の logger 設定で制御する。
 
 ### ルール
 
-- `traceId` は自動採番とする
+- `X-Request-Id` が有効な traceId 形式の場合は `traceId` として引き継ぐ
+- `X-Request-Id` が無効で、`X-Correlation-Id` が有効な traceId 形式の場合は `X-Correlation-Id` を `traceId` として引き継ぐ
+- どちらのヘッダーも利用できない場合は `traceId` を自動採番する
+- 受け入れる `traceId` は 128 文字以内とし、英数字・`.`・`_`・`-` のみを許可する
 - アプリケーションコード側で手動採番しない
 - ログ出力時に `traceId` を必須項目とする
 - `traceId` を業務項目の代わりに使わない
@@ -220,6 +223,8 @@ logging.level.jp.co.shimizutdev.phoneorderapi=INFO
 - 非対応 Content-Type は `[unsupported content type]` として扱う
 - body は 1 行化して出力する
 - body は最大文字数で切り詰める
+- body の文字エンコーディングが未指定または不正な場合は UTF-8 として扱う
+- body のログ変換失敗でレスポンス返却を妨げない
 - レスポンス body を壊さないよう `ContentCachingResponseWrapper` を使用する
 
 ---

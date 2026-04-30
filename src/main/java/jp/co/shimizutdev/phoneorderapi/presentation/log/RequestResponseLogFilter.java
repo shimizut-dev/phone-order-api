@@ -16,7 +16,9 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -300,7 +302,12 @@ public class RequestResponseLogFilter extends OncePerRequestFilter {
         if (encoding == null || encoding.isBlank()) {
             return StandardCharsets.UTF_8;
         }
-        return Charset.forName(encoding);
+
+        try {
+            return Charset.forName(encoding);
+        } catch (IllegalCharsetNameException | UnsupportedCharsetException ex) {
+            return StandardCharsets.UTF_8;
+        }
     }
 
     /**

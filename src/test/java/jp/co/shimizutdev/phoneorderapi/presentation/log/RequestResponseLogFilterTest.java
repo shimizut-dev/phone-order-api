@@ -1,5 +1,9 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletResponse;
+import jp.co.shimizutdev.phoneorderapi.infrastructure.log.LogMasker;
 import jp.co.shimizutdev.phoneorderapi.support.AbstractPostgreSQLTest;
 import jp.co.shimizutdev.phoneorderapi.support.ResetLogLevel;
 import org.junit.jupiter.api.DisplayName;
@@ -12,9 +16,13 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,5 +89,38 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
             .contains("\"path\":\"/api/v1/orders\"")
             .contains("\"validationErrors\":[]")
             .contains("[response] size(bytes):");
+    }
+
+    /**
+     * <pre>
+     * Given 不正な文字エンコーディングを持つJSONリクエストを用意する
+     * When リクエスト/レスポンスログフィルタを実行する
+     * Then UTF-8へフォールバックしてレスポンスが返却される
+     * </pre>
+     */
+    @Test
+    @DisplayName("不正な文字エンコーディングでもUTF-8へフォールバックできること")
+    void shouldFallbackToUtf8WhenRequestEncodingIsInvalid() throws Exception {
+        RequestResponseLogFilter filter = new RequestResponseLogFilter(new LogMasker(new ObjectMapper()));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setMethod("POST");
+        request.setRequestURI("/test");
+        request.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        request.setCharacterEncoding("invalid-charset");
+        request.setContent("""
+            {"password":"secret-password"}
+            """.getBytes());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        FilterChain filterChain = (req, res) -> {
+            HttpServletResponse actualResponse = (HttpServletResponse) res;
+            actualResponse.setStatus(200);
+            actualResponse.getWriter().write("{\"status\":\"ok\"}");
+        };
+
+        assertDoesNotThrow(() -> filter.doFilter(request, response, filterChain));
+        assertEquals(200, response.getStatus());
+        assertThat(response.getContentAsString()).contains("\"status\":\"ok\"");
     }
 }
