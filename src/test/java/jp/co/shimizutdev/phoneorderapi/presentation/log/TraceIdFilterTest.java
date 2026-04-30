@@ -74,6 +74,53 @@ class TraceIdFilterTest {
 
     /**
      * <pre>
+     * Given 不正な X-Request-Id と有効な X-Correlation-Id を含むリクエストを用意する
+     * When フィルタを実行する
+     * Then X-Correlation-Id が traceId として設定される
+     * </pre>
+     */
+    @Test
+    @DisplayName("不正な X-Request-Id の場合は X-Correlation-Id を traceId として引き継ぐこと")
+    void shouldFallbackToCorrelationIdWhenRequestIdIsInvalid() {
+        TraceIdFilter traceIdFilter = new TraceIdFilter();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.addHeader("X-Request-Id", "invalid trace id");
+        request.addHeader("X-Correlation-Id", "correlation-123");
+        AtomicReference<String> actualTraceId = new AtomicReference<>();
+        FilterChain filterChain = (req, res) -> actualTraceId.set(MDC.get(TraceIdFilter.TRACE_ID_KEY));
+
+        assertDoesNotThrow(() -> traceIdFilter.doFilter(request, response, filterChain));
+
+        assertEquals("correlation-123", actualTraceId.get());
+        assertEquals("correlation-123", response.getHeader("X-Trace-Id"));
+    }
+
+    /**
+     * <pre>
+     * Given 不正な X-Request-Id を含むリクエストを用意する
+     * When フィルタを実行する
+     * Then UUID形式の traceId が新規生成される
+     * </pre>
+     */
+    @Test
+    @DisplayName("不正なヘッダーの場合はUUID形式の traceId を生成すること")
+    void shouldGenerateTraceIdWhenHeadersAreInvalid() {
+        TraceIdFilter traceIdFilter = new TraceIdFilter();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.addHeader("X-Request-Id", "a".repeat(129));
+        AtomicReference<String> actualTraceId = new AtomicReference<>();
+        FilterChain filterChain = (req, res) -> actualTraceId.set(MDC.get(TraceIdFilter.TRACE_ID_KEY));
+
+        assertDoesNotThrow(() -> traceIdFilter.doFilter(request, response, filterChain));
+
+        assertTrue(isUuid(actualTraceId.get()));
+        assertEquals(actualTraceId.get(), response.getHeader("X-Trace-Id"));
+    }
+
+    /**
+     * <pre>
      * Given トレースIDフィルタを用意する
      * When フィルタを実行する
      * Then フィルタチェーン実行後にMDCからトレースIDが削除される
