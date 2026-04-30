@@ -1,47 +1,49 @@
 package jp.co.shimizutdev.phoneorderapi.domain.order;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-/**
- * バージョンテスト
- */
+/** バージョンテスト */
 class VersionTest {
 
-    /**
-     * <pre>
-     * Given 0以上のバージョン値を用意する
-     * When バージョンを生成する
-     * Then バージョンが生成される
-     * </pre>
-     */
-    @Test
-    @DisplayName("0以上のバージョンを生成できること")
-    void shouldCreateVersionWhenValueIsZeroOrGreater() {
-        Version actual = Version.of(1L);
+  /**
+   *
+   *
+   * <pre>
+   * Given 0以上のバージョン値を用意する
+   * When バージョンを生成する
+   * Then バージョンが生成される
+   * </pre>
+   */
+  @Test
+  @DisplayName("0以上のバージョンを生成できること")
+  void shouldCreateVersionWhenValueIsZeroOrGreater() {
+    Version actual = Version.of(1L);
 
-        assertEquals(1L, actual.getValue());
-    }
+    assertEquals(1L, actual.getValue());
+  }
 
-    /**
-     * <pre>
-     * Given 負のバージョン値を用意する
-     * When バージョンを生成する
-     * Then 例外が発生する
-     * </pre>
-     */
-    @ParameterizedTest
-    @ValueSource(longs = {-1L, -10L})
-    @DisplayName("負のバージョン値は例外になる")
-    void shouldThrowExceptionWhenVersionIsNegative(final long value) {
-        IllegalArgumentException actual =
-            assertThrows(IllegalArgumentException.class, () -> Version.of(value));
+  /**
+   *
+   *
+   * <pre>
+   * Given 負のバージョン値を用意する
+   * When バージョンを生成する
+   * Then 例外が発生する
+   * </pre>
+   */
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, -10L})
+  @DisplayName("負のバージョン値は例外になる")
+  void shouldThrowExceptionWhenVersionIsNegative(final long value) {
+    IllegalArgumentException actual =
+        assertThrows(IllegalArgumentException.class, () -> Version.of(value));
 
-        assertEquals("バージョンは0以上である必要があります。", actual.getMessage());
-    }
+    assertEquals("バージョンは0以上である必要があります。", actual.getMessage());
+  }
 }

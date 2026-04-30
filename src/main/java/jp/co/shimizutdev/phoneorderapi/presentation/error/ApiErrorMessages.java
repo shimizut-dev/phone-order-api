@@ -1,48 +1,29 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.error;
 
-/**
- * APIエラーメッセージ
- */
+/** APIエラーメッセージ */
 public final class ApiErrorMessages {
 
-    /**
-     * バリデーションエラー時のメッセージ
-     */
-    public static final String VALIDATION_ERROR = "入力値が不正です。";
+  /** バリデーションエラー時のメッセージ */
+  public static final String VALIDATION_ERROR = "入力値が不正です。";
 
-    /**
-     * リクエストボディの形式が不正な場合のメッセージ
-     */
-    public static final String INVALID_REQUEST_BODY = "リクエストボディの形式が不正です。";
+  /** リクエストボディの形式が不正な場合のメッセージ */
+  public static final String INVALID_REQUEST_BODY = "リクエストボディの形式が不正です。";
 
-    /**
-     * 監査ユーザーが不正な場合のメッセージ
-     */
-    public static final String INVALID_AUDITOR = "監査ユーザーは50文字以内で指定してください。";
+  /** 監査ユーザーが不正な場合のメッセージ */
+  public static final String INVALID_AUDITOR = "監査ユーザーは50文字以内で指定してください。";
 
-    /**
-     * サーバー内部でエラーが発生した場合のメッセージ
-     */
-    public static final String INTERNAL_SERVER_ERROR = "サーバー内部でエラーが発生しました。";
+  /** サーバー内部でエラーが発生した場合のメッセージ */
+  public static final String INTERNAL_SERVER_ERROR = "サーバー内部でエラーが発生しました。";
 
-    /**
-     * 注文が見つからない場合のメッセージ
-     */
-    public static final String ORDER_NOT_FOUND = "注文が見つかりません。";
+  /** 注文が見つからない場合のメッセージ */
+  public static final String ORDER_NOT_FOUND = "注文が見つかりません。";
 
-    /**
-     * 注文をキャンセルできない場合のメッセージ
-     */
-    public static final String ORDER_CANNOT_BE_CANCELLED = "注文をキャンセルできません。";
+  /** 注文をキャンセルできない場合のメッセージ */
+  public static final String ORDER_CANNOT_BE_CANCELLED = "注文をキャンセルできません。";
 
-    /**
-     * 注文の楽観的ロック競合時のメッセージ
-     */
-    public static final String ORDER_VERSION_CONFLICT = "注文が他の更新で変更されました。最新データを取得してから再実行してください。";
+  /** 注文の楽観的ロック競合時のメッセージ */
+  public static final String ORDER_VERSION_CONFLICT = "注文が他の更新で変更されました。最新データを取得してから再実行してください。";
 
-    /**
-     * コンストラクタ(インスタンス化を防止)
-     */
-    private ApiErrorMessages() {
-    }
+  /** コンストラクタ(インスタンス化を防止) */
+  private ApiErrorMessages() {}
 }

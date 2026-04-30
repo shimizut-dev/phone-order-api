@@ -1,79 +1,68 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.order;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import jp.co.shimizutdev.phoneorderapi.domain.common.PageResult;
 import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderPageResponse;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-/**
- * 注文マッパー
- */
+/** 注文マッパー */
 public class OrderMapper {
 
-    /**
-     * コンストラクタ(インスタンス化を防止)
-     */
-    private OrderMapper() {
+  /** コンストラクタ(インスタンス化を防止) */
+  private OrderMapper() {}
+
+  /**
+   * 注文を注文レスポンスへ変換する
+   *
+   * @param order 注文
+   * @return 注文レスポンス。注文が null の場合は null
+   */
+  public static OrderResponse toResponse(final Order order) {
+    if (order == null) {
+      return null;
     }
 
-    /**
-     * 注文を注文レスポンスへ変換する
-     *
-     * @param order 注文
-     * @return 注文レスポンス。注文が null の場合は null
-     */
-    public static OrderResponse toResponse(final Order order) {
-        if (order == null) {
-            return null;
-        }
+    return new OrderResponse(
+        order.getOrderCode().getValue(),
+        order.getOrderedAt().getValue(),
+        OrderResponse.OrderStatusEnum.fromValue(order.getOrderStatus().getCode()),
+        order.getVersion().getValue());
+  }
 
-        return new OrderResponse(
-            order.getOrderCode().getValue(),
-            order.getOrderedAt().getValue(),
-            OrderResponse.OrderStatusEnum.fromValue(order.getOrderStatus().getCode()),
-            order.getVersion().getValue()
-        );
+  /**
+   * 注文一覧を注文レスポンス一覧へ変換する
+   *
+   * @param orders 注文一覧
+   * @return 注文レスポンス一覧。注文一覧が null の場合は空リスト
+   */
+  public static List<OrderResponse> toResponses(final List<Order> orders) {
+    if (orders == null) {
+      return Collections.emptyList();
     }
 
-    /**
-     * 注文一覧を注文レスポンス一覧へ変換する
-     *
-     * @param orders 注文一覧
-     * @return 注文レスポンス一覧。注文一覧が null の場合は空リスト
-     */
-    public static List<OrderResponse> toResponses(final List<Order> orders) {
-        if (orders == null) {
-            return Collections.emptyList();
-        }
+    return orders.stream().map(OrderMapper::toResponse).filter(Objects::nonNull).toList();
+  }
 
-        return orders.stream()
-            .map(OrderMapper::toResponse)
-            .filter(Objects::nonNull)
-            .toList();
-    }
+  /**
+   * ページング済みの注文一覧をページング済みの注文レスポンスへ変換する
+   *
+   * @param orders ページング済みの注文一覧
+   * @return ページング済みの注文レスポンス
+   * @throws NullPointerException ページング済みの注文一覧が null の場合
+   */
+  public static OrderPageResponse toPageResponse(final PageResult<Order> orders) {
+    Objects.requireNonNull(orders, "ページング済み注文一覧は必須です。");
 
-    /**
-     * ページング済みの注文一覧をページング済みの注文レスポンスへ変換する
-     *
-     * @param orders ページング済みの注文一覧
-     * @return ページング済みの注文レスポンス
-     * @throws NullPointerException ページング済みの注文一覧が null の場合
-     */
-    public static OrderPageResponse toPageResponse(final PageResult<Order> orders) {
-        Objects.requireNonNull(orders, "ページング済み注文一覧は必須です。");
-
-        return new OrderPageResponse(
-            toResponses(orders.items()),
-            orders.page(),
-            orders.size(),
-            orders.totalElements(),
-            orders.totalPages(),
-            orders.hasNext(),
-            orders.hasPrevious()
-        );
-    }
+    return new OrderPageResponse(
+        toResponses(orders.items()),
+        orders.page(),
+        orders.size(),
+        orders.totalElements(),
+        orders.totalPages(),
+        orders.hasNext(),
+        orders.hasPrevious());
+  }
 }
