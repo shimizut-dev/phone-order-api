@@ -5,14 +5,20 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    name: Test on Debian Trixie Slim
+  verify:
+    name: Verify on Debian Trixie Slim
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     container:
       image: debian:trixie-slim
@@ -50,3 +56,6 @@ jobs:
         env:
           TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
         run: ./mvnw -B -Dmaven.repo.local="$HOME/.m2/repository" test
+
+      - name: Verify tracked files are unchanged after build
+        run: git diff --exit-code -- . ':(exclude)target'
