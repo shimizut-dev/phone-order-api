@@ -58,4 +58,6 @@ jobs:
         run: ./mvnw -B -Dmaven.repo.local="$HOME/.m2/repository" test
 
       - name: Verify tracked files are unchanged after build
-        run: git diff --exit-code -- .
+        run: |
+          git update-index -q --refresh
+          git diff-index --quiet HEAD --
