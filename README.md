@@ -171,7 +171,25 @@ IntelliJ IDEA から起動する場合の環境変数設定手順は
 ```
 
 `generate-sources` フェーズで OpenAPI Generator が実行され、API インターフェースと API 入出力モデルが生成されます。
-GitHub Actions では Debian Trixie Slim コンテナ上で `sh ./mvnw test` を実行し、tracked file がビルド後に変化しないことも検証します。
+GitHub Actions では Debian Trixie Slim コンテナ上で `sh ./mvnw spotless:check test` を実行し、tracked file がビルド後に変化しないことも検証します。
+
+品質チェック付きの確認例:
+
+```bash
+./mvnw spotless:check test
+```
+
+このコマンドでは以下をまとめて確認します。
+
+- Spotless による Java 整形ルール
+- Maven Enforcer による Java / Maven バージョンと依存定義
+- 単体テストと ArchUnit による依存ルール検証
+
+Java 整形を反映する場合:
+
+```bash
+./mvnw spotless:apply
+```
 
 ---
 

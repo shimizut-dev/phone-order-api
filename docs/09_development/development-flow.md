@@ -191,6 +191,10 @@ git checkout -b feature/12
 - 実装
 - 動作確認
 - テスト
+- `./mvnw spotless:check test` による品質チェック
+  - Spotless による Java 整形ルール確認
+  - Maven Enforcer による Java / Maven バージョンと依存定義確認
+  - 単体テストと ArchUnit による依存ルール確認
 
 以下を参照
 

@@ -55,7 +55,7 @@ jobs:
       - name: Run tests
         env:
           TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
-        run: sh ./mvnw -B -Dmaven.repo.local="$HOME/.m2/repository" test
+        run: sh ./mvnw -B -Dmaven.repo.local="$HOME/.m2/repository" spotless:check test
 
       - name: Verify tracked files are unchanged after build
         run: |
