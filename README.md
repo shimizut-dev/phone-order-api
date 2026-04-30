@@ -258,3 +258,11 @@ docs/
 ## Author
 
 個人開発プロジェクト
+
+---
+
+## 補足
+
+- 改行コードは Windows 開発環境でも LF を正本とし、*.cmd / *.bat のみ CRLF を使用する
+- OpenAPI generated sources が IntelliJ で未解決になる場合は ./mvnw generate-sources 実行後に Maven プロジェクトを再読込する
+- 詳細手順は docs/09_development/intellij-generated-sources-setup.md を参照する
