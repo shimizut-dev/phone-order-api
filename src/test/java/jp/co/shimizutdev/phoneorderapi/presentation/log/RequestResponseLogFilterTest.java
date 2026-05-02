@@ -29,7 +29,8 @@ import org.springframework.test.web.servlet.MockMvc;
 /** リクエスト/レスポンスのログを出力するフィルタテスト */
 @SpringBootTest(
     properties =
-        "logging.level.jp.co.shimizutdev.phoneorderapi.presentation.log.RequestResponseLogFilter=DEBUG")
+        "logging.level.jp.co.shimizutdev.phoneorderapi.presentation.log."
+            + "RequestResponseLogFilter=DEBUG")
 @AutoConfigureMockMvc
 @ExtendWith(OutputCaptureExtension.class)
 @ResetLogLevel(RequestResponseLogFilter.class)

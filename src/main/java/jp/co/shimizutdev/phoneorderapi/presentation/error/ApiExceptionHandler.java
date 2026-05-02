@@ -40,7 +40,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return バリデーションエラーを表す API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValidException(
       final MethodArgumentNotValidException ex, final HttpServletRequest request) {
@@ -61,7 +60,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return バリデーションエラーを表す API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(
       final ConstraintViolationException ex, final HttpServletRequest request) {
@@ -82,7 +80,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(
       final IllegalArgumentException ex, final HttpServletRequest request) {
@@ -101,7 +98,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(
       final HttpMessageNotReadableException ex, final HttpServletRequest request) {
@@ -119,7 +115,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(InvalidAuditorException.class)
   public ResponseEntity<ApiErrorResponse> handleInvalidAuditorException(
       final InvalidAuditorException ex, final HttpServletRequest request) {
@@ -137,7 +132,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(OrderCannotBeCancelledException.class)
   public ResponseEntity<ApiErrorResponse> handleOrderCannotBeCancelledException(
       final OrderCannotBeCancelledException ex, final HttpServletRequest request) {
@@ -155,7 +149,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler({
     OrderVersionConflictException.class,
     ObjectOptimisticLockingFailureException.class
@@ -176,7 +169,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(InvalidPersistedOrderException.class)
   public ResponseEntity<ApiErrorResponse> handleInvalidPersistedOrderException(
       final InvalidPersistedOrderException ex, final HttpServletRequest request) {
@@ -198,7 +190,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(OrderNotFoundException.class)
   public ResponseEntity<ApiErrorResponse> handleOrderNotFoundException(
       final OrderNotFoundException ex, final HttpServletRequest request) {
@@ -216,7 +207,6 @@ public class ApiExceptionHandler {
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @SuppressWarnings("unused")
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiErrorResponse> handleUnexpectedException(
       final Exception ex, final HttpServletRequest request) {

@@ -40,17 +40,17 @@
 ## 主要資料
 
 - `database-overview.md`
-    - DB 全体方針
+  - DB 全体方針
 - `id-generation.md`
-    - ID 採番方針
+  - ID 採番方針
 - `naming-rules.md`
-    - DB 命名ルール
+  - DB 命名ルール
 - `a5sql-ddl-generation.md`
-    - DDL 生成手順
+  - DDL 生成手順
 - `er-diagram-guideline.md`
-    - ER 図運用ルール
+  - ER 図運用ルール
 - `er-diagram/`
-    - ER 図本体
+  - ER 図本体
 
 ---
 

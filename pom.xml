@@ -22,10 +22,15 @@
     <maven.version>3.9.0</maven.version>
     <archunit.version>1.4.1</archunit.version>
     <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
+    <checkstyle.version>10.26.1</checkstyle.version>
     <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
+    <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <spotbugs.version>4.9.4</spotbugs.version>
+    <spotbugs-maven-plugin.version>4.9.4.1</spotbugs-maven-plugin.version>
     <spotless-maven-plugin.version>2.46.1</spotless-maven-plugin.version>
     <tomcat.version>10.1.54</tomcat.version>
     <openapi-generator.version>7.21.0</openapi-generator.version>
+    <postgresql.version>42.7.11</postgresql.version>
   </properties>
 
   <dependencies>
@@ -128,6 +133,14 @@
       <version>${archunit.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>${spotbugs.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <build>
@@ -159,6 +172,34 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${maven-checkstyle-plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>${checkstyle.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>${project.basedir}/config/checkstyle/checkstyle.xml</configLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle-validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <annotationProcessorPaths>
@@ -178,14 +219,14 @@
           <inputSpec>${project.basedir}/docs/05_api/openapi.yaml</inputSpec>
           <generatorName>spring</generatorName>
           <apiPackage>jp.co.shimizutdev.phoneorderapi.presentation.generated.api</apiPackage>
-          <modelPackage>jp.co.shimizutdev.phoneorderapi.presentation.generated.model</modelPackage>
-          <output>${project.build.directory}/generated-sources/openapi</output>
-          <cleanupOutput>true</cleanupOutput>
-          <configOptions>
-            <annotationLibrary>none</annotationLibrary>
-            <dateLibrary>java8</dateLibrary>
-            <documentationProvider>none</documentationProvider>
-            <interfaceOnly>true</interfaceOnly>
+            <modelPackage>jp.co.shimizutdev.phoneorderapi.presentation.generated.model</modelPackage>
+            <output>${project.build.directory}/generated-sources/openapi</output>
+            <cleanupOutput>true</cleanupOutput>
+            <configOptions>
+              <annotationLibrary>none</annotationLibrary>
+              <dateLibrary>java8</dateLibrary>
+              <documentationProvider>none</documentationProvider>
+              <interfaceOnly>true</interfaceOnly>
             <openApiNullable>false</openApiNullable>
             <skipDefaultInterface>true</skipDefaultInterface>
             <useSpringBoot3>true</useSpringBoot3>
@@ -246,6 +287,26 @@
             -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
           </argLine>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${spotbugs-maven-plugin.version}</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <excludeFilterFile>${project.basedir}/config/spotbugs/exclude.xml</excludeFilterFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotbugs-check</id>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>

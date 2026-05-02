@@ -79,7 +79,8 @@ class LogMaskerTest {
 
     assertThat(actual)
         .isEqualTo(
-            "{\"token\":\"****\",\"profile\":{\"email\":\"****\",\"name\":\"taro\"},\"children\":[{\"password\":\"****\"}]}");
+            "{\"token\":\"****\",\"profile\":{\"email\":\"****\",\"name\":\"taro\"},"
+                + "\"children\":[{\"password\":\"****\"}]}");
   }
 
   /**
@@ -122,6 +123,7 @@ class LogMaskerTest {
 
     assertThat(actual)
         .isEqualTo(
-            "{\"orderedAt\":\"2026-04-07T10:15:30+09:00\",\"password\":\"****\",\"email\":\"****\"}");
+            "{\"orderedAt\":\"2026-04-07T10:15:30+09:00\","
+                + "\"password\":\"****\",\"email\":\"****\"}");
   }
 }

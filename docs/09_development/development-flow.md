@@ -271,3 +271,4 @@ PRのタイトルはコミットメッセージと同じフォーマット
 
 - OpenAPI generated sources が未解決の場合は ./mvnw generate-sources 実行後に IntelliJ で Maven を再読込する
 - generated sources の復旧手順は docs/09_development/intellij-generated-sources-setup.md を参照する
+- ./mvnw spotless:check test には Checkstyle と SpotBugs の検証も含まれる

@@ -1,18 +1,17 @@
 # 09_development
 
-開発ルールと開発環境手順の一覧
+開発ルールと開発時の補助手順をまとめる
 
 ---
 
-## 概要
+## 目的
 
-- 日々の実装時に参照する
-- Git / テスト / 命名 / ログ / ドキュメントのルールを管理する
-- ローカル開発時のセットアップや IntelliJ 手順を管理する
+- 日常の実装、レビュー、テスト、ドキュメント更新の進め方を揃える
+- Git、ログ、命名、Javadoc、IntelliJ 設定などの運用ルールを参照しやすくする
 
 ---
 
-## 文書一覧
+## ドキュメント一覧
 
 - `development-flow.md`
 - `git-branch-naming.md`
@@ -30,14 +29,26 @@
 - `javadoc-generation-guideline.md`
 - `log-operation-rules.md`
 - `intellij-local-profile-setup.md`
+- `intellij-code-style-setup.md`
 - `intellij-generated-sources-setup.md`
+- `intellij-java-import-setup.md`
+- `intellij-maven-console-encoding-setup.md`
+- `intellij-xml-dtd-setup.md`
+- `intellij-profile-setup.md`
+- `intellij-warning-operation-guideline.md`
 - `document-format-guideline.md`
 
 ---
 
-## よく参照する文書
+## よく参照するドキュメント
 
-- 実装時の流れ: `development-flow.md`
-- ローカル起動設定: `intellij-local-profile-setup.md`
+- 開発の流れ: `development-flow.md`
+- IntelliJ ローカル実行設定: `intellij-local-profile-setup.md`
+- IntelliJ Code Style 取込: `intellij-code-style-setup.md`
 - OpenAPI generated sources 復旧: `intellij-generated-sources-setup.md`
-- ドキュメント形式: `document-format-guideline.md`
+- Java import 設定: `intellij-java-import-setup.md`
+- Maven ツールウィンドウ文字化け対策: `intellij-maven-console-encoding-setup.md`
+- XML DTD 設定: `intellij-xml-dtd-setup.md`
+- IntelliJ Inspection Profile 取込: `intellij-profile-setup.md`
+- IntelliJ 警告運用: `intellij-warning-operation-guideline.md`
+- ドキュメント形式ルール: `document-format-guideline.md`
