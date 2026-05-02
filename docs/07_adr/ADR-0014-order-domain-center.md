@@ -123,9 +123,9 @@ phone-order-api は
 ドメイン中心構造
 
 - Order（注文）
-    - OrderLine（注文明細）
-    - Delivery（配送）
-    - OrderParty（注文関係者）
+  - OrderLine（注文明細）
+  - Delivery（配送）
+  - OrderParty（注文関係者）
 
 注文をアグリゲートルートとする
 

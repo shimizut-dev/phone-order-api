@@ -15,7 +15,6 @@ class ArchitectureTest {
 
   /** domain が外側レイヤや Spring / Servlet / JPA に依存しないことを検証する */
   @ArchTest
-  @SuppressWarnings("unused")
   static final ArchRule domain_should_not_depend_on_outer_layers_or_frameworks =
       noClasses()
           .that()

@@ -1,16 +1,16 @@
 create table orders_reordered
 (
-    id           uuid                                  not null,
-    order_code   varchar(20)                           not null,
-    ordered_at   timestamptz                           not null,
-    order_status varchar(10)                           not null,
-    version      bigint      default 0                 not null,
-    created_at   timestamptz default CURRENT_TIMESTAMP not null,
-    created_by   varchar(50)                           not null,
-    updated_at   timestamptz default CURRENT_TIMESTAMP not null,
-    updated_by   varchar(50)                           not null,
-    deleted_at   timestamptz,
-    deleted_by varchar(50)
+  id           uuid                                  not null,
+  order_code   varchar(20)                           not null,
+  ordered_at   timestamptz                           not null,
+  order_status varchar(10)                           not null,
+  version      bigint      default 0                 not null,
+  created_at   timestamptz default CURRENT_TIMESTAMP not null,
+  created_by   varchar(50)                           not null,
+  updated_at   timestamptz default CURRENT_TIMESTAMP not null,
+  updated_by   varchar(50)                           not null,
+  deleted_at   timestamptz,
+  deleted_by   varchar(50)
 );
 
 insert into orders_reordered (id,
@@ -40,13 +40,13 @@ from orders;
 drop table orders;
 
 alter table orders_reordered
-    rename to orders;
+  rename to orders;
 
 alter table orders
-    add constraint pk_orders primary key (id);
+  add constraint pk_orders primary key (id);
 
 alter table orders
-    add constraint uk_orders_order_code unique (order_code);
+  add constraint uk_orders_order_code unique (order_code);
 
 comment on table orders is '注文:注文を管理するテーブル';
 comment on column orders.id is 'ID';

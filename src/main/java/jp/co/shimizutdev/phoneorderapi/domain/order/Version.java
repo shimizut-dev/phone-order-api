@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class Version {
+public final class Version {
 
   /** バージョン値不正時の例外メッセージ */
   private static final String INVALID_VALUE_MESSAGE = "バージョンは0以上である必要があります。";

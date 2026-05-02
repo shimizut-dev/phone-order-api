@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class OrderCode {
+public final class OrderCode {
 
   /** 注文コード形式不一致時の例外メッセージ */
   private static final String INVALID_FORMAT_MESSAGE = "注文コード（ORD000001）の形式と不一致です。";

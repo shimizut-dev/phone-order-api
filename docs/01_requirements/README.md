@@ -16,13 +16,13 @@
 ## 管理資料
 
 - `scope.md`
-    - 対象範囲
+  - 対象範囲
 - `actors.md`
-    - 利用者・関係者
+  - 利用者・関係者
 - `business-rules.md`
-    - 業務ルール
+  - 業務ルール
 - `system-overview.md`
-    - システム概要
+  - システム概要
 
 ---
 

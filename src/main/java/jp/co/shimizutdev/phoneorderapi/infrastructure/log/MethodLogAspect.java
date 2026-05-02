@@ -39,7 +39,6 @@ public class MethodLogAspect {
       "execution(* jp.co.shimizutdev.phoneorderapi.presentation..*Controller.*(..)) || execution(*"
           + " jp.co.shimizutdev.phoneorderapi.application..*Service.*(..)) || execution(*"
           + " jp.co.shimizutdev.phoneorderapi.infrastructure.repository..*RepositoryImpl.*(..))")
-  @SuppressWarnings("unused")
   public Object logMethod(final ProceedingJoinPoint joinPoint) throws Throwable {
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     String className = signature.getDeclaringType().getSimpleName();
@@ -74,7 +73,7 @@ public class MethodLogAspect {
       }
 
       return returnValue;
-    } catch (Throwable ex) {
+    } catch (RuntimeException | Error ex) {
       if (stopWatch.isRunning()) {
         stopWatch.stop();
       }

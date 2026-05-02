@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class OrderedAt {
+public final class OrderedAt {
 
   /** 注文日時未指定時の例外メッセージ */
   private static final String REQUIRED_MESSAGE = "注文日時は必須です。";

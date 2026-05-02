@@ -81,7 +81,7 @@ public class LogMasker {
       JsonNode root = objectMapper.readTree(text);
       maskJsonNode(root);
       return objectMapper.writeValueAsString(root);
-    } catch (Exception ex) {
+    } catch (JsonProcessingException | IllegalArgumentException ex) {
       return normalizeWhitespace(text);
     }
   }

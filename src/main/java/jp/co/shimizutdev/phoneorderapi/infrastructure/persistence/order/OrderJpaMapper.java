@@ -1,6 +1,11 @@
 package jp.co.shimizutdev.phoneorderapi.infrastructure.persistence.order;
 
-import jp.co.shimizutdev.phoneorderapi.domain.order.*;
+import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderCode;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderId;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderStatus;
+import jp.co.shimizutdev.phoneorderapi.domain.order.OrderedAt;
+import jp.co.shimizutdev.phoneorderapi.domain.order.Version;
 
 /** 注文JPAマッパー */
 public class OrderJpaMapper {

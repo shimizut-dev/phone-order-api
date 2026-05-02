@@ -34,19 +34,19 @@
 ## 主要資料
 
 - `domain-glossary.md`
-    - 用語集
+  - 用語集
 - `order-aggregate.md`
-    - 注文集約の設計方針
+  - 注文集約の設計方針
 - `order-line-creation-rules.md`
-    - 注文明細生成ルール
+  - 注文明細生成ルール
 - `model/`
-    - ドメインモデル図
+  - ドメインモデル図
 - `rules/domain-rules.md`
-    - ドメイン共通ルール
+  - ドメイン共通ルール
 - `rules/delivery-rules.md`
-    - 配送関連ルール
+  - 配送関連ルール
 - `rules/naming-rules.md`
-    - ドメイン命名ルール
+  - ドメイン命名ルール
 
 ---
 

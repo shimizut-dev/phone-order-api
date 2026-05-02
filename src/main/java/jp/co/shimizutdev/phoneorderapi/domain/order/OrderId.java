@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class OrderId {
+public final class OrderId {
 
   /** 注文ID */
   private final UUID value;
