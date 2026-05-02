@@ -37,7 +37,7 @@ class ApiExceptionHandlerTest {
   /** MockMvc */
   private MockMvc mockMvc;
 
-  /** テスト前処理 */
+  /** テスト実行前処理 */
   @BeforeEach
   void setUp() {
     ObjectMapper objectMapper =
@@ -58,21 +58,46 @@ class ApiExceptionHandlerTest {
    *
    *
    * <pre>
-   * Given IllegalArgumentExceptionを送出するAPIがある
-   * When IllegalArgumentException発生APIを実行する
-   * Then 400 Bad Requestのエラーレスポンスが返る
+   * Given API入力不正エラーを送出するAPIがある
+   * When API入力不正エラー送出APIを実行する
+   * Then 400 Bad Request と項目別エラーのレスポンスが返る
    * </pre>
    */
   @Test
-  @DisplayName("IllegalArgumentExceptionは400に変換されること")
-  void shouldReturnBadRequestWhenIllegalArgumentExceptionOccurs() throws Exception {
+  @DisplayName("API入力不正エラーは400に変換されること")
+  void shouldReturnBadRequestWhenApiBadRequestExceptionOccurs() throws Exception {
     mockMvc
-        .perform(get("/test/errors/illegal-argument"))
+        .perform(get("/test/errors/api-bad-request"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.timestamp").isString())
         .andExpect(jsonPath("$.status").value(400))
         .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
         .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
+        .andExpect(jsonPath("$.path").value("/test/errors/api-bad-request"))
+        .andExpect(jsonPath("$.validationErrors", hasSize(1)))
+        .andExpect(jsonPath("$.validationErrors[0].field").value("orderCode"))
+        .andExpect(jsonPath("$.validationErrors[0].message").value("illegal argument occurred"));
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Given IllegalArgumentException を送出するAPIがある
+   * When IllegalArgumentException送出APIを実行する
+   * Then 500 Internal Server Error のレスポンスが返る
+   * </pre>
+   */
+  @Test
+  @DisplayName("IllegalArgumentExceptionは500に変換されること")
+  void shouldReturnInternalServerErrorWhenIllegalArgumentExceptionOccurs() throws Exception {
+    mockMvc
+        .perform(get("/test/errors/illegal-argument"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.timestamp").isString())
+        .andExpect(jsonPath("$.status").value(500))
+        .andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))
+        .andExpect(jsonPath("$.message").value(ApiErrorMessages.INTERNAL_SERVER_ERROR))
         .andExpect(jsonPath("$.path").value("/test/errors/illegal-argument"))
         .andExpect(jsonPath("$.validationErrors", hasSize(0)));
   }
@@ -81,33 +106,9 @@ class ApiExceptionHandlerTest {
    *
    *
    * <pre>
-   * Given メッセージなしIllegalArgumentExceptionを送出するAPIがある
-   * When メッセージなしIllegalArgumentException発生APIを実行する
-   * Then 400 Bad Requestとバリデーションエラーメッセージのエラーレスポンスが返る
-   * </pre>
-   */
-  @Test
-  @DisplayName("メッセージなしIllegalArgumentExceptionはバリデーションエラーメッセージで400に変換されること")
-  void shouldReturnValidationErrorMessageWhenIllegalArgumentExceptionHasNoMessage()
-      throws Exception {
-    mockMvc
-        .perform(get("/test/errors/illegal-argument-without-message"))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.timestamp").isString())
-        .andExpect(jsonPath("$.status").value(400))
-        .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
-        .andExpect(jsonPath("$.message").value(ApiErrorMessages.VALIDATION_ERROR))
-        .andExpect(jsonPath("$.path").value("/test/errors/illegal-argument-without-message"))
-        .andExpect(jsonPath("$.validationErrors", hasSize(0)));
-  }
-
-  /**
-   *
-   *
-   * <pre>
    * Given バリデーションエラーとなるリクエストを受け付けるAPIがある
-   * When 必須項目不足のリクエストでAPIを実行する
-   * Then 400 Bad Requestとバリデーションエラー詳細が返る
+   * When 必須項目欠落のリクエストでAPIを実行する
+   * Then 400 Bad Request とバリデーション詳細が返る
    * </pre>
    */
   @Test
@@ -132,8 +133,8 @@ class ApiExceptionHandlerTest {
    *
    * <pre>
    * Given 監査ユーザー不正例外を送出するAPIがある
-   * When 監査ユーザー不正例外発生APIを実行する
-   * Then 400 Bad Requestのエラーレスポンスが返る
+   * When 監査ユーザー不正例外送出APIを実行する
+   * Then 400 Bad Request のエラーレスポンスが返る
    * </pre>
    */
   @Test
@@ -154,13 +155,13 @@ class ApiExceptionHandlerTest {
    *
    *
    * <pre>
-   * Given 想定外例外を送出するAPIがある
-   * When 想定外例外発生APIを実行する
-   * Then 500 Internal Server Errorと汎用エラーメッセージが返る
+   * Given 想定外の例外を送出するAPIがある
+   * When 想定外の例外送出APIを実行する
+   * Then 500 Internal Server Error と汎用メッセージが返る
    * </pre>
    */
   @Test
-  @DisplayName("想定外例外は汎用メッセージの500に変換されること")
+  @DisplayName("想定外の例外は汎用メッセージの500に変換されること")
   void shouldReturnInternalServerErrorWhenUnexpectedExceptionOccurs() throws Exception {
     mockMvc
         .perform(get("/test/errors/unexpected"))
@@ -177,13 +178,13 @@ class ApiExceptionHandlerTest {
    *
    *
    * <pre>
-   * Given 永続化済み注文データ不整合例外を送出するAPIがある
-   * When 永続化済み注文データ不整合例外発生APIを実行する
-   * Then 500 Internal Server Errorのエラーレスポンスが返る
+   * Given 永続化データ不整合例外を送出するAPIがある
+   * When 永続化データ不整合例外送出APIを実行する
+   * Then 500 Internal Server Error のエラーレスポンスが返る
    * </pre>
    */
   @Test
-  @DisplayName("永続化済み注文データ不整合例外は500に変換されること")
+  @DisplayName("永続化データ不整合例外は500に変換されること")
   void shouldReturnInternalServerErrorWhenInvalidPersistedOrderExceptionOccurs() throws Exception {
     mockMvc
         .perform(get("/test/errors/invalid-persisted-order"))
@@ -200,14 +201,14 @@ class ApiExceptionHandlerTest {
   @RequestMapping("/test/errors")
   static class TestController {
 
+    @GetMapping("/api-bad-request")
+    String throwApiBadRequestException() {
+      throw new ApiBadRequestException("orderCode", "illegal argument occurred");
+    }
+
     @GetMapping("/illegal-argument")
     String throwIllegalArgumentException() {
       throw new IllegalArgumentException("illegal argument occurred");
-    }
-
-    @GetMapping("/illegal-argument-without-message")
-    String throwIllegalArgumentExceptionWithoutMessage() {
-      throw new IllegalArgumentException();
     }
 
     @PostMapping("/validation")

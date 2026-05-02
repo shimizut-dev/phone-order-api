@@ -176,7 +176,7 @@ public class LogMasker {
    * @return 正規化後名称
    */
   private String normalizeName(final String name) {
-    return name.replace("-", "_").toLowerCase(Locale.ROOT);
+    return name.replaceAll("([a-z0-9])([A-Z])", "$1_$2").replace("-", "_").toLowerCase(Locale.ROOT);
   }
 
   /**
