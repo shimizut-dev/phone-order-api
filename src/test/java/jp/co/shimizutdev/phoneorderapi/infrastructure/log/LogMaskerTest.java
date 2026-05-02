@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** デフォルトログマスキング実装テスト */
+/** デフォルトログマスキングのテスト */
 class LogMaskerTest {
 
   private final LogMasker logMasker = new LogMasker(new ObjectMapper());
@@ -19,7 +19,7 @@ class LogMaskerTest {
    * <pre>
    * Given マスク対象ヘッダーを用意する
    * When ヘッダー値をマスキングする
-   * Then ヘッダー値がマスク文字列へ変換される
+   * Then ヘッダー値がマスク文字列に置き換えられる
    * </pre>
    */
   @Test
@@ -34,13 +34,13 @@ class LogMaskerTest {
    *
    *
    * <pre>
-   * Given マスク対象外ヘッダーを用意する
+   * Given マスク対象外のヘッダーを用意する
    * When ヘッダー値をマスキングする
    * Then 元のヘッダー値がそのまま返る
    * </pre>
    */
   @Test
-  @DisplayName("マスク対象外ヘッダーはそのまま返すこと")
+  @DisplayName("マスク対象外のヘッダーはそのまま返すこと")
   void shouldReturnOriginalValueWhenHeaderIsNotMaskTarget() {
     String actual = logMasker.maskHeader("Content-Type", "application/json");
 
@@ -51,13 +51,13 @@ class LogMaskerTest {
    *
    *
    * <pre>
-   * Given マスク対象項目を含むJSON文字列を用意する
+   * Given マスク対象項目を含む JSON 文字列を用意する
    * When テキストをマスキングする
    * Then ネストした項目や配列要素も含めてマスクされる
    * </pre>
    */
   @Test
-  @DisplayName("JSON文字列のマスク対象項目を再帰的にマスクできること")
+  @DisplayName("JSON 文字列のマスク対象項目を再帰的にマスクできること")
   void shouldMaskNestedJsonText() {
     String text =
         """
@@ -87,13 +87,44 @@ class LogMaskerTest {
    *
    *
    * <pre>
-   * Given 改行を含む非JSON文字列を用意する
+   * Given camelCase の機微情報項目を含む JSON 文字列
    * When テキストをマスキングする
-   * Then 改行と連続空白が正規化された1行文字列になる
+   * Then camelCase の機微情報項目もマスクされること
    * </pre>
    */
   @Test
-  @DisplayName("JSONでない文字列は1行化されること")
+  @DisplayName("camelCase の機微情報項目を JSON 文字列でもマスクできること")
+  void shouldMaskCamelCaseJsonFields() {
+    String text =
+        """
+        {
+          "accessToken": "secret-token",
+          "profile": {
+            "phoneNumber": "09012345678",
+            "apiKey": "secret-api-key"
+          }
+        }
+        """;
+
+    String actual = logMasker.maskText(text);
+
+    assertThat(actual)
+        .isEqualTo(
+            "{\"accessToken\":\"****\",\"profile\":{\"phoneNumber\":\"****\","
+                + "\"apiKey\":\"****\"}}");
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Given 改行を含む非 JSON 文字列を用意する
+   * When テキストをマスキングする
+   * Then 改行が正規化された 1 行文字列になる
+   * </pre>
+   */
+  @Test
+  @DisplayName("JSON でない文字列は 1 行に正規化されること")
   void shouldNormalizeWhitespaceWhenTextIsNotJson() {
     String text = "line1\n  line2\r\nline3";
 
@@ -108,7 +139,7 @@ class LogMaskerTest {
    * <pre>
    * Given マスク対象項目を含むオブジェクトを用意する
    * When オブジェクトをマスキングする
-   * Then マスク対象項目だけがマスク文字列へ変換される
+   * Then マスク対象項目だけがマスク文字列に置き換えられる
    * </pre>
    */
   @Test
@@ -125,5 +156,31 @@ class LogMaskerTest {
         .isEqualTo(
             "{\"orderedAt\":\"2026-04-07T10:15:30+09:00\","
                 + "\"password\":\"****\",\"email\":\"****\"}");
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Given camelCase の機微情報項目を含むオブジェクト
+   * When オブジェクトをマスキングする
+   * Then camelCase の機微情報項目もマスクされること
+   * </pre>
+   */
+  @Test
+  @DisplayName("camelCase の機微情報項目をオブジェクトでもマスクできること")
+  void shouldMaskCamelCaseObjectFields() {
+    Map<String, String> request = new LinkedHashMap<>();
+    request.put("orderedAt", "2026-04-07T10:15:30+09:00");
+    request.put("accessToken", "secret-token");
+    request.put("phoneNumber", "09012345678");
+    request.put("apiKey", "secret-api-key");
+
+    String actual = logMasker.maskObject(request);
+
+    assertThat(actual)
+        .isEqualTo(
+            "{\"orderedAt\":\"2026-04-07T10:15:30+09:00\","
+                + "\"accessToken\":\"****\",\"phoneNumber\":\"****\",\"apiKey\":\"****\"}");
   }
 }

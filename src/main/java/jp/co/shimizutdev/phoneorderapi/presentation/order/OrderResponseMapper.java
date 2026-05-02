@@ -8,17 +8,17 @@ import jp.co.shimizutdev.phoneorderapi.domain.order.Order;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderPageResponse;
 import jp.co.shimizutdev.phoneorderapi.presentation.generated.model.OrderResponse;
 
-/** 注文マッパー */
-public class OrderMapper {
+/** 注文レスポンスマッパー */
+public class OrderResponseMapper {
 
   /** コンストラクタ(インスタンス化を防止) */
-  private OrderMapper() {}
+  private OrderResponseMapper() {}
 
   /**
    * 注文を注文レスポンスへ変換する
    *
    * @param order 注文
-   * @return 注文レスポンス。注文が null の場合は null
+   * @return 注文レスポンス。引数が null の場合は null
    */
   public static OrderResponse toResponse(final Order order) {
     if (order == null) {
@@ -36,14 +36,14 @@ public class OrderMapper {
    * 注文一覧を注文レスポンス一覧へ変換する
    *
    * @param orders 注文一覧
-   * @return 注文レスポンス一覧。注文一覧が null の場合は空リスト
+   * @return 注文レスポンス一覧。引数が null の場合は空リスト
    */
   public static List<OrderResponse> toResponses(final List<Order> orders) {
     if (orders == null) {
       return Collections.emptyList();
     }
 
-    return orders.stream().map(OrderMapper::toResponse).filter(Objects::nonNull).toList();
+    return orders.stream().map(OrderResponseMapper::toResponse).filter(Objects::nonNull).toList();
   }
 
   /**

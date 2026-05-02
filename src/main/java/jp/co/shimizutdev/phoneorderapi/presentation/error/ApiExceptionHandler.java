@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-  /** ログ */
+  /** ロガー */
   private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
   /**
@@ -38,7 +38,7 @@ public class ApiExceptionHandler {
    *
    * @param ex バリデーション例外
    * @param request HTTP リクエスト
-   * @return バリデーションエラーを表す API エラーレスポンス
+   * @return バリデーションエラーを含む API エラーレスポンス
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValidException(
@@ -58,7 +58,7 @@ public class ApiExceptionHandler {
    *
    * @param ex 制約違反例外
    * @param request HTTP リクエスト
-   * @return バリデーションエラーを表す API エラーレスポンス
+   * @return バリデーションエラーを含む API エラーレスポンス
    */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(
@@ -74,27 +74,31 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 不正な引数を表す {@link IllegalArgumentException} を 400 Bad Request に変換する
+   * API入力値エラーを 400 Bad Request に変換する
    *
-   * @param ex 不正引数例外
+   * @param ex API入力値エラー
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
-  @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(
-      final IllegalArgumentException ex, final HttpServletRequest request) {
+  @ExceptionHandler(ApiBadRequestException.class)
+  public ResponseEntity<ApiErrorResponse> handleApiBadRequestException(
+      final ApiBadRequestException ex, final HttpServletRequest request) {
 
-    logHandledException(
-        resolveMessage(ex.getMessage(), ApiErrorMessages.VALIDATION_ERROR), request, ex);
+    String message = resolveMessage(ex.getMessage(), ApiErrorMessages.VALIDATION_ERROR);
+
+    logHandledException(message, request, ex);
 
     return buildErrorResponse(
-        HttpStatus.BAD_REQUEST, ApiErrorMessages.VALIDATION_ERROR, request, List.of());
+        HttpStatus.BAD_REQUEST,
+        ApiErrorMessages.VALIDATION_ERROR,
+        request,
+        List.of(new ApiValidationError(ex.getField(), message)));
   }
 
   /**
-   * JSON の構文不正や型不一致を 400 Bad Request に変換する
+   * JSON 形式不正などの読み取りエラーを 400 Bad Request に変換する
    *
-   * @param ex メッセージ変換例外
+   * @param ex メッセージ読み取り例外
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
@@ -126,7 +130,7 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 注文キャンセル不可の業務例外を 409 Conflict に変換する
+   * 注文キャンセル不可例外を 409 Conflict に変換する
    *
    * @param ex 注文キャンセル不可例外
    * @param request HTTP リクエスト
@@ -143,9 +147,9 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 注文の楽観ロック競合を 409 Conflict に変換する
+   * 楽観ロック例外を 409 Conflict に変換する
    *
-   * @param ex 楽観ロック競合例外
+   * @param ex 楽観ロック例外
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
@@ -163,9 +167,9 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 永続化済みデータ不整合を 500 Internal Server Error に変換する
+   * 永続化データ不整合例外を 500 Internal Server Error に変換する
    *
-   * @param ex 永続化済みデータ不整合例外
+   * @param ex 永続化データ不整合例外
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
@@ -184,9 +188,9 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 注文未存在例外を 404 Not Found に変換する
+   * 注文未検出例外を 404 Not Found に変換する
    *
-   * @param ex 注文未存在例外
+   * @param ex 注文未検出例外
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
@@ -201,9 +205,9 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 想定外例外を 500 Internal Server Error に変換し、詳細はサーバーログへ記録する
+   * 予期しない例外を 500 Internal Server Error に変換する
    *
-   * @param ex 想定外例外
+   * @param ex 予期しない例外
    * @param request HTTP リクエスト
    * @return API エラーレスポンス
    */
@@ -221,7 +225,7 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * フィールド単位のバリデーションエラーを API 用のエラー表現へ変換する
+   * フィールドエラーを API 用のバリデーションエラーへ変換する
    *
    * @param fieldError フィールドエラー
    * @return API 用バリデーションエラー
@@ -233,7 +237,7 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 制約違反を API 用のエラー表現へ変換する
+   * 制約違反を API 用のバリデーションエラーへ変換する
    *
    * @param violation 制約違反
    * @return API 用バリデーションエラー
@@ -245,7 +249,7 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 制約違反のプロパティパスからクライアントへ返却する項目名を抽出する
+   * 制約違反のプロパティパスからクライアント向けの項目名を抽出する
    *
    * @param violation 制約違反
    * @return 項目名
@@ -259,18 +263,18 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * メッセージが null または空の場合にデフォルトメッセージへ置き換える
+   * メッセージが null または空白の場合にデフォルトメッセージを返す
    *
-   * @param message 変換元メッセージ
+   * @param message 例外メッセージ
    * @param defaultMessage デフォルトメッセージ
-   * @return メッセージ
+   * @return 解決済みメッセージ
    */
   private String resolveMessage(final String message, final String defaultMessage) {
     return message != null && !message.isBlank() ? message : defaultMessage;
   }
 
   /**
-   * ハンドリング済み例外をデバッグログに出力する
+   * 既知のハンドリング済み例外をデバッグログへ出力する
    *
    * @param message ログメッセージ
    * @param request HTTP リクエスト
@@ -290,7 +294,7 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 想定外またはサーバー内部例外をエラーログに出力する
+   * 予期しない例外をエラーログへ出力する
    *
    * @param message ログメッセージ
    * @param request HTTP リクエスト
@@ -310,7 +314,7 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * 指定したステータスとメッセージから統一形式のエラーレスポンスを組み立てる
+   * ステータスとメッセージから統一形式のエラーレスポンスを構築する
    *
    * @param statusCode HTTP ステータス
    * @param message エラーメッセージ
@@ -329,13 +333,13 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * エラーレスポンス本体を生成する
+   * API エラーレスポンス本体を生成する
    *
    * @param statusCode HTTP ステータス
    * @param message エラーメッセージ
    * @param request HTTP リクエスト
    * @param validationErrors バリデーションエラー一覧
-   * @return エラーレスポンス本体
+   * @return API エラーレスポンス本体
    */
   private ApiErrorResponse createErrorResponse(
       final HttpStatusCode statusCode,
@@ -353,10 +357,10 @@ public class ApiExceptionHandler {
   }
 
   /**
-   * HTTP ステータスコードを API レスポンス用のエラーコード文字列へ変換する
+   * HTTP ステータスから API レスポンス用のエラーコードを解決する
    *
    * @param statusCode HTTP ステータス
-   * @return エラーコード文字列
+   * @return エラーコード
    */
   private String resolveErrorCode(final HttpStatusCode statusCode) {
     return Optional.ofNullable(HttpStatus.resolve(statusCode.value()))
