@@ -219,7 +219,7 @@
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <version>${openapi-generator.version}</version>
         <configuration>
-          <inputSpec>${project.basedir}/docs/05_api/openapi.yaml</inputSpec>
+          <inputSpec>${project.basedir}/docs/02_設計/API設計/OpenAPI仕様.yaml</inputSpec>
           <generatorName>spring</generatorName>
           <apiPackage>jp.co.shimizutdev.phoneorderapi.presentation.generated.api</apiPackage>
             <modelPackage>jp.co.shimizutdev.phoneorderapi.presentation.generated.model</modelPackage>
