@@ -1,6 +1,9 @@
 package jp.co.shimizutdev.phoneorderapi.presentation.error;
 
+import lombok.Getter;
+
 /** API入力不正エラー */
+@Getter
 public class ApiBadRequestException extends RuntimeException {
 
   /** エラー対象項目 */
@@ -15,14 +18,5 @@ public class ApiBadRequestException extends RuntimeException {
   public ApiBadRequestException(final String field, final String message) {
     super(message);
     this.field = field;
-  }
-
-  /**
-   * エラー対象項目を返す
-   *
-   * @return エラー対象項目
-   */
-  public String getField() {
-    return field;
   }
 }
