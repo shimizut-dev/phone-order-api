@@ -8,7 +8,7 @@ OpenAPI Generator が出力した generated sources を IntelliJ で正しく参
 
 ## 対象
 
-- `docs/05_api/openapi.yaml` を更新した場合
+- `docs/02_設計/API設計/OpenAPI仕様.yaml` を更新した場合
 - `presentation.generated.*` 配下の型が IntelliJ で未解決になった場合
 - `OrderController` や `OrderMapper` で generated model / api が参照できない場合
 
@@ -16,7 +16,7 @@ OpenAPI Generator が出力した generated sources を IntelliJ で正しく参
 
 ## 前提
 
-- OpenAPI の生成元は `docs/05_api/openapi.yaml`
+- OpenAPI の生成元は `docs/02_設計/API設計/OpenAPI仕様.yaml`
 - 生成物の出力先は `target/generated-sources/openapi/src/main/java`
 - 生成物は手修正しない
 - `pom.xml` で `build-helper-maven-plugin` により generated sources を source root として登録している

@@ -3,7 +3,7 @@ info:
   title: phone-order-api
   version: 0.0.1-SNAPSHOT
   description: |
-    携帯電話注文 API の外部仕様です。
+    移動機注文 API の外部仕様です。
     OpenAPI を API 仕様の正本として管理し、Swagger UI、モックサーバー、
     openapi-generator に利用します。
 

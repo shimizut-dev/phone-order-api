@@ -1,4 +1,4 @@
-# IntelliJ Inspection Profile 設定手順
+# IntelliJインスペクションプロファイル設定
 
 プロジェクト共有用の IntelliJ Inspection Profile は、リポジトリ内の次の場所に配置する
 
@@ -16,6 +16,19 @@
 
 ---
 
+## 利用プラグイン
+
+IntelliJ では次のプラグインを利用する。
+
+- `SonarQube for IDE`
+  - ローカルで解析結果を確認する
+- `GitHub Copilot - Your AI Pair Programmer`
+  - 実装補助に利用する
+- `Mermaid`
+  - Markdown 内の Mermaid 図を確認する
+
+---
+
 ## IntelliJ への import 手順
 
 1. `File > Settings > Editor > Inspections` を開く
@@ -29,4 +42,4 @@
 
 - profile を更新した場合は、この XML を更新してコミットする
 - `.idea/inspectionProfiles` は共有対象にしない
-- generated code や framework 由来の inspection 運用は、この profile と `intellij-warning-operation-guideline.md` で揃える
+- generated code や framework 由来の inspection 運用は、この profile と `IntelliJ警告対応ガイド.md` で揃える

@@ -1,4 +1,4 @@
-# Javadoc 生成ガイドライン
+# Javadoc作成ガイド
 
 プロダクトコードとテストコードに記載した Javadoc から HTML ドキュメントを生成する手順を定義します。
 
@@ -344,6 +344,7 @@ Javadoc は、コードを読めば分かる型名や抽象語だけで説明し
 
 ## 関連資料
 
-- `implementation-naming-rules.md`
-- `test-code-naming-and-javadoc-rules.md`
-- `document-format-guideline.md`
+- `実装命名ルール.md`
+- `テストコード命名とJavadocルール.md`
+- `../../00_はじめに/ドキュメントガイドライン.md`
+- Oracle JDK 21 公式仕様: <https://docs.oracle.com/javase/jp/21/docs/specs/javadoc/doc-comment-spec.html>
