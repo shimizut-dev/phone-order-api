@@ -18,11 +18,11 @@
 ### 方針
 
 - 外部 API は REST を基本とし、JSON を利用する
-- OpenAPI 仕様は `OpenAPI仕様.yaml` を正本とする
+- OpenAPI 仕様は `specs/openapi/openapi.yaml` を正本とする
 - 実装は OpenAPI から生成された API インターフェースとモデルに従う
 - 外部公開識別子は `orderCode` を用い、内部識別子 `OrderId` は公開しない
-- OpenAPI 仕様の正本は `docs/02_設計/API設計/OpenAPI仕様.yaml` とする
-- OpenAPI Generator の入力は `specs/openapi/openapi.yaml` とする
+- OpenAPI 仕様の正本は `specs/openapi/openapi.yaml` とする
+- OpenAPI Generator の入力も `specs/openapi/openapi.yaml` とする
 
 ### ルール
 
@@ -44,8 +44,8 @@
 
 ### 手順
 
-1. API を追加または変更する場合は、先に `OpenAPI仕様.yaml` を更新する
-2. `specs/openapi/openapi.yaml` に同じ内容を反映する
+1. API を追加または変更する場合は、先に `specs/openapi/openapi.yaml` を更新する
+2. OpenAPI Generator と関連ドキュメントを更新する
 3. パス、HTTP メソッド、リクエスト、レスポンス、エラーを仕様へ反映する
 4. 既存の `operationId` とスキーマ名を変更する場合は、生成コード利用箇所への影響を確認する
 5. 実装側では OpenAPI 生成インターフェースとモデルに合わせて controller と mapper を修正する
@@ -54,7 +54,6 @@
 
 ## 関連資料
 
-- `OpenAPI仕様.yaml`
 - `../../../specs/openapi/openapi.yaml`
 - `エラーレスポンス.md`
 - `../アーキテクチャ設計/レイヤー設計/プレゼンテーション層.md`

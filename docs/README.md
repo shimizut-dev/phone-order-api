@@ -16,6 +16,8 @@
 
 ## 管理資料
 
+- `../README.md`
+  - リポジトリ全体の入口
 - `00_はじめに/README.md`
   - `docs/` 全体の入口
 - `00_はじめに/ドキュメントガイドライン.md`
@@ -28,3 +30,5 @@
   - 開発ガイドの入口
 - `05_ADR/README.md`
   - ADR の入口
+- `../specs/openapi/openapi.yaml`
+  - API 仕様の正本
