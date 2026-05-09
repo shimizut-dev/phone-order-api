@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 /** 注文コントローラテスト */
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @SqlMergeMode(MERGE)
 @Sql(
     scripts = "classpath:sql/cleanup/cleanup-transaction-tables.sql",

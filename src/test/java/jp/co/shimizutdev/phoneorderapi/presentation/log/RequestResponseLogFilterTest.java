@@ -3,6 +3,7 @@ package jp.co.shimizutdev.phoneorderapi.presentation.log;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,17 +17,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-/** リクエスト/レスポンスのログを出力するフィルタテスト */
+/** リクエストレスポンスログのフィルターテスト */
 @SpringBootTest(
     properties =
         "logging.level.jp.co.shimizutdev.phoneorderapi.presentation.log."
@@ -39,13 +40,21 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
   /** MockMvc */
   @Autowired private MockMvc mockMvc;
 
+  /** Basic認証ユーザー名 */
+  @Value("${app.security.basic.username}")
+  private String basicUsername;
+
+  /** Basic認証パスワード */
+  @Value("${app.security.basic.password}")
+  private String basicPassword;
+
   /**
    *
    *
    * <pre>
-   * Given マスク対象ヘッダーとマスク対象項目を含むリクエストを用意する
-   * When 注文登録APIを実行する
-   * Then ログ出力時にヘッダーとボディ項目がマスクされる
+   * Given マスク対象ヘッダーとマスク対象項目を含むリクエストを送信する
+   * When  注文登録APIを実行する
+   * Then  ログ出力時にヘッダーとボディ項目がマスクされる
    * </pre>
    */
   @Test
@@ -54,8 +63,8 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
     mockMvc
         .perform(
             post("/api/v1/orders")
+                .with(httpBasic(basicUsername, basicPassword))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer secret-token")
                 .header("X-Request-Id", "request-123")
                 .header("X-Forwarded-For", "203.0.113.10, 203.0.113.11")
                 .content(
@@ -98,13 +107,13 @@ class RequestResponseLogFilterTest extends AbstractPostgreSQLTest {
    *
    *
    * <pre>
-   * Given 不正な文字エンコーディングを持つJSONリクエストを用意する
-   * When リクエスト/レスポンスログフィルタを実行する
-   * Then UTF-8へフォールバックしてレスポンスが返却される
+   * Given 不正な文字エンコーディングを持つJSONリクエストを送信する
+   * When  リクエストレスポンスログフィルターを実行する
+   * Then  UTF-8にフォールバックしてレスポンスが返却される
    * </pre>
    */
   @Test
-  @DisplayName("不正な文字エンコーディングでもUTF-8へフォールバックできること")
+  @DisplayName("不正な文字エンコーディングでもUTF-8にフォールバックできること")
   void shouldFallbackToUtf8WhenRequestEncodingIsInvalid() throws Exception {
     RequestResponseLogFilter filter =
         new RequestResponseLogFilter(new LogMasker(new ObjectMapper()));
