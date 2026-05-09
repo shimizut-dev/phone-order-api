@@ -1,4 +1,6 @@
 HELP.md
+
+### Build outputs ###
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -14,10 +16,11 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
+# Shared IntelliJ settings live under config/intellij/
 
 ### NetBeans ###
 /nbproject/private/
