@@ -45,6 +45,8 @@ paths:
         注文日時の降順、同一日時の場合は注文コードの降順で返します。
         総ページ数を超える page を指定した場合は、空の items と指定ページのページ情報を返します。
       operationId: getOrders
+      security:
+        - basicAuth: [ ]
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/Size'
@@ -73,6 +75,10 @@ paths:
                 hasPrevious: false
         '400':
           $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -82,6 +88,8 @@ paths:
       summary: 注文を登録する
       description: 注文日時を指定して注文を登録します。作成された注文は受付状態で返却します。
       operationId: createOrder
+      security:
+        - basicAuth: [ ]
       requestBody:
         x-codegen-request-body-name: createOrderRequest
         required: true
@@ -103,6 +111,10 @@ paths:
                 version: 0
         '400':
           $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -113,6 +125,8 @@ paths:
       summary: 注文を取得する
       description: 注文コードを指定して注文を取得します。
       operationId: getOrderByOrderCode
+      security:
+        - basicAuth: [ ]
       parameters:
         - $ref: '#/components/parameters/OrderCode'
       responses:
@@ -129,6 +143,10 @@ paths:
                 version: 0
         '400':
           $ref: '#/components/responses/InvalidOrderCodeError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '500':
@@ -141,6 +159,8 @@ paths:
       summary: 注文をキャンセルする
       description: 注文コードを指定して注文をキャンセル状態に更新します。
       operationId: cancelOrder
+      security:
+        - basicAuth: [ ]
       parameters:
         - $ref: '#/components/parameters/OrderCode'
       requestBody:
@@ -164,6 +184,10 @@ paths:
                 version: 1
         '400':
           $ref: '#/components/responses/InvalidOrderCodeError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '409':
@@ -172,6 +196,11 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
   parameters:
     OrderCode:
       name: orderCode
@@ -242,6 +271,36 @@ components:
             validationErrors:
               - field: getOrderByOrderCode.orderCode
                 message: must match "^ORD\d{6}$"
+    UnauthorizedError:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            timestamp: '2026-04-07T10:15:30+09:00'
+            status: 401
+            error: UNAUTHORIZED
+            message: 認証が必要です。
+            path: /api/v1/orders
+            validationErrors:
+              - field: auth
+                message: 認証が必要です。
+    ForbiddenError:
+      description: 認可エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            timestamp: '2026-04-07T10:15:30+09:00'
+            status: 403
+            error: FORBIDDEN
+            message: アクセスが拒否されました。
+            path: /api/v1/admin
+            validationErrors:
+              - field: auth
+                message: アクセスが拒否されました。
     NotFoundError:
       description: 指定された注文が存在しない
       content:
