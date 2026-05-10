@@ -9,6 +9,25 @@
 - Mock Server: `準備中`
 - OpenAPI 正本: [specs/openapi/openapi.yaml](specs/openapi/openapi.yaml)
 
+## Contract-First Development
+
+このリポジトリは `specs/openapi/openapi.yaml` を契約の正本として扱い、仕様変更から実装反映までを次の流れで進めます。
+
+1. OpenAPI 仕様を更新する
+2. `openapi-generator-maven-plugin` で生成コードを更新する
+3. テストを実行して整合性を確認する
+4. CI で契約と実装の差分・品質を検証する
+
+```text
+Edit OpenAPI spec
+        ↓
+Generate code (Maven plugin)
+        ↓
+Run tests locally
+        ↓
+Validate in CI
+```
+
 ---
 
 ## 概要
