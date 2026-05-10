@@ -52,10 +52,18 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Run tests
+      - name: Run tests and generate JaCoCo report
         env:
           TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
-        run: sh ./mvnw -B -Dmaven.repo.local="$HOME/.m2/repository" spotless:check test
+        run: sh ./mvnw -B -Dmaven.repo.local="$HOME/.m2/repository" spotless:check verify
+
+      - name: Upload JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+          if-no-files-found: error
 
       - name: Verify tracked files are unchanged after build
         run: |

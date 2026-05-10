@@ -66,7 +66,7 @@ docker compose -f docker/docker-compose.yml up -d
 テスト実行:
 
 ```bash
-./mvnw spotless:check test
+./mvnw spotless:check verify
 ```
 
 アプリ起動:
@@ -79,9 +79,15 @@ Windows の場合:
 
 ```powershell
 docker compose -f docker/docker-compose.yml up -d
-.\mvnw.cmd spotless:check test
+.\mvnw.cmd spotless:check verify
 .\mvnw.cmd spring-boot:run
 ```
+
+## JaCoCo レポート
+
+- ローカルで `./mvnw verify` 実行後、`target/site/jacoco/index.html` にカバレッジレポートを生成
+- CI では `jacoco-report` artifact として保存
+- GitHub Actions の該当 workflow run から `jacoco-report` をダウンロードして確認可能
 
 ---
 
