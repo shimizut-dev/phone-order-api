@@ -3,6 +3,12 @@
 `phone-order-api` は移動機注文を管理する Spring Boot ベースの REST API です。  
 注文一覧取得、注文取得、注文登録、注文キャンセルを提供します。
 
+## すぐ試せるもの
+
+- Swagger UI: `https://shimizut-dev.github.io/phone-order-api/swagger/`
+- Mock Server: `準備中`
+- OpenAPI 正本: [specs/openapi/openapi.yaml](specs/openapi/openapi.yaml)
+
 ---
 
 ## 概要
