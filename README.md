@@ -6,7 +6,7 @@
 ## すぐ試せるもの
 
 - Swagger UI: `https://shimizut-dev.github.io/phone-order-api/swagger/`
-- Mock Server: `準備中`
+- Mock Server: `未提供`
 - OpenAPI 正本: [specs/openapi/openapi.yaml](specs/openapi/openapi.yaml)
 
 ## Contract-First Development
@@ -133,3 +133,34 @@ docker compose -f docker/docker-compose.yml up -d
 - [docker/docker-compose.yml](docker/docker-compose.yml)
 
 基本コマンドは `最短手順` を参照する
+
+---
+
+## 品質管理
+
+本プロジェクトでは、実装だけでなく品質管理も重視しています。
+
+- CI で `./mvnw spotless:check verify` を実行
+- JaCoCo によるカバレッジレポートを生成
+- OpenAPI 正本と生成コード、実装、テストの整合を確認
+
+## テスト / カバレッジ
+
+テストは単体テスト、統合テスト、アーキテクチャテストを対象としています。  
+カバレッジは JaCoCo により計測します。
+
+ローカルでの確認手順:
+
+```bash
+./mvnw clean verify
+```
+
+Windows の場合:
+
+```powershell
+.\mvnw.cmd clean verify
+```
+
+生成レポート:
+
+`target/site/jacoco/index.html`
